@@ -1,4 +1,66 @@
 <resources>
     <string name="app_name">TastingRoomDelMar</string>
     <string name="action_settings">Settings</string>
+    <string name="title_activity_email_signup">EmailSignup</string>
+
+    <string name="facebook_app_id">457105024484728</string>
+
+    <string name="parse_app_id">rbn3CQlwygFMxvxNHVVXbe7n6AcehDOjtM9VCk9S</string>
+    <string name="parse_client_key">2INp36PG0LgWsTUEuXqwe45qcBPqJTuzj6kuHiNj</string>
+
+    <string name="tell_us">Tell us a little bit about yourself. We’d love to get to know you!</string>
+    <string name="already_have">Already have an account? Login</string>
+
+    <string name="provide_email">Provide your email and password below to login.</string>
+    <string name="dont_have">Dont have an account? Sign Up</string>
+
+    <string name="title_activity_splash">Splash</string>
+    <string name="title_activity_tier1">TASTING ROOM</string>
+    <string name="title_activity_tier2__dine_in">Dine In</string>
+    <string name="title_activity_tier2__take_out">Take Out</string>
+    <string name="title_activity_tier3__vines">Vines</string>
+    <string name="title_activity_tier4__reds">Reds</string>
+
+    <string name="del_mar">Del Mar</string>
+
+    <string-array name="tier1_entries">
+        <item>Dine in</item>
+        <item>Take out</item>
+        <item>Events</item>
+    </string-array>
+
+    <string-array name="tier2_entries">
+        <item>Vines</item>
+        <item>Hops</item>
+        <item>Harvest</item>
+        <item>More</item>
+    </string-array>
+
+    <string-array name="tier3_entries">
+        <item>Reds</item>
+        <item>Whites</item>
+        <item>Sparkling</item>
+        <item>Rose</item>
+        <item>Dessert</item>
+        <item>Flights</item>
+    </string-array>
+
+    <string-array name="tier4_entries">
+        <item>Pietra Santa</item>
+        <item>Failla</item>
+        <item>Penner Ash</item>
+    </string-array>
+
+    <!-- Navigation: Toolbar & Nav Drawer -->
+    <string-array name="nav_drawer_list">
+        <item>Menu</item>
+        <item>Events</item>
+        <item>My Tab</item>
+        <item>Payments</item>
+        <item>Settings</item>
+    </string-array>
+
+    <string name="open_drawer">Open Drawer</string>
+    <string name="close_drawer">Close Drawer</string>
+
 </resources>

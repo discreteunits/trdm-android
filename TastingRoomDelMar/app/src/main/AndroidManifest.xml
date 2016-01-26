@@ -2,12 +2,35 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.tastingroomdelmar.tastingroomdelmar">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <provider
+        android:name="com.facebook.FacebookContentProvider"
+        android:authorities="com.facebook.app.FacebookContentProvider457105024484728"
+        android:exported="true" />
+
     <application
+        android:name=".ParseIntegration"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme.Base">
+        <meta-data
+            android:name="com.facebook.sdk.ApplicationId"
+            android:value="@string/facebook_app_id" />
+
+        <activity
+            android:name=".Splash"
+            android:label="@string/title_activity_splash"
+            android:theme="@style/AppTheme.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".LogIn"
             android:label="@string/app_name"
@@ -15,8 +38,72 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name="com.facebook.FacebookActivity"
+            android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+            android:label="@string/app_name"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+        <activity
+            android:name=".SignupLoginScene"
+            android:label="@string/title_activity_email_signup"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".Tier1"
+            android:label="@string/title_activity_tier1"
+            android:parentActivityName=".LogIn"
+            android:theme="@style/AppTheme.NoActionBar">
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.tastingroomdelmar.tastingroomdelmar.LogIn" />
+        </activity>
+        <activity
+            android:name=".Tier2_DineIn"
+            android:label="@string/title_activity_tier2__dine_in"
+            android:parentActivityName=".Tier1"
+            android:theme="@style/AppTheme.NoActionBar">
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.tastingroomdelmar.tastingroomdelmar.Tier1" />
+        </activity>
+        <activity
+            android:name=".Tier2_TakeOut"
+            android:label="@string/title_activity_tier2__take_out"
+            android:parentActivityName=".Tier1"
+            android:theme="@style/AppTheme.NoActionBar">
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.tastingroomdelmar.tastingroomdelmar.Tier1" />
+        </activity>
+        <activity
+            android:name=".Tier3_Vines"
+            android:label="@string/title_activity_tier3__vines"
+            android:parentActivityName=".Tier2_DineIn"
+            android:theme="@style/AppTheme.NoActionBar">
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.tastingroomdelmar.tastingroomdelmar.Tier2_DineIn" />
+        </activity>
+        <activity
+            android:name=".Tier4_Reds"
+            android:label="@string/title_activity_tier4__reds"
+            android:parentActivityName=".Tier3_Vines"
+            android:theme="@style/AppTheme.NoActionBar">
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.tastingroomdelmar.tastingroomdelmar.Tier3_Vines" />
         </activity>
     </application>
 
