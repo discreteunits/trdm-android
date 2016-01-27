@@ -8,7 +8,7 @@
 
     <include layout="@layout/app_bar" />
 
-    <include layout="@layout/navigation_drawer" />
+    <!-- <include layout="@layout/navigation_drawer" /> -->
 
     <ListView
         android:layout_width="match_parent"
