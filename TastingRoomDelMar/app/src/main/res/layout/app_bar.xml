@@ -1,36 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.widget.Toolbar
-    android:id="@+id/tier1_toolbar"
+    android:id="@+id/app_bar"
     android:layout_width="match_parent"
     android:layout_height="?attr/actionBarSize"
     android:background="#000000"
+    android:paddingLeft="8dp"
+    android:paddingRight="8dp"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <TextView
+        android:id="@+id/up_nav_textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/del_mar"
-        android:layout_gravity="left" />
+        android:text=""
+        android:layout_gravity="left"
+        android:onClick="goToParentActivity"/>
 
     <TextView
+        android:id="@+id/toolbar_header"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/title_activity_tier1"
+        android:text=""
         android:layout_gravity="center" />
 
-    <ImageButton
+    <ImageView
+        android:id="@+id/nav_drawer_viewButton"
+        android:src="@drawable/hamburger"
         android:layout_width="22dp"
         android:layout_height="22dp"
-        android:src="@drawable/hamburger"
-        android:id="@+id/nav_button"
-        android:layout_gravity="right"
-        android:onClick="onNavButtonClick"/>
+        android:layout_gravity="right"/>
 
-    <ImageButton
+    <ImageView
+        android:id="@+id/current_order_viewButton"
+        android:src="@drawable/current_order"
         android:layout_width="25dp"
         android:layout_height="25dp"
-        android:src="@drawable/current_order"
-        android:id="@+id/current_order"
         android:layout_gravity="right" />
 
 </android.support.v7.widget.Toolbar>

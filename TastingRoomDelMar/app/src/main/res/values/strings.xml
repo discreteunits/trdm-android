@@ -15,13 +15,12 @@
     <string name="dont_have">Dont have an account? Sign Up</string>
 
     <string name="title_activity_splash">Splash</string>
+    <string name="back">Del Mar</string>
     <string name="title_activity_tier1">TASTING ROOM</string>
     <string name="title_activity_tier2__dine_in">Dine In</string>
     <string name="title_activity_tier2__take_out">Take Out</string>
     <string name="title_activity_tier3__vines">Vines</string>
     <string name="title_activity_tier4__reds">Reds</string>
-
-    <string name="del_mar">Del Mar</string>
 
     <string-array name="tier1_entries">
         <item>Dine in</item>

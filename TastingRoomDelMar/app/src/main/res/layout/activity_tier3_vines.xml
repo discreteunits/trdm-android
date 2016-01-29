@@ -6,39 +6,7 @@
     tools:context=".Tier3_Vines"
     android:orientation="vertical" >
 
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/tier3_toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="#000000">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/title_activity_tier2__dine_in"
-            android:layout_gravity="left" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/title_activity_tier3__vines"
-            android:layout_gravity="center" />
-
-        <ImageButton
-            android:layout_width="22dp"
-            android:layout_height="22dp"
-            android:src="@drawable/hamburger"
-            android:id="@+id/menu_icon"
-            android:layout_gravity="right" />
-
-        <ImageButton
-            android:layout_width="25dp"
-            android:layout_height="25dp"
-            android:src="@drawable/current_order"
-            android:id="@+id/current_order"
-            android:layout_gravity="right" />
-
-    </android.support.v7.widget.Toolbar>
+    <include layout="@layout/app_bar" />
 
     <ListView
         android:layout_width="match_parent"

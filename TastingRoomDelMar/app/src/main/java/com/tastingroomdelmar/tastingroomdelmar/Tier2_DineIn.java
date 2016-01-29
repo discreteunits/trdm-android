@@ -1,17 +1,13 @@
 package com.tastingroomdelmar.tastingroomdelmar;
 
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.os.Bundle;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class Tier2_DineIn extends AppCompatActivity {
@@ -23,12 +19,21 @@ public class Tier2_DineIn extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tier2_dine_in);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.tier2_dine_in_toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.app_bar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
+        /* getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
-        toolbar.setNavigationIcon(R.drawable.ic_action_back);
+        toolbar.setNavigationIcon(R.drawable.ic_action_back); */
+
+        TextView up_nav = (TextView) findViewById(R.id.up_nav_textView);
+        up_nav.setText(R.string.title_activity_tier1);
+        /* An alternative to getPrevActivityName() may be getParentActivityName()
+        TextView up_nav = (TextView) findViewById(R.id.up_nav_textView);
+        up_nav.setText(PrevActivity.getPrevActivityName()); */
+
+        TextView toolbar_header = (TextView) findViewById(R.id.toolbar_header);
+        toolbar_header.setText(R.string.title_activity_tier2__dine_in);
 
         dineInListView = (ListView) findViewById(R.id.tier2_listView);
         AdapterView.OnItemClickListener itemClickListener = new AdapterView.OnItemClickListener() {
@@ -62,5 +67,10 @@ public class Tier2_DineIn extends AppCompatActivity {
             }
         };
         dineInListView.setOnItemClickListener(itemClickListener);
+    }
+
+    public void goToParentActivity(View view) {
+        Intent parentActivityIntent = new Intent(Tier2_DineIn.this, Tier1.class);
+        startActivity(parentActivityIntent);
     }
 }
