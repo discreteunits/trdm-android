@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="discreteunits.com.tastingroomdelmar.SignUpLoginActivity"
+    tools:showIn="@layout/app_bar_sign_up_login"
+    android:background="@color/colorPrimary">
+
+    <TextView
+        android:id="@+id/tv_signup_login_message"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:gravity="center_horizontal"
+        android:padding="40dp"
+        android:text="Tell us a little bit about yourself. We’d love to get to know you!"
+        android:textSize="20sp"
+        android:textColor="@color/grayText"/>
+
+    <View
+        android:id="@+id/first_divider"
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:layout_below="@+id/tv_signup_login_message"
+        android:background="@android:color/darker_gray"/>
+
+    <RelativeLayout
+        android:id="@+id/layout_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/first_divider">
+
+        <TextView
+            android:id="@+id/tv_email"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:paddingLeft="15dp"
+            android:text="EMAIL"
+            android:textScaleX="0.8"
+            android:textSize="25sp"
+            android:textColor="@color/grayText"/>
+        <EditText
+            android:id="@+id/et_email"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignLeft="@+id/et_password"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:paddingRight="15dp"
+            android:background="@android:color/transparent"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:inputType="textEmailAddress"
+            android:textColor="@color/white"
+            android:textSize="25sp"
+            android:textScaleX="0.8"/>
+
+    <View
+        android:id="@+id/second_divider"
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:layout_below="@+id/et_email"
+        android:background="@android:color/darker_gray"/>
+
+        <TextView
+            android:id="@+id/tv_password"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/second_divider"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:paddingLeft="15dp"
+            android:text="PASSWORD"
+            android:textScaleX="0.8"
+            android:textSize="25sp"
+            android:textColor="@color/grayText"/>
+        <EditText
+            android:id="@+id/et_password"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/second_divider"
+            android:layout_toRightOf="@+id/tv_password"
+            android:layout_toEndOf="@+id/tv_password"
+            android:layout_marginStart="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:paddingRight="15dp"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:background="@android:color/transparent"
+            android:inputType="textPassword"
+            android:textColor="@color/white"
+            android:textSize="25sp"
+            android:textScaleX="0.8"/>
+    </RelativeLayout>
+
+    <View
+        android:id="@+id/third_divider"
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:layout_below="@+id/layout_input"
+        android:background="@android:color/darker_gray"/>
+
+    <TextView
+        android:id="@+id/tv_signup_login_question"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:paddingTop="30dp"
+        android:textSize="15sp"
+        android:textColor="@color/grayText"
+        android:text="Already have an account? Login"
+        android:layout_below="@+id/third_divider"
+        android:layout_alignParentLeft="false"
+        android:layout_alignParentStart="false" />
+
+    <Button
+        android:id="@+id/button_signup_login"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:layout_alignParentBottom="true"
+        android:textSize="25sp"
+        android:textColor="@color/white"/>
+</RelativeLayout>

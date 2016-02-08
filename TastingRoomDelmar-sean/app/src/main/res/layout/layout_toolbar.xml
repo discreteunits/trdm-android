@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.Toolbar
+    android:layout_width="match_parent"
+    android:layout_height="?attr/actionBarSize"
+    android:background="#000000"
+    android:layout_gravity="end"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <TextView
+        android:id="@+id/tv_prev_activity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/white"
+        android:text="s1"
+        android:textSize="15sp"
+        android:layout_gravity="start" />
+
+    <TextView
+        android:id="@+id/tv_curr_activity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/white"
+        android:text="s2"
+        android:textSize="15sp"
+        android:layout_gravity="center" />
+
+    <ImageButton
+        android:id="@+id/nav_button"
+        android:layout_width="22dp"
+        android:layout_height="22dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginEnd="10dp"
+        android:contentDescription="@string/content_description_drawer"
+        android:src="@drawable/hamburger"
+        android:layout_gravity="end" />
+
+    <ImageButton
+        android:id="@+id/current_order"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginEnd="5dp"
+        android:contentDescription="@string/content_description_tab"
+        android:src="@drawable/current_order"
+        android:layout_gravity="end" />
+
+</android.support.v7.widget.Toolbar>

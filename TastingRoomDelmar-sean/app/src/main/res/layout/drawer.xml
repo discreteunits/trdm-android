@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+xmlns:android="http://schemas.android.com/apk/res/android"
+android:id="@+id/drawer_view"
+android:layout_width="240dp"
+android:layout_height="match_parent"
+android:orientation="vertical"
+android:background="@color/colorPrimary"
+android:layout_gravity="end">
+
+<ListView
+    android:id="@+id/right_drawer"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:choiceMode="singleChoice"
+    android:divider="@android:color/transparent"
+    android:dividerHeight="0dp"
+    android:layout_gravity="end"
+    android:entries="@array/drawer"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:baselineAligned="false"
+        android:paddingBottom="15dp"
+        android:layout_weight="1">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="15dp"
+            android:src="@drawable/primary_text_logo_600_600" />
+
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="1435 Camino Del Mar"
+        android:layout_gravity="center_horizontal" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Del Mar, CA 92014"
+        android:layout_gravity="center_horizontal" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="858.232.6545"
+        android:layout_gravity="center_horizontal" />
+</LinearLayout>

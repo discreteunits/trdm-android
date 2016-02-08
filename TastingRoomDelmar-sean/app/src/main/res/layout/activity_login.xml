@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    android:orientation="vertical"
+    android:background="#000000" >
+
+    <ImageView
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:id="@+id/image_view_logo"
+        android:layout_weight="1"
+        android:src="@drawable/primary_text_logo_600_600"
+        android:layout_gravity="center_vertical" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <com.facebook.login.widget.LoginButton
+            android:id="@+id/fb_login_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="30dp"
+            android:layout_marginBottom="30dp"
+            android:layout_weight="0"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:paddingRight="20dp"
+            android:paddingLeft="20dp" />
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="20dp"
+            android:paddingBottom="20dp">
+
+            <Button
+                android:id="@+id/button_signup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sign Up"
+                android:textColor="@color/white"
+                android:background="@android:color/transparent"
+                android:gravity="center"
+                android:layout_weight="1" />
+
+            <Button
+                android:id="@+id/button_login"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Log In"
+                android:textColor="@color/white"
+                android:background="@android:color/transparent"
+                android:gravity="center"
+                android:layout_weight="1" />
+
+            <Button
+                android:id="@+id/button_guest_continue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Continue as a Guest"
+                android:textColor="@color/white"
+                android:background="@android:color/transparent"
+                android:gravity="center"
+                android:layout_weight="1"
+                android:clickable="true" />
+
+        </LinearLayout>
+    </LinearLayout>
+
+
+</LinearLayout>

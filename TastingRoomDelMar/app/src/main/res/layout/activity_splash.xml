@@ -16,7 +16,6 @@
         android:layout_height="wrap_content"
         android:id="@+id/imageView"
         android:layout_weight="1"
-        android:layout_gravity="bottom"
         android:src="@drawable/primary_text_logo_600_600"/>
 
 </LinearLayout>
