@@ -33,7 +33,15 @@
             android:label="@string/app_name"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
         <activity android:name=".SignUpLoginActivity" />
-        <activity android:name=".Tier1Activity"></activity>
+        <activity android:name=".Tier1Activity" />
+        <activity
+            android:name=".Tier2Activity"
+            android:label="@string/title_activity_tier2"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".Tier3Activity"
+            android:label="@string/title_activity_tier3"
+            android:theme="@style/AppTheme"></activity>
     </application>
 
 </manifest>

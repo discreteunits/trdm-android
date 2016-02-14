@@ -6,4 +6,5 @@
     <color name="white">#FFFFFF</color>
     <color name="grayText">#7F797E</color>
     <color name="confirmGreen">#40B34E</color>
+    <color name="dark_grey">#4d4d4d</color>
 </resources>

@@ -18,38 +18,21 @@ android:layout_gravity="end">
     android:layout_gravity="end"
     android:entries="@array/drawer"/>
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
+        android:layout_height="0dp"
+        android:gravity="bottom"
         android:orientation="vertical"
-        android:baselineAligned="false"
-        android:paddingBottom="15dp"
         android:layout_weight="1">
 
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
             android:padding="15dp"
-            android:src="@drawable/primary_text_logo_600_600" />
+            android:src="@drawable/primary_logo_tilted"
+            android:alpha=".30"/>
 
-    </LinearLayout>
+    </RelativeLayout>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="1435 Camino Del Mar"
-        android:layout_gravity="center_horizontal" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Del Mar, CA 92014"
-        android:layout_gravity="center_horizontal" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="858.232.6545"
-        android:layout_gravity="center_horizontal" />
 </LinearLayout>

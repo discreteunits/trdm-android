@@ -28,4 +28,6 @@
     <string name="welcome_message_login">Provide your email and password below to login.</string>
     <string name="question_signup">Already have an account? Login</string>
     <string name="question_login">Dont have an account? Sign Up</string>
+    <string name="title_activity_tier2">Tier2Activity</string>
+    <string name="title_activity_tier3">Tier3Activity</string>
 </resources>

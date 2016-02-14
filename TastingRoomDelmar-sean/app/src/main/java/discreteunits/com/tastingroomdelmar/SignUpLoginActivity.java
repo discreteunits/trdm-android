@@ -1,6 +1,8 @@
 package discreteunits.com.tastingroomdelmar;
 
 import android.content.Intent;
+import android.content.res.AssetManager;
+import android.graphics.Typeface;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -11,6 +13,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,12 +29,11 @@ public class SignUpLoginActivity extends AppCompatActivity {
 
     //TODO remove drawer. it's only for demo purpose
 
-    //DrawerLayout drawer;
-
     TextView mTVPreviousActivityName;
     TextView mTVCurrentActivityName;
-    TextView mTVWelcomeMessage;
     TextView mTVQuestion;
+    TextView mTVEmail;
+    TextView mTVPassword;
 
     Button mButtonSignupLogin;
 
@@ -47,13 +49,17 @@ public class SignUpLoginActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         final ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
+        if (actionBar != null)
             actionBar.setDisplayShowTitleEnabled(false);
-            actionBar.setDisplayHomeAsUpEnabled(true);
-            actionBar.setDisplayShowHomeEnabled(true);
-        }
 
-        //drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        final ImageView mIVUp = (ImageView) findViewById(R.id.up_button);
+        mIVUp.setVisibility(View.VISIBLE);
+        mIVUp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
 
         final ImageButton mImageButtonDrawer = (ImageButton) findViewById(R.id.nav_button);
         mImageButtonDrawer.setVisibility(View.GONE);
@@ -61,25 +67,30 @@ public class SignUpLoginActivity extends AppCompatActivity {
         final ImageButton mImageButtonTab = (ImageButton) findViewById(R.id.current_order);
         mImageButtonTab.setVisibility(View.GONE);
 
-//        mImageButtonDrawer.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                if (drawer.isDrawerOpen(GravityCompat.END)) {
-//                    drawer.closeDrawer(GravityCompat.END);
-//                }
-//                else {
-//                    drawer.openDrawer(GravityCompat.END);
-//                }
-//            }
-//        });
+        final AssetManager assetManager = getAssets();
+        final Typeface nexarust = Typeface.createFromAsset(assetManager, "fonts/nexarust/NexaRustScriptL-0.otf");
+        final Typeface bebas = Typeface.createFromAsset(assetManager, "fonts/bebas/BebasNeue Regular.otf");
 
         mTVPreviousActivityName = (TextView) toolbar.findViewById(R.id.tv_prev_activity);
-        mTVCurrentActivityName = (TextView) toolbar.findViewById(R.id.tv_curr_activity);
-        mTVWelcomeMessage = (TextView) findViewById(R.id.tv_signup_login_message);
-        mTVQuestion = (TextView) findViewById(R.id.tv_signup_login_question);
-        mButtonSignupLogin = (Button) findViewById(R.id.button_signup_login);
+        mTVPreviousActivityName.setTypeface(nexarust);
 
+        mTVCurrentActivityName = (TextView) toolbar.findViewById(R.id.tv_curr_activity);
+        mTVCurrentActivityName.setTypeface(nexarust);
+
+        mTVQuestion = (TextView) findViewById(R.id.tv_signup_login_question);
+        mTVQuestion.setTypeface(nexarust);
+
+        mButtonSignupLogin = (Button) findViewById(R.id.button_signup_login);
+        mButtonSignupLogin.setTypeface(nexarust);
+
+        mTVEmail = (TextView) findViewById(R.id.tv_email);
+        mTVEmail.setTypeface(bebas);
         mEditTextEmail = (EditText) findViewById(R.id.et_email);
+        mEditTextEmail.setTypeface(bebas);
+
+        mTVPassword = (TextView) findViewById(R.id.tv_password);
+        mTVPassword.setTypeface(bebas);
+
         mEditTextPassword = (EditText) findViewById(R.id.et_password);
 
         Bundle extras = getIntent().getExtras();
@@ -88,7 +99,6 @@ public class SignUpLoginActivity extends AppCompatActivity {
 
             if (flagSignupOrLogin == Constants.SIGNUP_FLAG) {
                 mTVCurrentActivityName.setText(getResources().getString(R.string.signup));
-                mTVWelcomeMessage.setText(getResources().getString(R.string.welcome_message_signup));
                 mTVQuestion.setText(getResources().getString(R.string.question_signup));
                 mButtonSignupLogin.setText(getResources().getString(R.string.signup));
                 mButtonSignupLogin.setBackgroundColor(ContextCompat.getColor(this, R.color.confirmGreen));
@@ -101,7 +111,6 @@ public class SignUpLoginActivity extends AppCompatActivity {
             }
             else {
                 mTVCurrentActivityName.setText(getResources().getString(R.string.login));
-                mTVWelcomeMessage.setText(getResources().getString(R.string.welcome_message_login));
                 mTVQuestion.setText(getResources().getString(R.string.question_login));
                 mButtonSignupLogin.setText(getResources().getString(R.string.login));
                 mButtonSignupLogin.setBackgroundColor(ContextCompat.getColor(this, R.color.grayText));
@@ -115,17 +124,6 @@ public class SignUpLoginActivity extends AppCompatActivity {
         }
 
         mTVPreviousActivityName.setVisibility(View.GONE);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                finish();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
     }
 
     private void createNewUser() {

@@ -9,22 +9,10 @@
     tools:showIn="@layout/app_bar_sign_up_login"
     android:background="@color/colorPrimary">
 
-    <TextView
-        android:id="@+id/tv_signup_login_message"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        android:gravity="center_horizontal"
-        android:padding="40dp"
-        android:text="Tell us a little bit about yourself. We’d love to get to know you!"
-        android:textSize="20sp"
-        android:textColor="@color/grayText"/>
-
     <View
         android:id="@+id/first_divider"
         android:layout_width="match_parent"
         android:layout_height="1px"
-        android:layout_below="@+id/tv_signup_login_message"
         android:background="@android:color/darker_gray"/>
 
     <RelativeLayout
@@ -43,7 +31,7 @@
             android:paddingBottom="10dp"
             android:paddingLeft="15dp"
             android:text="EMAIL"
-            android:textScaleX="0.8"
+            android:textScaleX="0.9"
             android:textSize="25sp"
             android:textColor="@color/grayText"/>
         <EditText
@@ -62,7 +50,7 @@
             android:inputType="textEmailAddress"
             android:textColor="@color/white"
             android:textSize="25sp"
-            android:textScaleX="0.8"/>
+            android:textScaleX="0.9"/>
 
     <View
         android:id="@+id/second_divider"
@@ -82,7 +70,7 @@
             android:paddingBottom="10dp"
             android:paddingLeft="15dp"
             android:text="PASSWORD"
-            android:textScaleX="0.8"
+            android:textScaleX="0.9"
             android:textSize="25sp"
             android:textColor="@color/grayText"/>
         <EditText
@@ -105,7 +93,7 @@
             android:inputType="textPassword"
             android:textColor="@color/white"
             android:textSize="25sp"
-            android:textScaleX="0.8"/>
+            android:textScaleX="0.9"/>
     </RelativeLayout>
 
     <View
@@ -133,6 +121,7 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:layout_alignParentBottom="true"
-        android:textSize="25sp"
+        android:textSize="30sp"
+        android:textAllCaps="false"
         android:textColor="@color/white"/>
 </RelativeLayout>
