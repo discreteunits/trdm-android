@@ -31,7 +31,7 @@ import java.util.List;
 import parseUtils.ListObject;
 
 public class Tier2Activity extends AppCompatActivity {
-    private static final String TAG = Tier1Activity.class.getSimpleName();
+    private static final String TAG = Tier2Activity.class.getSimpleName();
 
     DrawerLayout drawer;
     ArrayList<ListObject> listItem = new ArrayList<>();

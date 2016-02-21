@@ -1,6 +1,5 @@
 package discreteunits.com.tastingroomdelmar;
 
-import android.content.Intent;
 import android.content.res.AssetManager;
 import android.graphics.Typeface;
 import android.support.v4.view.GravityCompat;
@@ -30,8 +29,8 @@ import java.util.List;
 
 import parseUtils.ListObject;
 
-public class Tier3Activity extends AppCompatActivity {
-    private static final String TAG = Tier3Activity.class.getSimpleName();
+public class Tier4Activity extends AppCompatActivity {
+    private static final String TAG = Tier4Activity.class.getSimpleName();
 
     DrawerLayout drawer;
 
@@ -73,8 +72,8 @@ public class Tier3Activity extends AppCompatActivity {
 
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
-            currentActivity = extras.getString("TIER3_DEST");
-            String prevActivity = extras.getString("TIER3_ORIG");
+            currentActivity = extras.getString("TIER4_DEST");
+            String prevActivity = extras.getString("TIER4_ORIG");
 
             mTVCurrentActivityName.setText(currentActivity);
             mTVCurrentActivityName.setTypeface(nexarust);
@@ -125,16 +124,6 @@ public class Tier3Activity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 Log.d(TAG, "position " + position + " clicked");
 
-                Intent intent = new Intent(Tier3Activity.this, Tier4Activity.class);
-
-                if (currentActivity.equals("Vines"))
-                    intent.putExtra("TIER4_DEST", listItemVines.get(position).getName());
-                else
-                    intent.putExtra("TIER4_DEST", listItemHops.get(position).getName());
-
-                intent.putExtra("TIER4_ORIG", currentActivity);
-
-                startActivity(intent);
             }
         });
     }

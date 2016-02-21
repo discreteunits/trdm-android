@@ -52,7 +52,7 @@
                 android:layout_marginRight="10dp"
                 android:layout_marginEnd="10dp"
 
-                android:background="@drawable/soft_corner_button"
+                android:background="@drawable/gray_soft_corner_button"
                 android:textAllCaps="false"
                 android:gravity="center" />
 
@@ -63,7 +63,7 @@
                 android:text="Log In"
                 android:textColor="@color/white"
                 android:textSize="17sp"
-                android:background="@drawable/soft_corner_button"
+                android:background="@drawable/gray_soft_corner_button"
                 android:textAllCaps="false"
                 android:gravity="center" />
 
