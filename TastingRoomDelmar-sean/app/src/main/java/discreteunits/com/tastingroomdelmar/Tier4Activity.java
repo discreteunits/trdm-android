@@ -23,20 +23,27 @@ import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import parseUtils.ItemListObject;
 import parseUtils.ListObject;
+import utils.TagManager;
 
 public class Tier4Activity extends AppCompatActivity {
     private static final String TAG = Tier4Activity.class.getSimpleName();
 
     DrawerLayout drawer;
 
-    ArrayList<ListObject> listItemVines = new ArrayList<>();
-    ArrayList<ListObject> listItemHops = new ArrayList<>();
-    Tier3ListViewAdapter adapter;
+    ArrayList<String> topListItem = new ArrayList<>();
+    ArrayList<ItemListObject> listItem = new ArrayList<>();
+    Tier4TopListViewAdapter topAdapter;
+    Tier4ListViewAdapter adapter;
 
     ProgressBar mProgressBar;
 
@@ -45,7 +52,7 @@ public class Tier4Activity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_tier3);
+        setContentView(R.layout.activity_tier4);
 
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -88,7 +95,7 @@ public class Tier4Activity extends AppCompatActivity {
             });
         }
 
-        mProgressBar = (ProgressBar) findViewById(R.id.pb_tier3);
+        mProgressBar = (ProgressBar) findViewById(R.id.pb_tier4);
         mProgressBar.setVisibility(View.VISIBLE);
 
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -108,13 +115,14 @@ public class Tier4Activity extends AppCompatActivity {
             }
         });
 
-        final ListView listView = (ListView) findViewById(R.id.lv_tier3);
+        final ListView topListView = (ListView) findViewById(R.id.lv_top_tier4);
+        topAdapter = new Tier4TopListViewAdapter(this, topListItem);
+        topListView.setAdapter(topAdapter);
 
-        if (currentActivity.equals("Vines"))
-            adapter = new Tier3ListViewAdapter(this,listItemVines);
-        else
-            adapter = new Tier3ListViewAdapter(this,listItemHops);
+        getTopListFromParse();
 
+        final ListView listView = (ListView) findViewById(R.id.lv_tier4);
+        adapter = new Tier4ListViewAdapter(this,listItem);
         listView.setAdapter(adapter);
 
         getListFromParse();
@@ -129,6 +137,12 @@ public class Tier4Activity extends AppCompatActivity {
     }
 
     @Override
+    protected void onDestroy() {
+        TagManager.popFromList();
+        super.onDestroy();
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
@@ -139,32 +153,54 @@ public class Tier4Activity extends AppCompatActivity {
         }
     }
 
-    private void getListFromParse() {
-        ParseQuery<ParseObject> query = new ParseQuery<ParseObject>("Tier3");
+    private void getTopListFromParse() {
+        ParseQuery<ParseObject> query = new ParseQuery<ParseObject>("WineVarietal");
         query.findInBackground(new FindCallback<ParseObject>() {
             public void done(List<ParseObject> objectList, ParseException e) {
                 if (e == null) {
                     for(ParseObject objects : objectList) {
                         String name = objects.getString("name");
-                        int sortOrder = objects.getInt("sortOrder");
-                        Log.d(TAG, "parse object name : " + name);
+                        JSONArray tier3JSONArray = objects.getJSONArray("tier3"); // reds, whites,...
 
-                        if (!name.equals("Bottles") && !name.equals("Draft")) {
-                            listItemVines.add(new ListObject(sortOrder, name));
-                        }
-                        else if (name.equals("Flights")) {
-                            listItemVines.add(new ListObject(sortOrder, name));
-                            listItemHops.add(new ListObject(sortOrder,name));
-                        }
-                        else {
-                            listItemHops.add(new ListObject(sortOrder, name));
+
+                        Log.d(TAG, "parse object name : " + name);
+                        try {
+                            String objectId = tier3JSONArray.getJSONObject(0).getString("objectId");
+
+                            if (TagManager.isInList(objectId))
+                                topListItem.add(name);
+
+                        } catch (JSONException e1) {
+                            e1.printStackTrace();
                         }
                     }
 
-                    if (currentActivity.equals("Vines"))
-                        Collections.sort(listItemVines);
-                    else
-                        Collections.sort(listItemHops);
+                    Collections.sort(topListItem);
+
+                    topAdapter.notifyDataSetChanged();
+                } else {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    private void getListFromParse() {
+        ParseQuery<ParseObject> query = new ParseQuery<ParseObject>("Item");
+        query.findInBackground(new FindCallback<ParseObject>() {
+            public void done(List<ParseObject> objectList, ParseException e) {
+                if (e == null) {
+                    for(ParseObject objects : objectList) {
+                        String name = objects.getString("name");
+                        String tag = objects.getString("tag");
+                        String altName = objects.getString("alternateName");
+
+                        Log.d(TAG, "parse object name : " + name);
+
+                        listItem.add(new ItemListObject(tag, name, altName));
+                    }
+
+                    Collections.sort(listItem);
 
                     adapter.notifyDataSetChanged();
                     mProgressBar.setVisibility(View.GONE);

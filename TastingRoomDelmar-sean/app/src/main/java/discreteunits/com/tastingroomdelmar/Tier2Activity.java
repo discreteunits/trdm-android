@@ -29,6 +29,7 @@ import java.util.Collections;
 import java.util.List;
 
 import parseUtils.ListObject;
+import utils.TagManager;
 
 public class Tier2Activity extends AppCompatActivity {
     private static final String TAG = Tier2Activity.class.getSimpleName();
@@ -119,12 +120,21 @@ public class Tier2Activity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 Log.d(TAG, "position " + position + " clicked");
 
+                TagManager.addToList(listItem.get(position).getTag());
+                TagManager.printTag();
+
                 Intent intent = new Intent(Tier2Activity.this, Tier3Activity.class);
                 intent.putExtra("TIER3_DEST", listItem.get(position).getName());
                 intent.putExtra("TIER3_ORIG", currentActivity);
                 startActivity(intent);
             }
         });
+    }
+
+    @Override
+    protected void onDestroy() {
+        TagManager.popFromList();
+        super.onDestroy();
     }
 
     @Override
@@ -140,12 +150,13 @@ public class Tier2Activity extends AppCompatActivity {
 
     private void getListFromParse() {
         ParseQuery<ParseObject> query = new ParseQuery<ParseObject>("Tier2");
+        query.include("tag");
         query.findInBackground(new FindCallback<ParseObject>() {
             public void done(List<ParseObject> objectList, ParseException e) {
                 if (e == null) {
                     for(ParseObject objects : objectList) {
                         Log.d(TAG, "parse object name : " + objects.getString("name"));
-                        listItem.add(new ListObject(objects.getInt("sortOrder"), objects.getString("name")));
+                        listItem.add(new ListObject(objects.getInt("sortOrder"), objects.getString("tag"), objects.getString("name")));
                     }
 
                     Collections.sort(listItem);

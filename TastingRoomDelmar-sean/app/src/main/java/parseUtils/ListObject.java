@@ -6,15 +6,19 @@ package parseUtils;
 public class ListObject implements Comparable<ListObject> {
     private int sortOrder;
     private String name;
+    private String tag;
 
-    public ListObject (int sortOrder, String name) {
+    public ListObject (int sortOrder, String tag, String name) {
         this.sortOrder = sortOrder;
         this.name = name;
+        this.tag = tag;
     }
 
     public String getName() {
         return name;
     }
+
+    public String getTag() { return tag; }
 
     public int getSortOrder() {
         return sortOrder;

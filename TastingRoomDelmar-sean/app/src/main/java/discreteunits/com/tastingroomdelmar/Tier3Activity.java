@@ -29,14 +29,14 @@ import java.util.Collections;
 import java.util.List;
 
 import parseUtils.ListObject;
+import utils.TagManager;
 
 public class Tier3Activity extends AppCompatActivity {
     private static final String TAG = Tier3Activity.class.getSimpleName();
 
     DrawerLayout drawer;
 
-    ArrayList<ListObject> listItemVines = new ArrayList<>();
-    ArrayList<ListObject> listItemHops = new ArrayList<>();
+    ArrayList<ListObject> listItem = new ArrayList<>();
     Tier3ListViewAdapter adapter;
 
     ProgressBar mProgressBar;
@@ -111,10 +111,8 @@ public class Tier3Activity extends AppCompatActivity {
 
         final ListView listView = (ListView) findViewById(R.id.lv_tier3);
 
-        if (currentActivity.equals("Vines"))
-            adapter = new Tier3ListViewAdapter(this,listItemVines);
-        else
-            adapter = new Tier3ListViewAdapter(this,listItemHops);
+
+        adapter = new Tier3ListViewAdapter(this,listItem);
 
         listView.setAdapter(adapter);
 
@@ -125,18 +123,23 @@ public class Tier3Activity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 Log.d(TAG, "position " + position + " clicked");
 
+                TagManager.addToList(listItem.get(position).getTag());
+                TagManager.printTag();
+
                 Intent intent = new Intent(Tier3Activity.this, Tier4Activity.class);
 
-                if (currentActivity.equals("Vines"))
-                    intent.putExtra("TIER4_DEST", listItemVines.get(position).getName());
-                else
-                    intent.putExtra("TIER4_DEST", listItemHops.get(position).getName());
-
+                intent.putExtra("TIER4_DEST", listItem.get(position).getName());
                 intent.putExtra("TIER4_ORIG", currentActivity);
 
                 startActivity(intent);
             }
         });
+    }
+
+    @Override
+    protected void onDestroy() {
+        TagManager.popFromList();
+        super.onDestroy();
     }
 
     @Override
@@ -152,30 +155,21 @@ public class Tier3Activity extends AppCompatActivity {
 
     private void getListFromParse() {
         ParseQuery<ParseObject> query = new ParseQuery<ParseObject>("Tier3");
+        query.include("tag");
         query.findInBackground(new FindCallback<ParseObject>() {
             public void done(List<ParseObject> objectList, ParseException e) {
                 if (e == null) {
                     for(ParseObject objects : objectList) {
                         String name = objects.getString("name");
+                        String tag = objects.getString("tag");
                         int sortOrder = objects.getInt("sortOrder");
+
                         Log.d(TAG, "parse object name : " + name);
 
-                        if (!name.equals("Bottles") && !name.equals("Draft")) {
-                            listItemVines.add(new ListObject(sortOrder, name));
-                        }
-                        else if (name.equals("Flights")) {
-                            listItemVines.add(new ListObject(sortOrder, name));
-                            listItemHops.add(new ListObject(sortOrder,name));
-                        }
-                        else {
-                            listItemHops.add(new ListObject(sortOrder, name));
-                        }
+                        listItem.add(new ListObject(sortOrder, tag, name));
                     }
 
-                    if (currentActivity.equals("Vines"))
-                        Collections.sort(listItemVines);
-                    else
-                        Collections.sort(listItemHops);
+                    Collections.sort(listItem);
 
                     adapter.notifyDataSetChanged();
                     mProgressBar.setVisibility(View.GONE);
