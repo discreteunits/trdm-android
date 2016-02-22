@@ -39,7 +39,7 @@ public class Tier4ListViewAdapter extends ArrayAdapter<ItemListObject> {
         final TextView tvName = (TextView) rowView.findViewById(R.id.tv_list_item_tier4);
         final TextView tvAltName = (TextView) rowView.findViewById(R.id.tv_desc_item_tier4);
         tvName.setText(items.get(position).getName());
-        tvName.setText(items.get(position).getAltName());
+        tvAltName.setText(items.get(position).getAltName());
 
         final Typeface tvFont = Typeface.createFromAsset(assetManager, "fonts/nexarust/NexaRustScriptL-0.otf");
         tvName.setTypeface(tvFont);

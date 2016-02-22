@@ -161,10 +161,11 @@ public class Tier3Activity extends AppCompatActivity {
                 if (e == null) {
                     for(ParseObject objects : objectList) {
                         String name = objects.getString("name");
-                        String tag = objects.getString("tag");
+                        String tag = objects.getObjectId();
                         int sortOrder = objects.getInt("sortOrder");
 
                         Log.d(TAG, "parse object name : " + name);
+                        Log.d(TAG, "tag name : " + tag);
 
                         listItem.add(new ListObject(sortOrder, tag, name));
                     }

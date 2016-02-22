@@ -9,16 +9,12 @@
     tools:showIn="@layout/app_bar_tier4"
     android:background="#FFF">
 
-    <HorizontalScrollView
+    <org.lucasr.twowayview.TwoWayView
+        android:id="@+id/lv_top_tier4"
+        style="@style/TwoWayView"
         android:layout_width="match_parent"
-        android:layout_height="100dp">
-
-        <ListView
-            android:id="@+id/lv_top_tier4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-
-    </HorizontalScrollView>
+        android:layout_height="100dp"
+        android:drawSelectorOnTop="false" />
 
     <ProgressBar
         android:id="@+id/pb_tier4"

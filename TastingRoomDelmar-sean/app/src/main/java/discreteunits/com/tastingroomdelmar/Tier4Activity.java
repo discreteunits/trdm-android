@@ -26,6 +26,7 @@ import com.parse.ParseQuery;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.lucasr.twowayview.TwoWayView;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -115,9 +116,9 @@ public class Tier4Activity extends AppCompatActivity {
             }
         });
 
-        final ListView topListView = (ListView) findViewById(R.id.lv_top_tier4);
+        final TwoWayView topListView = (TwoWayView) findViewById(R.id.lv_top_tier4);
         topAdapter = new Tier4TopListViewAdapter(this, topListItem);
-        topListView.setAdapter(topAdapter);
+        topListView.setAdapter(topAdapter); // TODO add license from https://github.com/lucasr/twoway-view
 
         getTopListFromParse();
 
@@ -192,10 +193,11 @@ public class Tier4Activity extends AppCompatActivity {
                 if (e == null) {
                     for(ParseObject objects : objectList) {
                         String name = objects.getString("name");
-                        String tag = objects.getString("tag");
+                        String tag = ""; //objects.getParseObject("tag").getObjectId();
                         String altName = objects.getString("alternateName");
 
                         Log.d(TAG, "parse object name : " + name);
+                        //Log.d(TAG, "tag name : " + objects.getParseObject("tags").getObjectId());
 
                         listItem.add(new ItemListObject(tag, name, altName));
                     }

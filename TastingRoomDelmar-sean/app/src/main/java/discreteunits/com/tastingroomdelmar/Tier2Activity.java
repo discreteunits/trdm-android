@@ -156,7 +156,11 @@ public class Tier2Activity extends AppCompatActivity {
                 if (e == null) {
                     for(ParseObject objects : objectList) {
                         Log.d(TAG, "parse object name : " + objects.getString("name"));
-                        listItem.add(new ListObject(objects.getInt("sortOrder"), objects.getString("tag"), objects.getString("name")));
+                        Log.d(TAG, "tag name : " + objects.getObjectId());
+
+                        listItem.add(new ListObject(objects.getInt("sortOrder"),
+                                                    objects.getObjectId(),
+                                                    objects.getString("name")));
                     }
 
                     Collections.sort(listItem);
