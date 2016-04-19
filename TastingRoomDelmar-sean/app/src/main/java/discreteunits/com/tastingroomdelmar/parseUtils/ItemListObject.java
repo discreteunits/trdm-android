@@ -1,0 +1,145 @@
+package discreteunits.com.tastingroomdelmar.parseUtils;
+
+import android.util.Log;
+
+import com.parse.GetCallback;
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+
+import java.util.ArrayList;
+
+import discreteunits.com.tastingroomdelmar.utils.Constants;
+
+/**
+ * Created by Sean on 2/14/16.
+ */
+public class ItemListObject implements Comparable<ItemListObject> {
+    private static final String TAG = ItemListObject.class.getSimpleName();
+
+    private String name;
+    private String altName;
+    private String objectId;
+    private String prices;
+    private String verietal;
+    private JSONArray categoryArray;
+    private JSONArray additionsArray;
+    private JSONArray servingsArray;
+
+    private String additionTitle;
+
+    private ArrayList<OptionListItem> servingList;
+    private ArrayList<OptionListItem> additionList;
+
+    private ArrayList<ModalListItem> additionOptions;
+
+    public ItemListObject(ParseObject obj) {
+        objectId = obj.getObjectId();
+        name = obj.getString("name");
+        altName = obj.getString("info");
+        prices = obj.getString("prices");
+        if (prices == null || prices.isEmpty()) prices = obj.getNumber("price") + "";
+        categoryArray = obj.getJSONArray("categories");
+        additionsArray = obj.getJSONArray("additions");
+        servingsArray = obj.getJSONArray("options");
+
+        if (servingsArray != null) storeServings();
+        if (additionsArray != null) storeAdditions();
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getObjectId() { return objectId; }
+
+    public String getAltName() {
+        return altName;
+    }
+
+    public String getPrices() { return prices; }
+
+    public JSONArray getCategoryArray() { return categoryArray; }
+
+    public String getVerietal() { return verietal; }
+
+    public void setVerietal(String v) {
+        verietal = v;
+    }
+
+    private void storeServings() {
+        servingList = new ArrayList<>();
+
+        for (int i = 0; i < servingsArray.length(); i++) {
+            ParseQuery<ParseObject> query = ParseQuery.getQuery("Product");
+            try {
+                query.getInBackground(servingsArray.getString(i), new GetCallback<ParseObject>() {
+                    @Override
+                    public void done(ParseObject object, ParseException e) {
+                        if (e == null) {
+                            servingList.add(new ServingListItem(object));
+                            Log.d(TAG, "Serving: " + object.getString("info"));
+                        } else {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+            } catch (JSONException e1) {
+                e1.printStackTrace();
+            }
+        }
+    }
+
+    private void storeAdditions() {
+        try {
+            additionOptions = new ArrayList<>();
+            additionList = new ArrayList<>();
+            for (int i = 0; i < additionsArray.length(); i++) {
+                final String additionName = additionsArray.getJSONObject(i).getString("displayName");
+
+                if (!additionName.isEmpty()) additionTitle = additionName;
+
+                Log.d(TAG, "Addition Name: " + additionName);
+                final JSONArray valueObject = additionsArray.getJSONObject(i).getJSONArray("values");
+
+                for (int j = 0; j < valueObject.length(); j++) {
+                    String additionDetailName = valueObject.getJSONObject(j).getString("name");
+                    String additionDetailPrice = valueObject.getJSONObject(j).getString("price");
+
+                    if (additionDetailPrice.equals("0")) additionDetailPrice = "";
+                    else additionDetailPrice = "  +" + additionDetailPrice;
+
+                    additionList.add(new AdditionListItem(additionDetailName + additionDetailPrice));
+
+                    Log.d(TAG, "addition detail name: " + additionDetailName);
+                }
+
+                additionOptions.add(new ModalListItem(Constants.Type.ADDITION, getAdditionTitle(), additionList ));
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public String getAdditionTitle() {
+        if (additionTitle == null || additionTitle.isEmpty()) return "OPTIONS";
+
+        return additionTitle;
+    }
+
+    public ArrayList<OptionListItem> getServings() {
+        return servingList;
+    }
+
+    public ArrayList<ModalListItem> getAdditions() {
+        return additionOptions;
+    }
+
+    @Override
+    public int compareTo(ItemListObject another) {
+        return name.compareTo(another.getName());
+    }
+}

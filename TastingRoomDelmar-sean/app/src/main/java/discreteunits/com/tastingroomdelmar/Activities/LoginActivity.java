@@ -1,17 +1,18 @@
-package discreteunits.com.tastingroomdelmar;
+package discreteunits.com.tastingroomdelmar.Activities;
 
 import android.content.Intent;
-import android.content.res.AssetManager;
-import android.graphics.Typeface;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import com.crashlytics.android.Crashlytics;
 import com.parse.ParseFacebookUtils;
 
-import parseUtils.ParseUtility;
-import utils.Constants;
+import discreteunits.com.tastingroomdelmar.R;
+import io.fabric.sdk.android.Fabric;
+import discreteunits.com.tastingroomdelmar.parseUtils.ParseUtility;
+import discreteunits.com.tastingroomdelmar.utils.Constants;
+import discreteunits.com.tastingroomdelmar.utils.FontManager;
 
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = LoginActivity.class.getSimpleName();
@@ -21,6 +22,7 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Fabric.with(this, new Crashlytics());
 
         if (parseUtility == null) {
             parseUtility = new ParseUtility(this);
@@ -29,15 +31,14 @@ public class LoginActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_login);
 
-        final AssetManager assetManager = getAssets();
-        final Typeface nexarust = Typeface.createFromAsset(assetManager, "fonts/nexarust/NexaRustScriptL-0.otf");
+        new FontManager(this);
 
         final Button mBtnSignup = (Button) findViewById(R.id.button_signup);
-        mBtnSignup.setTypeface(nexarust);
+        mBtnSignup.setTypeface(FontManager.nexa);
         final Button mBtnLogin = (Button) findViewById(R.id.button_login);
-        mBtnLogin.setTypeface(nexarust);
+        mBtnLogin.setTypeface(FontManager.nexa);
         final Button mBtnGuest = (Button) findViewById(R.id.button_guest_continue);
-        mBtnGuest.setTypeface(nexarust);
+        mBtnGuest.setTypeface(FontManager.nexa);
 
         mBtnSignup.setOnClickListener(new View.OnClickListener() {
             @Override

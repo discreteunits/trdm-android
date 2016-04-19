@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="discreteunits.com.tastingroomdelmar.SignUpLoginActivity"
+    tools:context=".Activities.SignUpLoginActivity"
     tools:showIn="@layout/app_bar_sign_up_login"
     android:background="@color/colorPrimary">
 

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/list_item_modal"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/modal_tv_category"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@android:color/black"
+        android:textSize="20sp"/>
+
+    <org.lucasr.twowayview.TwoWayView
+        android:id="@+id/modal_lv_choice"
+        style="@style/TwoWayView"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:drawSelectorOnTop="false" />
+
+</LinearLayout>

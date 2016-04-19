@@ -8,8 +8,8 @@
     <TextView
         android:id="@+id/tv_list_item_tier1"
         android:gravity="center"
-        android:padding="66dp"
-        android:textSize="40sp"
+        android:padding="55dp"
+        android:textSize="33sp"
         android:textColor="@android:color/black"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />

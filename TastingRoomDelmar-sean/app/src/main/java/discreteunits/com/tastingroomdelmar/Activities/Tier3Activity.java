@@ -1,14 +1,12 @@
-package discreteunits.com.tastingroomdelmar;
+package discreteunits.com.tastingroomdelmar.Activities;
 
-import android.content.res.AssetManager;
-import android.graphics.Typeface;
+import android.content.Intent;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -25,26 +23,25 @@ import com.parse.ParseQuery;
 
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
-import org.lucasr.twowayview.TwoWayView;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import parseUtils.ItemListObject;
-import parseUtils.ListObject;
-import utils.TagManager;
+import discreteunits.com.tastingroomdelmar.R;
+import discreteunits.com.tastingroomdelmar.ListViewAdapters.Tier3ListViewAdapter;
+import discreteunits.com.tastingroomdelmar.parseUtils.ListObject;
+import discreteunits.com.tastingroomdelmar.utils.CategoryManager;
+import discreteunits.com.tastingroomdelmar.utils.FontManager;
+import discreteunits.com.tastingroomdelmar.utils.OIDManager;
 
-public class Tier4Activity extends AppCompatActivity {
-    private static final String TAG = Tier4Activity.class.getSimpleName();
+public class Tier3Activity extends AppCompatActivity {
+    private static final String TAG = Tier3Activity.class.getSimpleName();
 
     DrawerLayout drawer;
 
-    ArrayList<String> topListItem = new ArrayList<>();
-    ArrayList<ItemListObject> listItem = new ArrayList<>();
-    Tier4TopListViewAdapter topAdapter;
-    Tier4ListViewAdapter adapter;
+    ArrayList<ListObject> listItem = new ArrayList<>();
+    Tier3ListViewAdapter adapter;
 
     ProgressBar mProgressBar;
 
@@ -53,7 +50,7 @@ public class Tier4Activity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_tier4);
+        setContentView(R.layout.activity_tier3);
 
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -72,22 +69,19 @@ public class Tier4Activity extends AppCompatActivity {
             }
         });
 
-        final AssetManager assetManager = getAssets();
-        final Typeface nexarust = Typeface.createFromAsset(assetManager, "fonts/nexarust/NexaRustScriptL-0.otf");
-
         final TextView mTVPreviousActivityName = (TextView) findViewById(R.id.tv_prev_activity);
         final TextView mTVCurrentActivityName = (TextView) findViewById(R.id.tv_curr_activity);
 
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
-            currentActivity = extras.getString("TIER4_DEST");
-            String prevActivity = extras.getString("TIER4_ORIG");
+            currentActivity = extras.getString("TIER3_DEST");
+            String prevActivity = extras.getString("TIER3_ORIG");
 
             mTVCurrentActivityName.setText(currentActivity);
-            mTVCurrentActivityName.setTypeface(nexarust);
+            mTVCurrentActivityName.setTypeface(FontManager.nexa);
 
             mTVPreviousActivityName.setText(prevActivity);
-            mTVPreviousActivityName.setTypeface(nexarust);
+            mTVPreviousActivityName.setTypeface(FontManager.nexa);
             mTVPreviousActivityName.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -96,7 +90,7 @@ public class Tier4Activity extends AppCompatActivity {
             });
         }
 
-        mProgressBar = (ProgressBar) findViewById(R.id.pb_tier4);
+        mProgressBar = (ProgressBar) findViewById(R.id.pb_tier3);
         mProgressBar.setVisibility(View.VISIBLE);
 
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -116,14 +110,11 @@ public class Tier4Activity extends AppCompatActivity {
             }
         });
 
-        final TwoWayView topListView = (TwoWayView) findViewById(R.id.lv_top_tier4);
-        topAdapter = new Tier4TopListViewAdapter(this, topListItem);
-        topListView.setAdapter(topAdapter); // TODO add license from https://github.com/lucasr/twoway-view
+        final ListView listView = (ListView) findViewById(R.id.lv_tier3);
 
-        getTopListFromParse();
 
-        final ListView listView = (ListView) findViewById(R.id.lv_tier4);
-        adapter = new Tier4ListViewAdapter(this,listItem);
+        adapter = new Tier3ListViewAdapter(this,listItem);
+
         listView.setAdapter(adapter);
 
         getListFromParse();
@@ -131,15 +122,28 @@ public class Tier4Activity extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                Log.d(TAG, "position " + position + " clicked");
+                //Log.d(TAG, "position " + position + " clicked");
 
+                OIDManager.addToList(listItem.get(position).getId());
+                //OIDManager.printObjectId();
+
+                CategoryManager.addToList(listItem.get(position).getCategoryId());
+                //CategoryManager.printCategory();
+
+                Intent intent = new Intent(Tier3Activity.this, Tier4Activity.class);
+
+                intent.putExtra("TIER4_DEST", listItem.get(position).getName());
+                intent.putExtra("TIER4_ORIG", currentActivity);
+
+                startActivity(intent);
             }
         });
     }
 
     @Override
     protected void onDestroy() {
-        TagManager.popFromList();
+        OIDManager.popFromList();
+        CategoryManager.popFromList();
         super.onDestroy();
     }
 
@@ -154,52 +158,44 @@ public class Tier4Activity extends AppCompatActivity {
         }
     }
 
-    private void getTopListFromParse() {
-        ParseQuery<ParseObject> query = new ParseQuery<ParseObject>("WineVarietal");
+    private void getListFromParse() {
+        ParseQuery<ParseObject> query = new ParseQuery<ParseObject>("Tier3");
+        query.include("category");
         query.findInBackground(new FindCallback<ParseObject>() {
             public void done(List<ParseObject> objectList, ParseException e) {
                 if (e == null) {
                     for(ParseObject objects : objectList) {
                         String name = objects.getString("name");
-                        JSONArray tier3JSONArray = objects.getJSONArray("tier3"); // reds, whites,...
+                        String objectId = objects.getObjectId();
+                        int sortOrder = objects.getInt("sortOrder");
+                        ParseObject categoryObject = objects.getParseObject("category");
 
-
-                        Log.d(TAG, "parse object name : " + name);
+                        //Log.d(TAG, "parse object name : " + name);
+                        //Log.d(TAG, "ObjectId : " + objectId);
                         try {
-                            String objectId = tier3JSONArray.getJSONObject(0).getString("objectId");
+                            JSONArray arr = objects.getJSONArray("parentTiers");
 
-                            if (TagManager.isInList(objectId))
-                                topListItem.add(name);
+                            CategoryManager.addToAllList(categoryObject == null ?
+                                    "" : categoryObject.getObjectId());
 
+                            for (int i = 0; i < arr.length(); i++) {
+                                if (OIDManager.isInList(arr.getJSONObject(i).getString("objectId"))) {
+                                    listItem.add(new ListObject(
+                                            sortOrder,
+                                            objectId,
+                                            categoryObject == null ?
+                                                    "" : categoryObject.getObjectId(),
+                                            name,
+                                            false));
+
+                                    break;
+                                }
+                            }
+                            //if (OIDManager.isInList(objects.getJSONObject("tier2").getString("Tier2")))
+                            //    listItem.add(new ListObject(sortOrder, objectId, name));
                         } catch (JSONException e1) {
                             e1.printStackTrace();
                         }
-                    }
-
-                    Collections.sort(topListItem);
-
-                    topAdapter.notifyDataSetChanged();
-                } else {
-                    e.printStackTrace();
-                }
-            }
-        });
-    }
-
-    private void getListFromParse() {
-        ParseQuery<ParseObject> query = new ParseQuery<ParseObject>("Item");
-        query.findInBackground(new FindCallback<ParseObject>() {
-            public void done(List<ParseObject> objectList, ParseException e) {
-                if (e == null) {
-                    for(ParseObject objects : objectList) {
-                        String name = objects.getString("name");
-                        String tag = ""; //objects.getParseObject("tag").getObjectId();
-                        String altName = objects.getString("alternateName");
-
-                        Log.d(TAG, "parse object name : " + name);
-                        //Log.d(TAG, "tag name : " + objects.getParseObject("tags").getObjectId());
-
-                        listItem.add(new ItemListObject(tag, name, altName));
                     }
 
                     Collections.sort(listItem);

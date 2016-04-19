@@ -5,6 +5,9 @@
     <color name="colorAccent">#AFAFAF</color>
     <color name="white">#FFFFFF</color>
     <color name="grayText">#7F797E</color>
-    <color name="confirmGreen">#40B34E</color>
+    <color name="confirmGreen">#20b07d</color>
+    <color name="confirmDarkGreen">#00824e</color>
     <color name="dark_grey">#4d4d4d</color>
+    <color name="light_grey">#dedede</color>
+    <color name="light_dark_grey">#b0b0b0</color>
 </resources>

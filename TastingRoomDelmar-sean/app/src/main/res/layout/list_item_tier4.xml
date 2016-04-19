@@ -3,14 +3,14 @@
     android:id="@+id/list_item_tier3"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_gravity="center_horizontal"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="5dp">
 
     <TextView
         android:id="@+id/tv_list_item_tier4"
         android:padding="10dp"
         android:textSize="20sp"
         android:textColor="@android:color/black"
-        android:text="PIETRA SANTA"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
@@ -18,10 +18,9 @@
         android:layout_width="250dp"
         android:layout_height="wrap_content"
         android:layout_below="@+id/tv_list_item_tier4"
-        android:paddingLeft="10dp"
-        android:paddingTop="10dp"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"
         android:textColor="@android:color/black"
-        android:text="Cienega Valley | brewed in the California Common Style. Crisp/- Clean/Rustic Edge"
         android:id="@+id/tv_desc_item_tier4" />
 
     <TextView
@@ -29,7 +28,6 @@
         android:layout_height="wrap_content"
         android:id="@+id/tv_wine_var_tier4"
         android:layout_below="@+id/tv_desc_item_tier4"
-        android:text="Pinor Noir"
         android:paddingTop="5dp"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
@@ -40,10 +38,10 @@
         android:layout_height="wrap_content"
         android:id="@+id/tv_select_opt_tier4"
         android:layout_below="@+id/tv_wine_var_tier4"
-        android:text="4, 6, 23"
         android:paddingTop="5dp"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
+        android:layout_marginBottom="10dp"
         android:textStyle="bold|italic"
         android:textColor="@android:color/black"/>
 
@@ -51,11 +49,13 @@
         android:id="@+id/button_add_to_tab_tier4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp"
         android:layout_marginRight="15dp"
         android:layout_marginEnd="15dp"
-        android:text="Add to Tab"
+        android:text="@string/add_to_tab"
+        android:textSize="20sp"
+        android:textAllCaps="false"
         android:background="@drawable/black_soft_corner_button"
         android:layout_alignBottom="@+id/tv_select_opt_tier4"
         android:layout_alignParentRight="true"

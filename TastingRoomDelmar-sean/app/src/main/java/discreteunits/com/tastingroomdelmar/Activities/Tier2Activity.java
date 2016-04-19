@@ -1,15 +1,12 @@
-package discreteunits.com.tastingroomdelmar;
+package discreteunits.com.tastingroomdelmar.Activities;
 
 import android.content.Intent;
-import android.content.res.AssetManager;
-import android.graphics.Typeface;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -24,12 +21,19 @@ import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import parseUtils.ListObject;
-import utils.TagManager;
+import discreteunits.com.tastingroomdelmar.R;
+import discreteunits.com.tastingroomdelmar.ListViewAdapters.Tier2ListViewAdapter;
+import discreteunits.com.tastingroomdelmar.parseUtils.ListObject;
+import discreteunits.com.tastingroomdelmar.utils.CategoryManager;
+import discreteunits.com.tastingroomdelmar.utils.FontManager;
+import discreteunits.com.tastingroomdelmar.utils.OIDManager;
 
 public class Tier2Activity extends AppCompatActivity {
     private static final String TAG = Tier2Activity.class.getSimpleName();
@@ -64,9 +68,6 @@ public class Tier2Activity extends AppCompatActivity {
             }
         });
 
-        final AssetManager assetManager = getAssets();
-        final Typeface nexarust = Typeface.createFromAsset(assetManager, "fonts/nexarust/NexaRustScriptL-0.otf");
-
         final TextView mTVPreviousActivityName = (TextView) findViewById(R.id.tv_prev_activity);
         final TextView mTVCurrentActivityName = (TextView) findViewById(R.id.tv_curr_activity);
 
@@ -75,11 +76,11 @@ public class Tier2Activity extends AppCompatActivity {
             currentActivity = extras.getString("TIER2_DEST");
 
             mTVCurrentActivityName.setText(currentActivity);
-            mTVCurrentActivityName.setTypeface(nexarust);
+            mTVCurrentActivityName.setTypeface(FontManager.nexa);
         }
 
         mTVPreviousActivityName.setText("Del Mar");
-        mTVPreviousActivityName.setTypeface(nexarust);
+        mTVPreviousActivityName.setTypeface(FontManager.nexa);
         mTVPreviousActivityName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -118,14 +119,26 @@ public class Tier2Activity extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                Log.d(TAG, "position " + position + " clicked");
+                //Log.d(TAG, "position " + position + " clicked");
 
-                TagManager.addToList(listItem.get(position).getTag());
-                TagManager.printTag();
+                OIDManager.addToList(listItem.get(position).getId());
+                //OIDManager.printObjectId();
 
-                Intent intent = new Intent(Tier2Activity.this, Tier3Activity.class);
-                intent.putExtra("TIER3_DEST", listItem.get(position).getName());
-                intent.putExtra("TIER3_ORIG", currentActivity);
+                CategoryManager.addToList(listItem.get(position).getCategoryId());
+                //CategoryManager.printCategory();
+
+                Intent intent;
+                if (!listItem.get(position).skipToTier4()) {
+                    intent = new Intent(Tier2Activity.this, Tier3Activity.class);
+                    intent.putExtra("TIER3_DEST", listItem.get(position).getName());
+                    intent.putExtra("TIER3_ORIG", currentActivity);
+                } else {
+                    intent = new Intent(Tier2Activity.this, Tier4Activity.class);
+
+                    intent.putExtra("TIER4_DEST", listItem.get(position).getName());
+                    intent.putExtra("TIER4_ORIG", "Del Mar");
+                }
+
                 startActivity(intent);
             }
         });
@@ -133,7 +146,8 @@ public class Tier2Activity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        TagManager.popFromList();
+        OIDManager.popFromList();
+        CategoryManager.popFromList();
         super.onDestroy();
     }
 
@@ -150,17 +164,34 @@ public class Tier2Activity extends AppCompatActivity {
 
     private void getListFromParse() {
         ParseQuery<ParseObject> query = new ParseQuery<ParseObject>("Tier2");
-        query.include("tag");
+        query.include("category");
         query.findInBackground(new FindCallback<ParseObject>() {
             public void done(List<ParseObject> objectList, ParseException e) {
                 if (e == null) {
                     for(ParseObject objects : objectList) {
-                        Log.d(TAG, "parse object name : " + objects.getString("name"));
-                        Log.d(TAG, "tag name : " + objects.getObjectId());
+                        //Log.d(TAG, "parse object name : " + objects.getString("name"));
+                        //Log.d(TAG, "objectId : " + objects.getObjectId());
+                        ParseObject categoryObject = objects.getParseObject("category");
 
-                        listItem.add(new ListObject(objects.getInt("sortOrder"),
-                                                    objects.getObjectId(),
-                                                    objects.getString("name")));
+
+
+                        try {
+                            JSONArray arr = objects.getJSONArray("parentTiers");
+                            CategoryManager.addToAllList(categoryObject == null ? "" : categoryObject.getObjectId());
+
+                            for (int i = 0; i < arr.length(); i++) {
+                                if (OIDManager.isInList(arr.getJSONObject(i).getString("objectId"))) {
+                                    listItem.add(new ListObject(objects.getInt("sortOrder"),
+                                            objects.getObjectId(),
+                                            categoryObject == null ?
+                                                    "" : categoryObject.getObjectId(),
+                                            objects.getString("name"),
+                                            objects.getBoolean("skipToTier4")));
+                                }
+                            }
+                        } catch (JSONException e1) {
+                            e1.printStackTrace();
+                        }
                     }
 
                     Collections.sort(listItem);

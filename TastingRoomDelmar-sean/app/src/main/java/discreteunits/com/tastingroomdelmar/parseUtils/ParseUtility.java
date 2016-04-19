@@ -1,4 +1,4 @@
-package parseUtils;
+package discreteunits.com.tastingroomdelmar.parseUtils;
 
 import android.content.Context;
 

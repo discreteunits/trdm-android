@@ -1,15 +1,12 @@
-package discreteunits.com.tastingroomdelmar;
+package discreteunits.com.tastingroomdelmar.Activities;
 
 import android.content.Intent;
-import android.content.res.AssetManager;
-import android.graphics.Typeface;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageButton;
@@ -27,8 +24,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import parseUtils.ListObject;
-import utils.TagManager;
+import discreteunits.com.tastingroomdelmar.R;
+import discreteunits.com.tastingroomdelmar.ListViewAdapters.Tier1ListViewAdapter;
+import discreteunits.com.tastingroomdelmar.parseUtils.ListObject;
+import discreteunits.com.tastingroomdelmar.utils.CategoryManager;
+import discreteunits.com.tastingroomdelmar.utils.FontManager;
+import discreteunits.com.tastingroomdelmar.utils.OIDManager;
 
 public class Tier1Activity extends AppCompatActivity {
     private static final String TAG = Tier1Activity.class.getSimpleName();
@@ -55,18 +56,14 @@ public class Tier1Activity extends AppCompatActivity {
         final ImageView mIVUp = (ImageView) findViewById(R.id.up_button);
         mIVUp.setVisibility(View.GONE);
 
-        final AssetManager assetManager = getAssets();
-        final Typeface nexarust = Typeface.createFromAsset(assetManager, "fonts/nexarust/NexaRustScriptL-0.otf");
-        final Typeface bebas = Typeface.createFromAsset(assetManager, "fonts/bebas/BebasNeue Regular.otf");
-
         final TextView mTVPreviousActivityName = (TextView) findViewById(R.id.tv_prev_activity);
         final TextView mTVCurrentActivityName = (TextView) findViewById(R.id.tv_curr_activity);
 
         mTVPreviousActivityName.setText("Del Mar");
-        mTVPreviousActivityName.setTypeface(nexarust);
+        mTVPreviousActivityName.setTypeface(FontManager.nexa);
 
         mTVCurrentActivityName.setText("TASTING ROOM");
-        mTVCurrentActivityName.setTypeface(bebas);
+        mTVCurrentActivityName.setTypeface(FontManager.bebasReg);
 
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
 
@@ -99,13 +96,25 @@ public class Tier1Activity extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                Log.d(TAG, "position " + position + " clicked");
+                //Log.d(TAG, "position " + position + " clicked");
 
-                TagManager.addToList(listItem.get(position).getTag());
-                TagManager.printTag();
+                OIDManager.addToList(listItem.get(position).getId());
+                //OIDManager.printObjectId();
 
-                Intent intent = new Intent(Tier1Activity.this, Tier2Activity.class);
-                intent.putExtra("TIER2_DEST", listItem.get(position).getName());
+                CategoryManager.addToList(listItem.get(position).getCategoryId());
+                //CategoryManager.printCategory();
+
+                Intent intent;
+                if (!listItem.get(position).skipToTier4()) {
+                    intent = new Intent(Tier1Activity.this, Tier2Activity.class);
+                    intent.putExtra("TIER2_DEST", listItem.get(position).getName());
+                } else {
+                    intent = new Intent(Tier1Activity.this, Tier4Activity.class);
+
+                    intent.putExtra("TIER4_DEST", listItem.get(position).getName());
+                    intent.putExtra("TIER4_ORIG", "Del Mar");
+                }
+
                 startActivity(intent);
             }
         });
@@ -113,23 +122,31 @@ public class Tier1Activity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        TagManager.popFromList();
+        OIDManager.popFromList();
+        CategoryManager.popFromList();
         super.onDestroy();
     }
 
     private void getListFromParse() {
-        ParseQuery<ParseObject> query = new ParseQuery<ParseObject>("Tier1");
-        query.include("tag");
+        ParseQuery<ParseObject> query = new ParseQuery<>("Tier1");
+        query.include("category");
         query.findInBackground(new FindCallback<ParseObject>() {
             public void done(List<ParseObject> objectList, ParseException e) {
                 if (e == null) {
                     for(ParseObject objects : objectList) {
-                        Log.d(TAG, "parse object name : " + objects.getString("name"));
-                        Log.d(TAG, "tag name : " + objects.getObjectId());
+                        //Log.d(TAG, "parse object name : " + objects.getString("name"));
+                        //Log.d(TAG, "objectId : " + objects.getObjectId());
 
-                        listItem.add(new ListObject(objects.getInt("sortOrder"),
-                                                    objects.getObjectId(),
-                                                    objects.getString("name")));
+                        ParseObject categoryObject = objects.getParseObject("category");
+
+                        listItem.add(new ListObject(
+                                objects.getInt("sortOrder"),
+                                objects.getObjectId(),
+                                categoryObject == null ? "" : categoryObject.getObjectId(),
+                                objects.getString("name"),
+                                objects.getBoolean("skipToTier4")));
+
+                        CategoryManager.addToAllList(categoryObject == null ? "" : categoryObject.getObjectId());
                     }
 
                     Collections.sort(listItem);

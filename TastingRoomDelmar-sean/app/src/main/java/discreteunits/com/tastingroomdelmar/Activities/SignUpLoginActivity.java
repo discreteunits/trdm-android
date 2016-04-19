@@ -1,4 +1,4 @@
-package discreteunits.com.tastingroomdelmar;
+package discreteunits.com.tastingroomdelmar.Activities;
 
 import android.content.Intent;
 import android.content.res.AssetManager;
@@ -8,7 +8,6 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -22,7 +21,8 @@ import com.parse.ParseException;
 import com.parse.ParseUser;
 import com.parse.SignUpCallback;
 
-import utils.Constants;
+import discreteunits.com.tastingroomdelmar.R;
+import discreteunits.com.tastingroomdelmar.utils.Constants;
 
 public class SignUpLoginActivity extends AppCompatActivity {
     private static final String TAG = SignUpLoginActivity.class.getSimpleName();
