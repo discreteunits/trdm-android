@@ -91,12 +91,16 @@ public class ItemListObject implements Comparable<ItemListObject> {
                 e1.printStackTrace();
             }
         }
+
+        /* do a null check on first item on the list and make it selected */
+        OptionListItem firstItem = servingList.size() == 0 ? null : servingList.get(0);
+        if(firstItem != null) firstItem.setSelected(true);
     }
 
     private void storeAdditions() {
         try {
             additionOptions = new ArrayList<>();
-            additionList = new ArrayList<>();
+
             for (int i = 0; i < additionsArray.length(); i++) {
                 final String additionName = additionsArray.getJSONObject(i).getString("displayName");
 
@@ -105,6 +109,10 @@ public class ItemListObject implements Comparable<ItemListObject> {
                 Log.d(TAG, "Addition Name: " + additionName);
                 final JSONArray valueObject = additionsArray.getJSONObject(i).getJSONArray("values");
 
+                /* check if this entry has any value to it */
+                if (valueObject.length() == 0) continue;
+
+                additionList = new ArrayList<>();
                 for (int j = 0; j < valueObject.length(); j++) {
                     String additionDetailName = valueObject.getJSONObject(j).getString("name");
                     String additionDetailPrice = valueObject.getJSONObject(j).getString("price");
@@ -116,6 +124,10 @@ public class ItemListObject implements Comparable<ItemListObject> {
 
                     Log.d(TAG, "addition detail name: " + additionDetailName);
                 }
+
+                /* do a null check on first item on the list and make it selected */
+                OptionListItem firstItem = additionList.size() == 0 ? null : additionList.get(0);
+                if (firstItem != null) firstItem.setSelected(true);
 
                 additionOptions.add(new ModalListItem(Constants.Type.ADDITION, getAdditionTitle(), additionList ));
             }

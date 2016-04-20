@@ -77,6 +77,8 @@ public class Tier4Activity extends AppCompatActivity {
         final TextView mTVPreviousActivityName = (TextView) findViewById(R.id.tv_prev_activity);
         final TextView mTVCurrentActivityName = (TextView) findViewById(R.id.tv_curr_activity);
 
+        if (FontManager.getSingleton() == null) new FontManager(getApplicationContext());
+
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             currentActivity = extras.getString("TIER4_DEST");

@@ -38,6 +38,8 @@ public class OptionListViewAdapter extends ArrayAdapter<OptionListItem> {
             rowView = inflater.inflate(R.layout.list_item_option, null, true);
         }
 
+        if (FontManager.getSingleton() == null) new FontManager(mContext.getApplicationContext());
+
         TextView optionName = (TextView) rowView.findViewById(R.id.modal_option_name);
 
         optionName.setText(options.get(position).getOptionName());

@@ -38,6 +38,8 @@ public class Tier4TopListViewAdapter extends ArrayAdapter<TopListObject> {
             rowView = inflater.inflate(R.layout.list_item_tier4_top, null, true);
         }
 
+        if (FontManager.getSingleton() == null) new FontManager(mContext.getApplicationContext());
+
         final TextView tv = (TextView) rowView.findViewById(R.id.tv_list_item_tier4_top);
         tv.setText(items.get(position).getName());
 

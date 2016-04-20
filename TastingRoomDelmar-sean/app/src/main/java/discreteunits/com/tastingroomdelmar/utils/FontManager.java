@@ -27,16 +27,5 @@ public class FontManager {
         singleton = this;
     }
 
-    public static FontManager getInstance() {
-        return singleton;
-    }
-
-    public Typeface getTypeface(String name) {
-        switch (name) {
-            case Constants.NEXA: return nexa;
-            case Constants.BEBA: return bebasReg;
-            case Constants.OPENSANS_LIGHT: return openSansLight;
-            default: return openSansItalic;
-        }
-    }
+    public static FontManager getSingleton() { return singleton; }
 }

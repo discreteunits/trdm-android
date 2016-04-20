@@ -23,6 +23,7 @@ import com.parse.SignUpCallback;
 
 import discreteunits.com.tastingroomdelmar.R;
 import discreteunits.com.tastingroomdelmar.utils.Constants;
+import discreteunits.com.tastingroomdelmar.utils.FontManager;
 
 public class SignUpLoginActivity extends AppCompatActivity {
     private static final String TAG = SignUpLoginActivity.class.getSimpleName();
@@ -67,29 +68,28 @@ public class SignUpLoginActivity extends AppCompatActivity {
         final ImageButton mImageButtonTab = (ImageButton) findViewById(R.id.current_order);
         mImageButtonTab.setVisibility(View.GONE);
 
-        final AssetManager assetManager = getAssets();
-        final Typeface nexarust = Typeface.createFromAsset(assetManager, "fonts/nexarust/NexaRustScriptL-0.otf");
-        final Typeface bebas = Typeface.createFromAsset(assetManager, "fonts/bebas/BebasNeue Regular.otf");
+
+        if (FontManager.getSingleton() == null) new FontManager(getApplicationContext());
 
         mTVPreviousActivityName = (TextView) toolbar.findViewById(R.id.tv_prev_activity);
-        mTVPreviousActivityName.setTypeface(nexarust);
+        mTVPreviousActivityName.setTypeface(FontManager.nexa);
 
         mTVCurrentActivityName = (TextView) toolbar.findViewById(R.id.tv_curr_activity);
-        mTVCurrentActivityName.setTypeface(nexarust);
+        mTVCurrentActivityName.setTypeface(FontManager.nexa);
 
         mTVQuestion = (TextView) findViewById(R.id.tv_signup_login_question);
-        mTVQuestion.setTypeface(nexarust);
+        mTVQuestion.setTypeface(FontManager.nexa);
 
         mButtonSignupLogin = (Button) findViewById(R.id.button_signup_login);
-        mButtonSignupLogin.setTypeface(nexarust);
+        mButtonSignupLogin.setTypeface(FontManager.nexa);
 
         mTVEmail = (TextView) findViewById(R.id.tv_email);
-        mTVEmail.setTypeface(bebas);
+        mTVEmail.setTypeface(FontManager.bebasReg);
         mEditTextEmail = (EditText) findViewById(R.id.et_email);
-        mEditTextEmail.setTypeface(bebas);
+        mEditTextEmail.setTypeface(FontManager.bebasReg);
 
         mTVPassword = (TextView) findViewById(R.id.tv_password);
-        mTVPassword.setTypeface(bebas);
+        mTVPassword.setTypeface(FontManager.bebasReg);
 
         mEditTextPassword = (EditText) findViewById(R.id.et_password);
 

@@ -59,6 +59,8 @@ public class Tier1Activity extends AppCompatActivity {
         final TextView mTVPreviousActivityName = (TextView) findViewById(R.id.tv_prev_activity);
         final TextView mTVCurrentActivityName = (TextView) findViewById(R.id.tv_curr_activity);
 
+        if (FontManager.getSingleton() == null) new FontManager(getApplicationContext());
+
         mTVPreviousActivityName.setText("Del Mar");
         mTVPreviousActivityName.setTypeface(FontManager.nexa);
 

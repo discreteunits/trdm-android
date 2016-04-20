@@ -26,7 +26,11 @@ public class ModalListItem {
 
         quantityList = new ArrayList<>();
 
-        for (int i = 1; i < 11; i++) quantityList.add(new OptionListItem((i+"")));
+        for (int i = 1; i < 11; i++) {
+            quantityList.add(new OptionListItem((i+"")));
+        }
+
+        quantityList.get(0).setSelected(true);
 
         type = Constants.Type.QUANTITY;
     }

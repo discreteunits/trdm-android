@@ -31,7 +31,7 @@ public class LoginActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_login);
 
-        new FontManager(this);
+        new FontManager(getApplicationContext());
 
         final Button mBtnSignup = (Button) findViewById(R.id.button_signup);
         mBtnSignup.setTypeface(FontManager.nexa);

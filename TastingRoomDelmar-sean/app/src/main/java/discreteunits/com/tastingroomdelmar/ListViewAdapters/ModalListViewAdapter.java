@@ -46,6 +46,8 @@ public class ModalListViewAdapter extends ArrayAdapter<ModalListItem> {
             rowView = inflater.inflate(R.layout.list_item_modal, null, true);
         }
 
+        if (FontManager.getSingleton() == null) new FontManager(mContext.getApplicationContext());
+
         final TextView title = (TextView) rowView.findViewById(R.id.modal_tv_category);
         final TwoWayView listView = (TwoWayView) rowView.findViewById(R.id.modal_lv_choice);
 

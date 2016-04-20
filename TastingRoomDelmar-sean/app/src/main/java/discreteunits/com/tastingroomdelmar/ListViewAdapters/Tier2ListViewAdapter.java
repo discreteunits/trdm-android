@@ -40,6 +40,8 @@ public class Tier2ListViewAdapter extends ArrayAdapter<ListObject> {
             rowView = inflater.inflate(R.layout.list_item_tier2, null, true);
         }
 
+        if (FontManager.getSingleton() == null) new FontManager(mContext.getApplicationContext());
+
         final TextView tv = (TextView) rowView.findViewById(R.id.tv_list_item_tier2);
         tv.setText(items.get(position).getName());
 

@@ -65,6 +65,8 @@ public class Tier4ListViewAdapter extends ArrayAdapter<ItemListObject> implement
             tvOption.setText(item.getPrices());
             tvVerietal.setText(item.getVerietal());
 
+            if (FontManager.getSingleton() == null) new FontManager(mContext.getApplicationContext());
+
             tvName.setTypeface(FontManager.bebasReg);
             tvInfo.setTypeface(FontManager.openSansLight);
             tvOption.setTypeface(FontManager.openSansItalic);

@@ -54,6 +54,9 @@ public class ModalDialog extends Dialog implements android.view.View.OnClickList
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.layout_modal);
+
+        if (FontManager.getSingleton() == null) new FontManager(mContext.getApplicationContext());
+
         final TextView name = (TextView) findViewById(R.id.modal_tv_name);
         final TextView info = (TextView) findViewById(R.id.modal_tv_info);
         final Button add = (Button) findViewById(R.id.modal_btn_add);
