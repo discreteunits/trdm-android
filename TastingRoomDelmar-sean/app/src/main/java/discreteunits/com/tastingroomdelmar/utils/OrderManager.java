@@ -2,6 +2,8 @@ package discreteunits.com.tastingroomdelmar.utils;
 
 import android.util.Log;
 
+import com.parse.ParseUser;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -11,7 +13,7 @@ import org.json.JSONObject;
 public class OrderManager {
     private static final String TAG = OrderManager.class.getSimpleName();
     private static JSONObject obj;
-
+    private ParseUser user;
     public OrderManager(JSONObject obj) {
         this.obj = obj;
     }
@@ -23,6 +25,8 @@ public class OrderManager {
             e.printStackTrace();
         }
     }
+
+    public void setUser(ParseUser user) { this.user = user; }
 
 
 

@@ -23,6 +23,7 @@
     </string-array>
 
     <string name="signup">Sign Up</string>
+    <string name="con">Continue</string>
     <string name="login">Login</string>
     <string name="welcome_message_signup">Tell us a little bit about yourself. \n We’d love to get to know you!</string>
     <string name="welcome_message_login">Provide your email and password below to login.</string>

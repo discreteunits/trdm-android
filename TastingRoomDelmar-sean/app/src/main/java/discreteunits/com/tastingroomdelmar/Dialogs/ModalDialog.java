@@ -99,6 +99,9 @@ public class ModalDialog extends Dialog implements android.view.View.OnClickList
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.modal_btn_add:
+                JSONObject topOrderObject = new JSONObject();
+
+                JSONObject userObject = new JSONObject();
                 JSONObject orderObject = new JSONObject();
 
                 JSONObject dineinObject = new JSONObject();
@@ -121,12 +124,10 @@ public class ModalDialog extends Dialog implements android.view.View.OnClickList
 
                 try {
                     /* put basic info to Dine-In and Takeaway */
-                    dineinObject.put("userId","userid");
                     dineinObject.put("checkoutMethod","stripe");
                     dineinObject.put("table","23");
                     dineinObject.put("tipPercent","0.152");
 
-                    takeawayObject.put("userId","userid");
                     takeawayObject.put("checkoutMethod","stripe");
                     takeawayObject.put("table","23");
                     takeawayObject.put("tipPercent","0.151");
@@ -163,9 +164,10 @@ public class ModalDialog extends Dialog implements android.view.View.OnClickList
 
                     ordersArray.put(dineinObject);
                     ordersArray.put(takeawayObject);
-                    // add structured item into orderObject
-                    orderObject.put("orders", ordersArray);
 
+                    // add structured item into orderObject
+                    orderObject.put("userId", "zMoJ95Cew5");
+                    orderObject.put("orders", ordersArray);
 
                     OrderManager orderManager = new OrderManager(orderObject);
                     orderManager.printOrder();

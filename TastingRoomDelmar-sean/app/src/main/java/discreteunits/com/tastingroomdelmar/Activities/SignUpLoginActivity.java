@@ -100,12 +100,12 @@ public class SignUpLoginActivity extends AppCompatActivity {
             if (flagSignupOrLogin == Constants.SIGNUP_FLAG) {
                 mTVCurrentActivityName.setText(getResources().getString(R.string.signup));
                 mTVQuestion.setText(getResources().getString(R.string.question_signup));
-                mButtonSignupLogin.setText(getResources().getString(R.string.signup));
+                mButtonSignupLogin.setText(getResources().getString(R.string.con));
                 mButtonSignupLogin.setBackgroundColor(ContextCompat.getColor(this, R.color.confirmGreen));
                 mButtonSignupLogin.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        createNewUser();
+                        proceedCreateNewUser();
                     }
                 });
             }
@@ -126,27 +126,21 @@ public class SignUpLoginActivity extends AppCompatActivity {
         mTVPreviousActivityName.setVisibility(View.GONE);
     }
 
-    private void createNewUser() {
+    private void proceedCreateNewUser() {
         final String email = mEditTextEmail.getText().toString();
 
         final String password = mEditTextPassword.getText().toString();
 
-        final ParseUser user = new ParseUser();
-        user.setUsername(email);
-        user.setEmail(email);
-        user.setPassword(password);
-        user.signUpInBackground(new SignUpCallback() {
-            @Override
-            public void done(ParseException e) {
-                if (e == null) {
-                    Toast.makeText(getApplicationContext(), "Thanks! Signing in now", Toast.LENGTH_SHORT).show();
-                    startActivity(new Intent(SignUpLoginActivity.this, Tier1Activity.class));
-                } else {
-                    e.printStackTrace();
-                    Toast.makeText(getApplicationContext(), "Please complete the sign up form", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
+        if (email.isEmpty() || password.isEmpty()) {
+            Toast.makeText(this, "Username or Password cannot be empty!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        Intent intent = new Intent(SignUpLoginActivity.this, SignUpSecondActivity.class);
+        intent.putExtra("email", email);
+        intent.putExtra("password", password);
+
+        startActivity(intent);
     }
 
     private void loginUser() {

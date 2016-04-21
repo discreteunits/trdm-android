@@ -9,6 +9,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -265,8 +266,6 @@ public class Tier4Activity extends AppCompatActivity {
                                         mProgressBar.setVisibility(View.GONE);
                                     }
                                 });
-
-
                             }
                         } catch (JSONException e1) {
                             e1.printStackTrace();
@@ -296,5 +295,14 @@ public class Tier4Activity extends AppCompatActivity {
         topAdapter.notifyDataSetChanged();
 
         adapter.getFilter().filter(topListItem.get(position).getName());
+    }
+
+
+    public static class ItemViewHolder {
+        public TextView tvName;
+        public TextView tvInfo;
+        public TextView tvVerietal;
+        public TextView tvOption;
+        public Button btnAddToTab;
     }
 }

@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import discreteunits.com.tastingroomdelmar.Activities.Tier4Activity;
 import discreteunits.com.tastingroomdelmar.Dialogs.ModalDialog;
 import discreteunits.com.tastingroomdelmar.R;
 import discreteunits.com.tastingroomdelmar.parseUtils.ItemListObject;
@@ -44,35 +45,41 @@ public class Tier4ListViewAdapter extends ArrayAdapter<ItemListObject> implement
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+        Tier4Activity.ItemViewHolder viewHolder;
         View rowView = convertView;
 
-        if (rowView == null) {
+        if (FontManager.getSingleton() == null) new FontManager(mContext.getApplicationContext());
+
+        if (rowView == null || rowView.getTag() == null) {
             LayoutInflater inflater = mContext.getLayoutInflater();
             rowView = inflater.inflate(R.layout.list_item_tier4, null, true);
-        }
 
-        final TextView tvName = (TextView) rowView.findViewById(R.id.tv_list_item_tier4);
-        final TextView tvInfo = (TextView) rowView.findViewById(R.id.tv_desc_item_tier4);
-        final TextView tvVerietal = (TextView) rowView.findViewById(R.id.tv_wine_var_tier4);
-        final TextView tvOption = (TextView) rowView.findViewById(R.id.tv_select_opt_tier4);
-        final Button btnAddToTab = (Button) rowView.findViewById(R.id.button_add_to_tab_tier4);
+            viewHolder = new Tier4Activity.ItemViewHolder();
+
+            viewHolder.tvName = (TextView) rowView.findViewById(R.id.tv_list_item_tier4);
+            viewHolder.tvInfo = (TextView) rowView.findViewById(R.id.tv_desc_item_tier4);
+            viewHolder.tvVerietal = (TextView) rowView.findViewById(R.id.tv_wine_var_tier4);
+            viewHolder.tvOption = (TextView) rowView.findViewById(R.id.tv_select_opt_tier4);
+            viewHolder.btnAddToTab = (Button) rowView.findViewById(R.id.button_add_to_tab_tier4);
+
+            viewHolder.tvName.setTypeface(FontManager.bebasReg);
+            viewHolder.tvInfo.setTypeface(FontManager.openSansLight);
+            viewHolder.tvOption.setTypeface(FontManager.openSansItalic);
+            viewHolder.btnAddToTab.setTypeface(FontManager.nexa);
+
+        } else {
+            viewHolder = (Tier4Activity.ItemViewHolder) rowView.getTag();
+        }
 
         final ItemListObject item = items.get(position);
 
         if (item != null) {
-            tvName.setText(item.getName());
-            tvInfo.setText(item.getAltName());
-            tvOption.setText(item.getPrices());
-            tvVerietal.setText(item.getVerietal());
+            viewHolder.tvName.setText(item.getName());
+            viewHolder.tvInfo.setText(item.getAltName());
+            viewHolder.tvOption.setText(item.getPrices());
+            viewHolder.tvVerietal.setText(item.getVerietal());
 
-            if (FontManager.getSingleton() == null) new FontManager(mContext.getApplicationContext());
-
-            tvName.setTypeface(FontManager.bebasReg);
-            tvInfo.setTypeface(FontManager.openSansLight);
-            tvOption.setTypeface(FontManager.openSansItalic);
-            btnAddToTab.setTypeface(FontManager.nexa);
-
-            btnAddToTab.setOnClickListener(new View.OnClickListener() {
+            viewHolder.btnAddToTab.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     ModalDialog modalDialog = new ModalDialog(mContext, item, isEvent);
