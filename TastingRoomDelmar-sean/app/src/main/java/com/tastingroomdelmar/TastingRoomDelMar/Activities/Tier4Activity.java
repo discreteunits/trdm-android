@@ -1,5 +1,6 @@
 package com.tastingroomdelmar.TastingRoomDelMar.Activities;
 
+import android.content.Intent;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -43,6 +44,8 @@ public class Tier4Activity extends AppCompatActivity {
     private static final String TAG = Tier4Activity.class.getSimpleName();
 
     DrawerLayout drawer;
+
+    ListView drawerListView;
 
     ArrayList<TopListObject> topListItem = new ArrayList<>();
     ArrayList<ItemListObject> listItem = new ArrayList<>();
@@ -114,6 +117,17 @@ public class Tier4Activity extends AppCompatActivity {
                     drawer.closeDrawer(GravityCompat.END);
                 } else {
                     drawer.openDrawer(GravityCompat.END);
+                }
+            }
+        });
+
+        drawerListView = (ListView) findViewById(R.id.right_drawer);
+        drawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                if (i == 2) {
+                    Intent intent = new Intent(Tier4Activity.this, MyTabActivity.class);
+                    startActivity(intent);
                 }
             }
         });

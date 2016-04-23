@@ -19,6 +19,8 @@ public class CategoryManager {
 
     private static ArrayList<String> allList = new ArrayList<>();
 
+    private static boolean isDinein = false;
+
     public static ArrayList getList() {
         return list;
     }
@@ -79,4 +81,9 @@ public class CategoryManager {
         if (!allList.contains(name)) allList.add(name);
     }
 
+    public static void setDinein(boolean dinein) {
+        isDinein = dinein;
+    }
+
+    public static boolean isDinein() { return isDinein; }
 }

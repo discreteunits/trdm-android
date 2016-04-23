@@ -14,15 +14,38 @@ public class ModalListItem {
 
     private Constants.Type type;
 
-    public ModalListItem(Constants.Type type, String title, ArrayList<OptionListItem> optionList) {
+    private String baseItemName;
+    private String baseItemPrice;
+
+    public ModalListItem(String baseItemName, String baseItemPrice, Constants.Type type, String title, ArrayList<OptionListItem> optionList) {
         this.title = title;
         this.optionList = optionList;
 
         this.type = type;
+        this.baseItemName = baseItemName;
+        this.baseItemPrice = baseItemPrice;
     }
 
-    public ModalListItem() {
+    public ModalListItem(String baseItemName, String baseItemPrice, String objectId) {
         this.title = Constants.QUANTITY;
+        this.baseItemName = baseItemName;
+        this.baseItemPrice = baseItemPrice;
+
+        quantityList = new ArrayList<>();
+
+        for (int i = 1; i < 11; i++) {
+            quantityList.add(new OptionListItem((i+""), objectId));
+        }
+
+        quantityList.get(0).setSelected(true);
+
+        type = Constants.Type.QUANTITY;
+    }
+
+    public ModalListItem(String baseItemName, String baseItemPrice) {
+        this.title = Constants.QUANTITY;
+        this.baseItemName = baseItemName;
+        this.baseItemPrice = baseItemPrice;
 
         quantityList = new ArrayList<>();
 
@@ -42,4 +65,22 @@ public class ModalListItem {
     public ArrayList<OptionListItem> getQuantityList() { return quantityList; }
 
     public Constants.Type getType() { return type; }
+
+    public OptionListItem getSelectedOptionItem() throws Exception {
+        if (getType() == Constants.Type.QUANTITY) {
+            for (OptionListItem optionItem : quantityList) {
+                if (optionItem.isSelected()) return optionItem;
+            }
+        } else {
+            for (OptionListItem optionItem : optionList) {
+                if (optionItem.isSelected()) return optionItem;
+            }
+        }
+
+        throw new Exception("There is no selected option");
+    }
+
+    public String getBaseItemName() { return baseItemName; }
+
+    public String getBaseItemPrice() { return baseItemPrice; }
 }

@@ -11,6 +11,7 @@ public class FontManager {
 
     public static Typeface nexa;
     public static Typeface bebasReg;
+    public static Typeface bebasBold;
     public static Typeface openSansLight;
     public static Typeface openSansItalic;
 
@@ -21,6 +22,7 @@ public class FontManager {
 
         nexa = Typeface.createFromAsset(assetManager, "fonts/nexarust/NexaRustScriptL-0.otf");
         bebasReg = Typeface.createFromAsset(assetManager, "fonts/bebas/BebasNeue Regular.otf");
+        bebasBold = Typeface.createFromAsset(assetManager, "fonts/bebas/BebasNeue Bold.otf");
         openSansLight = Typeface.createFromAsset(assetManager, "fonts/open-sans/OpenSans-Light.ttf");
         openSansItalic = Typeface.createFromAsset(assetManager, "fonts/open-sans/OpenSans-Italic.ttf");
 

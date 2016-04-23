@@ -35,6 +35,8 @@ public class Tier1Activity extends AppCompatActivity {
     private static final String TAG = Tier1Activity.class.getSimpleName();
 
     DrawerLayout drawer;
+    ListView drawerListView;
+
     ArrayList<ListObject> listItem = new ArrayList<>();
     Tier1ListViewAdapter adapter;
 
@@ -84,6 +86,17 @@ public class Tier1Activity extends AppCompatActivity {
             }
         });
 
+        drawerListView = (ListView) findViewById(R.id.right_drawer);
+        drawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                if (i == 2) {
+                    Intent intent = new Intent(Tier1Activity.this, MyTabActivity.class);
+                    startActivity(intent);
+                }
+            }
+        });
+
         mProgressBar = (ProgressBar) findViewById(R.id.pb_tier1);
         mProgressBar.setVisibility(View.VISIBLE);
 
@@ -105,6 +118,12 @@ public class Tier1Activity extends AppCompatActivity {
 
                 CategoryManager.addToList(listItem.get(position).getCategoryId());
                 //CategoryManager.printCategory();
+
+                if (listItem.get(position).getName().equals("Dine In")) {
+                    CategoryManager.setDinein(true);
+                } else {
+                    CategoryManager.setDinein(false);
+                }
 
                 Intent intent;
                 if (!listItem.get(position).skipToTier4()) {

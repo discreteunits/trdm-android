@@ -10,6 +10,7 @@ import com.parse.ParseQuery;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 import com.tastingroomdelmar.TastingRoomDelMar.utils.Constants;
@@ -103,6 +104,7 @@ public class ItemListObject implements Comparable<ItemListObject> {
 
             for (int i = 0; i < additionsArray.length(); i++) {
                 final String additionName = additionsArray.getJSONObject(i).getString("displayName");
+                final String modifierId = additionsArray.getJSONObject(i).getString("id");
 
                 if (!additionName.isEmpty()) additionTitle = additionName;
 
@@ -114,13 +116,16 @@ public class ItemListObject implements Comparable<ItemListObject> {
 
                 additionList = new ArrayList<>();
                 for (int j = 0; j < valueObject.length(); j++) {
+                    String additionId = valueObject.getJSONObject(j).getString("id");
                     String additionDetailName = valueObject.getJSONObject(j).getString("name");
                     String additionDetailPrice = valueObject.getJSONObject(j).getString("price");
-
+                    String additionDetailPriceWithoutVat = valueObject.getJSONObject(j).getString("priceWithoutVAT");
                     if (additionDetailPrice.equals("0")) additionDetailPrice = "";
                     else additionDetailPrice = "  +" + additionDetailPrice;
 
-                    additionList.add(new AdditionListItem(additionDetailName + additionDetailPrice));
+                    additionList.add(new AdditionListItem(additionDetailName + additionDetailPrice, getObjectId(),modifierId, additionId,
+                            !additionDetailPrice.equals("") ? Double.parseDouble(additionDetailPrice): 0,
+                            !additionDetailPriceWithoutVat.equals("") ? Double.parseDouble(additionDetailPriceWithoutVat) : 0));
 
                     Log.d(TAG, "addition detail name: " + additionDetailName);
                 }
@@ -129,7 +134,12 @@ public class ItemListObject implements Comparable<ItemListObject> {
                 OptionListItem firstItem = additionList.size() == 0 ? null : additionList.get(0);
                 if (firstItem != null) firstItem.setSelected(true);
 
-                additionOptions.add(new ModalListItem(Constants.Type.ADDITION, getAdditionTitle(), additionList ));
+                String basePrice =  getPrices().split(",")[0];
+                if (basePrice == null) basePrice = getPrices();
+
+                basePrice = new DecimalFormat("0.##").format(Double.parseDouble(basePrice));
+
+                additionOptions.add(new ModalListItem(getName(), basePrice, Constants.Type.ADDITION, getAdditionTitle(), additionList));
             }
         } catch (JSONException e) {
             e.printStackTrace();

@@ -83,6 +83,7 @@ public class Tier4ListViewAdapter extends ArrayAdapter<ItemListObject> implement
                 @Override
                 public void onClick(View view) {
                     ModalDialog modalDialog = new ModalDialog(mContext, item, isEvent);
+                    modalDialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
                     modalDialog.show();
                 }
             });

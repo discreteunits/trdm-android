@@ -3,22 +3,27 @@ package com.tastingroomdelmar.TastingRoomDelMar.Dialogs;
 import android.app.Dialog;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 import com.tastingroomdelmar.TastingRoomDelMar.ListViewAdapters.ModalListViewAdapter;
 import com.tastingroomdelmar.TastingRoomDelMar.R;
 import com.tastingroomdelmar.TastingRoomDelMar.parseUtils.ItemListObject;
 import com.tastingroomdelmar.TastingRoomDelMar.parseUtils.ModalListItem;
+import com.tastingroomdelmar.TastingRoomDelMar.parseUtils.OrderListItem;
+import com.tastingroomdelmar.TastingRoomDelMar.utils.CategoryManager;
 import com.tastingroomdelmar.TastingRoomDelMar.utils.Constants;
 import com.tastingroomdelmar.TastingRoomDelMar.utils.FontManager;
 import com.tastingroomdelmar.TastingRoomDelMar.utils.OrderManager;
@@ -76,9 +81,14 @@ public class ModalDialog extends Dialog implements android.view.View.OnClickList
         modalListView = (ListView) findViewById(R.id.modal_listview);
         modalListView.setAdapter(adapter);
 
+        String basePrice =  item.getPrices().split(",")[0];
+        if (basePrice == null) basePrice = item.getPrices();
+
+        basePrice = new DecimalFormat("0.##").format(Double.parseDouble(basePrice));
+
         if (!isEvent) {
             if (item.getServings() != null && !item.getServings().isEmpty()) {
-                modalItems.add(new ModalListItem(Constants.Type.SERVING, Constants.SERVING, item.getServings()));
+                modalItems.add(new ModalListItem(item.getName(), basePrice, Constants.Type.SERVING, Constants.SERVING, item.getServings()));
             }
 
             if (item.getAdditions() != null && !item.getAdditions().isEmpty()) {
@@ -86,10 +96,12 @@ public class ModalDialog extends Dialog implements android.view.View.OnClickList
                     modalItems.add(modalItem);
             }
 
-            modalItems.add(new ModalListItem());
+            modalItems.add(new ModalListItem(item.getName(), basePrice, item.getObjectId()));
         } else {
-            modalItems.add(new ModalListItem(Constants.Type.SERVING, Constants.BOX_OFFICE, item.getServings()));
-            modalItems.add(new ModalListItem());
+            if (item.getServings() != null && !item.getServings().isEmpty()) {
+                modalItems.add(new ModalListItem(item.getName(), basePrice, Constants.Type.SERVING, Constants.BOX_OFFICE, item.getServings()));
+            }
+            modalItems.add(new ModalListItem(item.getName(), basePrice, item.getObjectId()));
         }
 
         adapter.notifyDataSetChanged();
@@ -99,81 +111,81 @@ public class ModalDialog extends Dialog implements android.view.View.OnClickList
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.modal_btn_add:
-                JSONObject topOrderObject = new JSONObject();
-
-                JSONObject userObject = new JSONObject();
-                JSONObject orderObject = new JSONObject();
-
-                JSONObject dineinObject = new JSONObject();
-                JSONObject takeawayObject = new JSONObject();
-
-                JSONArray ordersArray = new JSONArray();
-
-                JSONObject dineinOrderBody = new JSONObject();
-                JSONObject takeawayOrderBody = new JSONObject();
-
-                JSONArray dineinOrderItems = new JSONArray();
-                JSONArray takeawayOrderItems = new JSONArray();
-
-                JSONObject dineinOrderItemDetail = new JSONObject();
-                JSONObject takeawayOrderItemDetail = new JSONObject();
-
-                JSONArray dineinOrderItemDetailMod = new JSONArray();
-                JSONArray takewayOrderItemDetailMod = new JSONArray();
-
+                OrderManager orderManager;
+                if (OrderManager.getSingleton() == null) {
+                     orderManager = new OrderManager();
+                } else {
+                    orderManager = OrderManager.getSingleton();
+                }
 
                 try {
-                    /* put basic info to Dine-In and Takeaway */
-                    dineinObject.put("checkoutMethod","stripe");
-                    dineinObject.put("table","23");
-                    dineinObject.put("tipPercent","0.152");
+                    JSONObject orderItem = new JSONObject();
+                    JSONArray modifiers = new JSONArray();
 
-                    takeawayObject.put("checkoutMethod","stripe");
-                    takeawayObject.put("table","23");
-                    takeawayObject.put("tipPercent","0.151");
+                    try {
+                        boolean servingIdAdded = false;
 
-                    /* put basic info to order bodies */
-                    dineinOrderBody.put("type","delivery");
-                    dineinOrderBody.put("note","Tobe @ Table 23");
+                        OrderListItem orderListItem = new OrderListItem();
 
-                    takeawayOrderBody.put("type","delivery");
-                    takeawayOrderBody.put("note","Tobe @ Table 23");
+                        for (ModalListItem modalItem : modalItems) {
+                            boolean servingExists = false;
 
-                    /* add order item details to order item detail objects */
-                    dineinOrderItemDetail.put("amount", "2");
-                    dineinOrderItemDetail.put("objectId", "wUQAmfT9dQ");
+                            if (modalItem.getType() == Constants.Type.QUANTITY) {
+                                orderItem.put("amount", modalItem.getSelectedOptionItem().getOptionName());
+                                orderListItem.setQty(modalItem.getSelectedOptionItem().getOptionName());
+                            }
 
-                    takeawayOrderItemDetail.put("amount", "1");
-                    takeawayOrderItemDetail.put("objectId", "wl5gmi1tq2");
+                            else if (modalItem.getType() == Constants.Type.SERVING) {
+                                orderItem.put("objectId", modalItem.getSelectedOptionItem().getObjectId());
 
-                    /* add modifiers to details */
-                    dineinOrderItemDetail.put("modifiers", dineinOrderItemDetailMod);
-                    takeawayOrderItemDetail.put("modifiers", takewayOrderItemDetailMod);
+                                orderListItem.setOptions(modalItem.getSelectedOptionItem().getOptionName());
+                                orderListItem.setModPrices(new DecimalFormat("0.##").format(modalItem.getSelectedOptionItem().getPrice()));
+                                servingExists = true;
+                            }
 
-                    /* add orderItemDetails to Order Items arrays */
-                    dineinOrderItems.put(dineinOrderItemDetail);
-                    takeawayOrderItems.put(takeawayOrderItemDetail);
+                            else {
+                                JSONObject modifierObject = new JSONObject();
+                                modifierObject.put("modifierId", modalItem.getSelectedOptionItem().getModifierId());
+                                modifierObject.put("modifierValueId", modalItem.getSelectedOptionItem().getModifierValueId());
+                                modifierObject.put("price", new DecimalFormat("0.##").format(modalItem.getSelectedOptionItem().getPrice()));
+                                modifierObject.put("priceWithoutVat", modalItem.getSelectedOptionItem().getPriceWithoutVat());
 
-                    /* add orderItems to order bodies */
-                    dineinOrderBody.put("orderItems", dineinOrderItems);
-                    takeawayOrderBody.put("orderItems", takeawayOrderItems);
+                                orderListItem.setOptions(modalItem.getTitle() + " (" + modalItem.getSelectedOptionItem().getOptionName() + ")" + "\n");
+                                orderListItem.setModPrices(modalItem.getSelectedOptionItem().getPrice() == 0 ?
+                                        "\n" : new DecimalFormat("0.##").format(modalItem.getSelectedOptionItem().getPrice()) + "\n");
 
-                    /* add order body to Dine-In and Takeaway */
-                    dineinObject.put("body",dineinOrderBody);
-                    takeawayObject.put("body",takeawayOrderBody);
+                                // TODO check quantity first 
+                                modifiers.put(modifierObject);
+                            }
 
-                    ordersArray.put(dineinObject);
-                    ordersArray.put(takeawayObject);
+                            if (!servingExists && !servingIdAdded) {
+                                orderItem.put("objectId", modalItem.getSelectedOptionItem().getObjectId());
+                                servingIdAdded = true;
+                            }
 
-                    // add structured item into orderObject
-                    orderObject.put("userId", "zMoJ95Cew5");
-                    orderObject.put("orders", ordersArray);
+                            orderListItem.setName(modalItem.getBaseItemName());
+                            orderListItem.setBasePrice(modalItem.getBaseItemPrice());
+                        }
 
-                    OrderManager orderManager = new OrderManager(orderObject);
-                    orderManager.printOrder();
+                        orderManager.addToOrderList(orderListItem);
+                    } catch (Exception e1) {
+                        e1.printStackTrace();
+                    }
+
+                    orderItem.put("modifiers", modifiers);
+
+                    if (CategoryManager.isDinein())
+                        orderManager.addToDineIn(orderItem);
+                    else
+                        orderManager.addToTakeAway(orderItem);
+
+                    //orderManager.printOrder();
+
+                    Toast.makeText(mContext, "Order Added", Toast.LENGTH_SHORT).show();
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+
                 break;
             case R.id.modal_btn_cancel:
                 dismiss();

@@ -27,7 +27,6 @@ public class ParseUtility {
 
         FacebookSdk.sdkInitialize(mContext);
 
-        ParseUser.enableAutomaticUser();
         ParseACL defaultACL = new ParseACL();
         ParseACL.setDefaultACL(defaultACL, true);
     }
