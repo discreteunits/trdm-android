@@ -12,6 +12,8 @@ import org.json.JSONException;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 import com.tastingroomdelmar.TastingRoomDelMar.utils.Constants;
 
@@ -25,7 +27,9 @@ public class ItemListObject implements Comparable<ItemListObject> {
     private String altName;
     private String objectId;
     private String prices;
+    private double taxRate;
     private String verietal;
+    private String productType;
     private JSONArray categoryArray;
     private JSONArray additionsArray;
     private JSONArray servingsArray;
@@ -42,6 +46,8 @@ public class ItemListObject implements Comparable<ItemListObject> {
         name = obj.getString("name");
         altName = obj.getString("info");
         prices = obj.getString("prices");
+        productType = obj.getString("productType");
+        taxRate = Double.parseDouble(obj.getString("taxClass").split("-")[1]);
         if (prices == null || prices.isEmpty()) prices = obj.getNumber("price") + "";
         categoryArray = obj.getJSONArray("categories");
         additionsArray = obj.getJSONArray("additions");
@@ -71,6 +77,10 @@ public class ItemListObject implements Comparable<ItemListObject> {
         verietal = v;
     }
 
+    public String getProductType() { return productType; }
+
+    public double getTaxRate() { return taxRate; }
+
     private void storeServings() {
         servingList = new ArrayList<>();
 
@@ -83,6 +93,8 @@ public class ItemListObject implements Comparable<ItemListObject> {
                         if (e == null) {
                             servingList.add(new ServingListItem(object));
                             Log.d(TAG, "Serving: " + object.getString("info"));
+
+                            Collections.sort(servingList, new MyComparator());
                         } else {
                             e.printStackTrace();
                         }
@@ -93,9 +105,9 @@ public class ItemListObject implements Comparable<ItemListObject> {
             }
         }
 
-        /* do a null check on first item on the list and make it selected */
-        OptionListItem firstItem = servingList.size() == 0 ? null : servingList.get(0);
-        if(firstItem != null) firstItem.setSelected(true);
+//        /* do a null check on first item on the list and make it selected */
+//        OptionListItem firstItem = servingList.size() == 0 ? null : servingList.get(0);
+//        if (firstItem != null) firstItem.setSelected(true);
     }
 
     private void storeAdditions() {
@@ -106,7 +118,8 @@ public class ItemListObject implements Comparable<ItemListObject> {
                 final String additionName = additionsArray.getJSONObject(i).getString("displayName");
                 final String modifierId = additionsArray.getJSONObject(i).getString("id");
 
-                if (!additionName.isEmpty()) additionTitle = additionName;
+                if (!additionName.equals("")) additionTitle = additionName;
+                else continue;
 
                 Log.d(TAG, "Addition Name: " + additionName);
                 final JSONArray valueObject = additionsArray.getJSONObject(i).getJSONArray("values");
@@ -120,14 +133,17 @@ public class ItemListObject implements Comparable<ItemListObject> {
                     String additionDetailName = valueObject.getJSONObject(j).getString("name");
                     String additionDetailPrice = valueObject.getJSONObject(j).getString("price");
                     String additionDetailPriceWithoutVat = valueObject.getJSONObject(j).getString("priceWithoutVAT");
+
                     if (additionDetailPrice.equals("0")) additionDetailPrice = "";
                     else additionDetailPrice = "  +" + additionDetailPrice;
 
                     additionList.add(new AdditionListItem(additionDetailName + additionDetailPrice, getObjectId(),modifierId, additionId,
                             !additionDetailPrice.equals("") ? Double.parseDouble(additionDetailPrice): 0,
-                            !additionDetailPriceWithoutVat.equals("") ? Double.parseDouble(additionDetailPriceWithoutVat) : 0));
+                            !additionDetailPriceWithoutVat.equals("") ? Double.parseDouble(additionDetailPriceWithoutVat) : 0,
+                            this.taxRate));
 
                     Log.d(TAG, "addition detail name: " + additionDetailName);
+                    Collections.sort(additionList, new MyComparator());
                 }
 
                 /* do a null check on first item on the list and make it selected */
@@ -137,9 +153,9 @@ public class ItemListObject implements Comparable<ItemListObject> {
                 String basePrice =  getPrices().split(",")[0];
                 if (basePrice == null) basePrice = getPrices();
 
-                basePrice = new DecimalFormat("0.##").format(Double.parseDouble(basePrice));
+                basePrice = new DecimalFormat("0.00").format(Double.parseDouble(basePrice));
 
-                additionOptions.add(new ModalListItem(getName(), basePrice, Constants.Type.ADDITION, getAdditionTitle(), additionList));
+                additionOptions.add(new ModalListItem(getObjectId(), getName(), basePrice, getTaxRate(), Constants.Type.ADDITION, Constants.OTHER, getAdditionTitle(), additionList));
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -153,6 +169,10 @@ public class ItemListObject implements Comparable<ItemListObject> {
     }
 
     public ArrayList<OptionListItem> getServings() {
+        if (servingList != null) {
+            for (OptionListItem item: servingList) { item.setSelected(false); }
+            servingList.get(0).setSelected(true);
+        }
         return servingList;
     }
 
@@ -163,5 +183,12 @@ public class ItemListObject implements Comparable<ItemListObject> {
     @Override
     public int compareTo(ItemListObject another) {
         return name.compareTo(another.getName());
+    }
+
+    private class MyComparator implements Comparator<OptionListItem> {
+        @Override
+        public int compare(OptionListItem i1, OptionListItem i2) {
+            return Double.valueOf(i1.getPrice()).compareTo(i2.getPrice());
+        }
     }
 }

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="300dp"
+    android:layout_height="wrap_content"
+    android:padding="5dp"
+    android:background="@drawable/modal">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Checkout Options"
+        android:layout_gravity="center"
+        android:layout_marginTop="10dp"
+        android:textSize="25sp"
+        android:textColor="@color/colorPrimary"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Please select your desired checkout method below."
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+        android:textSize="15sp"
+        android:textColor="@color/colorPrimary"/>
+
+    <Button
+        android:id="@+id/btn_closeout_now"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Closeout Now"
+        android:layout_marginBottom="5dp"
+        android:textColor="@color/confirmDarkGreen"/>
+
+    <Button
+        android:id="@+id/btn_closeout_server"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
+        android:text="Closeout later with your server"
+        android:textColor="@color/confirmDarkGreen"/>
+
+    <Button
+        android:id="@+id/btn_closeout_cancel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
+        android:text="Cancel"
+        android:textColor="@color/confirmDarkGreen" />
+
+</LinearLayout>

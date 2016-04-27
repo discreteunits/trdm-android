@@ -16,25 +16,35 @@ public class ModalListItem {
 
     private String baseItemName;
     private String baseItemPrice;
+    private String baseObjectId;
+    private double baseTaxRate;
 
-    public ModalListItem(String baseItemName, String baseItemPrice, Constants.Type type, String title, ArrayList<OptionListItem> optionList) {
+    private String productType;
+
+    public ModalListItem(String baseObjectId, String baseItemName, String baseItemPrice, double baseTaxRate, Constants.Type type, String pType, String title, ArrayList<OptionListItem> optionList) {
+        this.baseObjectId = baseObjectId;
         this.title = title;
         this.optionList = optionList;
 
         this.type = type;
         this.baseItemName = baseItemName;
         this.baseItemPrice = baseItemPrice;
+        this.baseTaxRate = baseTaxRate;
+        this.productType = pType;
     }
 
-    public ModalListItem(String baseItemName, String baseItemPrice, String objectId) {
+    public ModalListItem(String baseItemName, String baseItemPrice, double baseTaxRate, String pType, String objectId) {
         this.title = Constants.QUANTITY;
         this.baseItemName = baseItemName;
         this.baseItemPrice = baseItemPrice;
+        this.baseTaxRate = baseTaxRate;
+        this.productType = pType;
+        this.baseObjectId = objectId;
 
         quantityList = new ArrayList<>();
 
         for (int i = 1; i < 11; i++) {
-            quantityList.add(new OptionListItem((i+""), objectId));
+            quantityList.add(new OptionListItem((i+""), objectId, 0));
         }
 
         quantityList.get(0).setSelected(true);
@@ -60,7 +70,13 @@ public class ModalListItem {
 
     public String getTitle() { return title; }
 
-    public ArrayList<OptionListItem> getOptionList() { return optionList; }
+    public ArrayList<OptionListItem> getOptionList() {
+        if (optionList != null) {
+            for (OptionListItem item : optionList) { item.setSelected(false); }
+            optionList.get(0).setSelected(true);
+        }
+        return optionList;
+    }
 
     public ArrayList<OptionListItem> getQuantityList() { return quantityList; }
 
@@ -83,4 +99,10 @@ public class ModalListItem {
     public String getBaseItemName() { return baseItemName; }
 
     public String getBaseItemPrice() { return baseItemPrice; }
+
+    public String getProductType() { return productType; }
+
+    public String getBaseObjectId() { return baseObjectId; }
+
+    public double getBaseTaxRate() { return baseTaxRate; }
 }

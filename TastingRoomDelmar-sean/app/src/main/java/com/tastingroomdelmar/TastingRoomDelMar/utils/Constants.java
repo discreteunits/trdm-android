@@ -11,7 +11,11 @@ public class Constants {
     public static final String QUANTITY = "QUANTITY";
     public static final String GUESTS = "GUESTS";
 
-    public enum Type {SERVING, ADDITION, QUANTITY};
+    public enum Type {SERVING, ADDITION, QUANTITY}
+
+    public static final String CHOICE = "CHOICE";
+    public static final String GROUP = "CHOICE";
+    public static final String OTHER = "OTHER";
 
     public static final String NEXA = "nexa";
     public static final String BEBA = "bebasReg";

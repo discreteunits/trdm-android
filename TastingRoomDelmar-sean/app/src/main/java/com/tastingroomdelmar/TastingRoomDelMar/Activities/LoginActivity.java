@@ -58,7 +58,6 @@ public class LoginActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_login);
 
-
         if (ParseUser.getCurrentUser() != null) {
             Intent intent = new Intent(LoginActivity.this, Tier1Activity.class);
             startActivity(intent);
@@ -89,6 +88,7 @@ public class LoginActivity extends AppCompatActivity {
                             }
                             if (user == null) {
                                 Log.d(TAG, "Uh oh. The user cancelled the Facebook login.");
+                                Toast.makeText(getApplicationContext(), "Oops, There was an error!", Toast.LENGTH_SHORT).show();
                             } else if (user.isNew()) {
                                 Log.d(TAG, "User signed up and logged in through Facebook!");
                                 getAndSaveUserDetailsFromFB();

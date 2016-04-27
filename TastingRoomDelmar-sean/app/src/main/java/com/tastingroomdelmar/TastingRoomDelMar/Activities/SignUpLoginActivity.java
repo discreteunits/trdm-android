@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import com.parse.LogInCallback;
 import com.parse.ParseException;
+import com.parse.ParseInstallation;
 import com.parse.ParseUser;
 
 import com.tastingroomdelmar.TastingRoomDelMar.R;
@@ -148,6 +149,10 @@ public class SignUpLoginActivity extends AppCompatActivity {
         ParseUser.logInInBackground(email, password, new LogInCallback() {
             public void done(ParseUser user, ParseException e) {
                 if (user != null) {
+                    ParseInstallation installation = ParseInstallation.getCurrentInstallation();
+                    installation.put("user", ParseUser.getCurrentUser());
+                    installation.saveInBackground();
+
                     Toast.makeText(getApplicationContext(), "Thanks! Logging in now", Toast.LENGTH_SHORT).show();
                     startActivity(new Intent(SignUpLoginActivity.this, Tier1Activity.class));
                 } else {

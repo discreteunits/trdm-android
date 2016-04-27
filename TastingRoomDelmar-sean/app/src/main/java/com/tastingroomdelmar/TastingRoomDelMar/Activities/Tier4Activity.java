@@ -53,6 +53,7 @@ public class Tier4Activity extends AppCompatActivity {
     Tier4ListViewAdapter adapter;
 
     ProgressBar mProgressBar;
+    TextView nothing;
 
     String currentActivity = "";
 
@@ -100,6 +101,10 @@ public class Tier4Activity extends AppCompatActivity {
                 }
             });
         }
+
+        nothing = (TextView) findViewById(R.id.nothing_to_display);
+        nothing.setTypeface(FontManager.nexa);
+        nothing.setVisibility(View.GONE);
 
         mProgressBar = (ProgressBar) findViewById(R.id.pb_tier4);
         mProgressBar.setVisibility(View.VISIBLE);
@@ -191,10 +196,12 @@ public class Tier4Activity extends AppCompatActivity {
                         //Log.d(TAG, "parse object name : " + name);
                         try {
                             if (tier3JSONArray != null) {
-                                String objectId = tier3JSONArray.getJSONObject(0).getString("objectId");
+                                for (int i = 0; i < tier3JSONArray.length(); i++) {
+                                    String objectId = tier3JSONArray.getJSONObject(i).getString("objectId");
 
-                                if (OIDManager.isInList(objectId))
-                                    topListItem.add(new TopListObject(objects));
+                                    if (OIDManager.isInList(objectId))
+                                        topListItem.add(new TopListObject(objects));
+                                }
                             }
 
                         } catch (JSONException e1) {
@@ -225,6 +232,11 @@ public class Tier4Activity extends AppCompatActivity {
             public void done(List<ParseObject> objectList, ParseException e) {
                 if (e == null) {
                     for(ParseObject objects : objectList) {
+                        //TODO update this once db is correctly configured
+                        if (objects.getNumber("stockAmount").intValue() < 1) {
+                            // skip
+                            continue;
+                        }
                         String name = objects.getString("name");
                         String productType = objects.getString("productType");
 
@@ -278,6 +290,7 @@ public class Tier4Activity extends AppCompatActivity {
 
                                         adapter.notifyDataSetChanged();
                                         mProgressBar.setVisibility(View.GONE);
+                                        nothing.setVisibility(View.GONE);
                                     }
                                 });
                             }
@@ -290,8 +303,9 @@ public class Tier4Activity extends AppCompatActivity {
                         //Log.d(TAG, "Nothing to show");
                         adapter.notifyDataSetChanged();
                         mProgressBar.setVisibility(View.GONE);
-                    }
 
+                        nothing.setVisibility(View.VISIBLE);
+                    }
                 } else {
                     e.printStackTrace();
                 }

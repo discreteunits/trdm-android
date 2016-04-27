@@ -75,7 +75,6 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:layout_alignParentEnd="true"
-                android:text="125.25"
                 android:textColor="@color/colorPrimary"
                 android:textSize="18sp"/>
         </RelativeLayout>
@@ -99,7 +98,6 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:layout_alignParentEnd="true"
-                android:text="10.02"
                 android:textColor="@color/colorPrimary"
                 android:textSize="18sp"/>
         </RelativeLayout>
@@ -123,7 +121,6 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:layout_alignParentEnd="true"
-                android:text="135.27"
                 android:textColor="@color/colorPrimary"
                 android:textSize="18sp"/>
         </RelativeLayout>
@@ -135,5 +132,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:background="@drawable/green_soft_corner_button"
-        android:text="Place Order"/>
+        android:text="Place Order"
+        android:textAllCaps="false"
+        android:textSize="25sp"
+        />
 </RelativeLayout>

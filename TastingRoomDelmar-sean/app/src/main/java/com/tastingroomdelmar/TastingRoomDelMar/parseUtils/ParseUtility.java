@@ -6,6 +6,7 @@ import com.facebook.FacebookSdk;
 import com.parse.Parse;
 import com.parse.ParseACL;
 import com.parse.ParseFacebookUtils;
+import com.parse.ParseInstallation;
 import com.parse.ParseUser;
 
 import com.tastingroomdelmar.TastingRoomDelMar.R;
@@ -29,5 +30,14 @@ public class ParseUtility {
 
         ParseACL defaultACL = new ParseACL();
         ParseACL.setDefaultACL(defaultACL, true);
+
+        // Save the current Installation to Parse.
+        ParseInstallation.getCurrentInstallation().saveInBackground();
+
+        if (ParseUser.getCurrentUser() != null) {
+            ParseInstallation installation = ParseInstallation.getCurrentInstallation();
+            installation.put("user", ParseUser.getCurrentUser());
+            installation.saveInBackground();
+        }
     }
 }

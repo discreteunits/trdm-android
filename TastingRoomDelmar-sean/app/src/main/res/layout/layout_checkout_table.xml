@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="300dp"
+    android:layout_height="wrap_content"
+    android:padding="5dp"
+    android:background="@drawable/modal">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="ENTER TABLE NUMBER"
+        android:layout_gravity="center"
+        android:layout_marginTop="10dp"
+        android:textSize="25sp"
+        android:textColor="@color/colorPrimary"/>
+
+    <EditText
+        android:id="@+id/et_table_number"
+        android:layout_width="wrap_content"
+        android:layout_height="80dp"
+        android:hint="11"
+        android:inputType="number"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+        android:ems="2"
+        android:maxEms="2"
+        android:maxLines="1"
+        android:textSize="40sp"
+        android:textColor="@color/colorPrimary"/>
+
+    <TextView
+        android:id="@+id/cb_table_counter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center"
+        android:text="Enter table 99 to pickup at the bar"
+        android:layout_marginBottom="10dp"
+        android:textColor="@color/colorPrimary"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+    <Button
+        android:id="@+id/btn_table_cancel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:text="Cancel"
+        android:textSize="20sp"
+        android:textAllCaps="false"
+        android:layout_weight="1"
+        android:textColor="@color/colorPrimary"
+        android:background="@drawable/light_gray_soft_corner_button"/>
+
+    <Button
+        android:id="@+id/btn_table_place_order"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:text="Place Order"
+        android:textSize="20sp"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:background="@drawable/green_soft_corner_button"/>
+    </LinearLayout>
+
+</LinearLayout>

@@ -24,6 +24,18 @@
         android:layout_marginTop="30dp"
         style="?android:attr/progressBarStyleLarge"/>
 
+    <TextView
+        android:id="@+id/nothing_to_display"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="30dp"
+        android:visibility="gone"
+        android:gravity="center"
+        android:text="There's nothing to display for now..."
+        android:textSize="20sp"
+        android:textColor="@color/colorPrimary"/>
+
 
 
     <ListView

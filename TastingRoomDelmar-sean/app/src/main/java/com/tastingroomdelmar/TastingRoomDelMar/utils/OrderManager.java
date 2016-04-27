@@ -29,6 +29,11 @@ public class OrderManager {
     JSONArray dineinOrderItems;
     JSONArray takeawayOrderItems;
 
+    double subTotalPrice;
+    double taxRate;
+    double taxPrice;
+    double totalPrice;
+
     private static ArrayList<OrderListItem> orderListItems;
 
     private static OrderManager singleton;
@@ -71,11 +76,9 @@ public class OrderManager {
     }
 
     public static OrderManager getSingleton() {
-        return singleton;
-    }
+        if (singleton == null) singleton = new OrderManager();
 
-    public OrderManager(JSONObject obj) {
-        topLevelObject = obj;
+        return singleton;
     }
 
     public void printOrder() {
@@ -120,4 +123,16 @@ public class OrderManager {
     public ArrayList<OrderListItem> getOrderListItems() {
         return orderListItems;
     }
+
+    public void addToSubTotal(double price) {
+        subTotalPrice += price;
+    }
+
+    public double getSubTotalPrice() { return subTotalPrice; }
+
+    public void addToTax(double taxPrice) {
+        this.taxPrice += taxPrice;
+    }
+
+    public double getTaxPrice() { return taxPrice; }
 }

@@ -18,6 +18,7 @@ public class OIDManager {
 
     public static void addToList(String objectID) {
         list.add(objectID);
+        printObjectId();
     }
 
     public static void popFromList() {

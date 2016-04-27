@@ -17,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.parse.ParseException;
+import com.parse.ParseInstallation;
 import com.parse.ParseUser;
 import com.parse.SignUpCallback;
 
@@ -130,6 +131,10 @@ public class SignUpSecondActivity extends AppCompatActivity {
                         @Override
                         public void done(ParseException e) {
                             if (e == null) {
+                                ParseInstallation installation = ParseInstallation.getCurrentInstallation();
+                                installation.put("user", ParseUser.getCurrentUser());
+                                installation.saveInBackground();
+
                                 Toast.makeText(getApplicationContext(), "Thanks! Signing in now", Toast.LENGTH_SHORT).show();
                                 startActivity(new Intent(SignUpSecondActivity.this, Tier1Activity.class));
                             } else {

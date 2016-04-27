@@ -13,9 +13,10 @@ public class OptionListItem {
     private String modifierValueId;
     private double price;
     private double priceWithoutVat;
+    private double taxRate;
 
     /* This is for both servings and additions */
-    public OptionListItem(String optionName, String objectId, String modifierId, String modifierValueId, double price, double priceWithoutVat) {
+    public OptionListItem(String optionName, String objectId, String modifierId, String modifierValueId, double price, double priceWithoutVat, double taxRate) {
         this.optionName = optionName;
         this.isSelected = false;
 
@@ -24,13 +25,15 @@ public class OptionListItem {
         this.modifierValueId = modifierValueId;
         this.price = price;
         this.priceWithoutVat = priceWithoutVat;
+        this.taxRate = taxRate;
     }
 
     /* This is for items that do not have both Servings and options. (e.g. Merch, Tickets, etc) */
-    public OptionListItem(String quantityNumber, String objectId) {
+    public OptionListItem(String quantityNumber, String objectId, double taxRate) {
         this.optionName = quantityNumber;
         this.isSelected = false;
         this.objectId = objectId;
+        this.taxRate = taxRate;
     }
 
     /* This is for quantity options */
@@ -58,5 +61,7 @@ public class OptionListItem {
     public double getPrice() { return price; }
 
     public double getPriceWithoutVat() { return priceWithoutVat; }
+
+    public double getTaxRate() { return taxRate; }
 
 }

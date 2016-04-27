@@ -26,7 +26,7 @@ public class CategoryManager {
     }
 
     public static void addToList(String categoryId) {
-        list.add(categoryId);
+        list.add(categoryId); printCategory();
     }
 
     public static void popFromList() {
