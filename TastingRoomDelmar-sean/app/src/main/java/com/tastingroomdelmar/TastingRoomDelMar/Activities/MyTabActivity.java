@@ -6,6 +6,7 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -17,6 +18,8 @@ import com.tastingroomdelmar.TastingRoomDelMar.R;
 import com.tastingroomdelmar.TastingRoomDelMar.parseUtils.OrderListItem;
 import com.tastingroomdelmar.TastingRoomDelMar.utils.FontManager;
 import com.tastingroomdelmar.TastingRoomDelMar.utils.OrderManager;
+
+import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -90,76 +93,139 @@ public class MyTabActivity extends AppCompatActivity {
         final double tax = orderManager.getTaxPrice();
         final double grandtotal = subtotal + tax;
 
-        mTVSubtotal.setText(new DecimalFormat("0.00").format(subtotal));
-        mTVTax.setText(new DecimalFormat("0.00").format(tax));
-        mTVTotal.setText(new DecimalFormat("0.00").format(grandtotal));
+        final String formattedSubtotal = new DecimalFormat("0.00").format(subtotal);
+        final String formattedTax = new DecimalFormat("0.00").format(tax);
+        final String formattedGrandtotal = new DecimalFormat("0.00").format(grandtotal);
 
-        if(FontManager.getSingleton() == null) new FontManager(mContext);
+        mTVSubtotal.setText(formattedSubtotal);
+        mTVTax.setText(formattedTax);
+        mTVTotal.setText(formattedGrandtotal);
+
+        final Dialog checkoutOptionDialog = new Dialog(mContext);
+        checkoutOptionDialog.setContentView(R.layout.layout_checkout_options);
+
+        final Button closeoutNow = (Button) checkoutOptionDialog.findViewById(R.id.btn_closeout_now);
+        final Button closeoutServer = (Button) checkoutOptionDialog.findViewById(R.id.btn_closeout_server);
+        final Button cancelCheckout = (Button) checkoutOptionDialog.findViewById(R.id.btn_closeout_cancel);
+
+        final Dialog tableDialog = new Dialog(mContext);
+        tableDialog.setContentView(R.layout.layout_checkout_table);
+
+        final Dialog tipDialog = new Dialog(mContext);
+        tipDialog.setContentView(R.layout.layout_checkout_tip);
+
+        closeoutNow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                checkoutOptionDialog.dismiss();
+                tableDialog.show();
+            }
+        });
+
+        closeoutServer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                checkoutOptionDialog.dismiss();
+            }
+        });
+
+        cancelCheckout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                checkoutOptionDialog.dismiss();
+            }
+        });
+
+        final Button cancelTable = (Button) tableDialog.findViewById(R.id.btn_table_cancel);
+        final Button placeOrderTable = (Button) tableDialog.findViewById(R.id.btn_table_place_order);
+
+        cancelTable.setTypeface(FontManager.nexa);
+        placeOrderTable.setTypeface(FontManager.nexa);
+
+        cancelTable.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                tableDialog.dismiss();
+            }
+        });
+
+        placeOrderTable.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                tableDialog.dismiss();
+                tipDialog.show();
+            }
+        });
+
+
+        final Button cancelTip = (Button) tipDialog.findViewById(R.id.btn_tip_cancel);
+        final Button placeOrderTip = (Button) tipDialog.findViewById(R.id.btn_tip_place_order);
+        final TextView tvSubTotal = (TextView) tipDialog.findViewById(R.id.tv_tip_subtotal);
+        final TextView tvTax = (TextView) tipDialog.findViewById(R.id.tv_tip_tax);
+        final TextView tvGratuity = (TextView) tipDialog.findViewById(R.id.tv_tip_tip);
+        final TextView tvTotal = (TextView) tipDialog.findViewById(R.id.tv_tip_total);
+        final DiscreteSeekBar seekBar = (DiscreteSeekBar) tipDialog.findViewById(R.id.seekbar_tip);
+
+        cancelTip.setTypeface(FontManager.nexa);
+        placeOrderTip.setTypeface(FontManager.nexa);
+        tvSubTotal.setTypeface(FontManager.nexa);
+        tvTax.setTypeface(FontManager.nexa);
+        tvGratuity.setTypeface(FontManager.nexa);
+        tvGratuity.setTypeface(mTVTotal.getTypeface(), Typeface.BOLD);
+        tvTotal.setTypeface(FontManager.nexa);
+        tvTotal.setTypeface(mTVTotal.getTypeface(), Typeface.BOLD);
+
+        tvSubTotal.setText(formattedSubtotal);
+        tvTax.setText(formattedTax);
+        tvTotal.setText(formattedGrandtotal);
+
+        seekBar.setOnProgressChangeListener(new DiscreteSeekBar.OnProgressChangeListener() {
+            @Override
+            public void onProgressChanged(DiscreteSeekBar seekBar, int value, boolean fromUser) {
+                double afterTip = subtotal * value/100;
+                double totalAfterTip = grandtotal + afterTip;
+                final String gratuity = new DecimalFormat("0.00").format(afterTip);
+                final String grandTotal = new DecimalFormat("0.00").format(totalAfterTip);
+                tvGratuity.setText(gratuity);
+                tvTotal.setText(grandTotal);
+            }
+
+            @Override
+            public void onStartTrackingTouch(DiscreteSeekBar seekBar){}
+
+            @Override
+            public void onStopTrackingTouch(DiscreteSeekBar seekBar){}
+        });
+
+        seekBar.setProgress(15); // default
 
         orderButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                final Dialog checkoutOptionDialog = new Dialog(mContext);
-                checkoutOptionDialog.setContentView(R.layout.layout_checkout_options);
-
-                final Button closeoutNow = (Button) checkoutOptionDialog.findViewById(R.id.btn_closeout_now);
-                final Button closeoutServer = (Button) checkoutOptionDialog.findViewById(R.id.btn_closeout_server);
-                final Button cancelCheckout = (Button) checkoutOptionDialog.findViewById(R.id.btn_closeout_cancel);
-
-                final Dialog tableDialog = new Dialog(mContext);
-                tableDialog.setContentView(R.layout.layout_checkout_table);
-
-                final Dialog tipDialog = new Dialog(mContext);
-                tipDialog.setContentView(R.layout.layout_checkout_tip);
-
-                closeoutNow.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        checkoutOptionDialog.dismiss();
-                        tableDialog.show();
-                    }
-                });
-
-                closeoutServer.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        checkoutOptionDialog.dismiss();
-                    }
-                });
-
-                cancelCheckout.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        checkoutOptionDialog.dismiss();
-                    }
-                });
-
                 checkoutOptionDialog.show();
+            }
+        });
 
-                final Button cancelTable = (Button) tableDialog.findViewById(R.id.btn_table_cancel);
-                final Button placeOrderTable = (Button) tableDialog.findViewById(R.id.btn_table_place_order);
+        cancelTip.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                tipDialog.dismiss();
+            }
+        });
 
-                cancelTable.setTypeface(FontManager.nexa);
-                placeOrderTable.setTypeface(FontManager.nexa);
+        placeOrderTip.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(mContext, "To place order, tab the button and HOLD it!", Toast.LENGTH_SHORT).show();
+            }
+        });
 
-                cancelTable.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        tableDialog.dismiss();
-                    }
-                });
+        placeOrderTip.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
 
-                placeOrderTable.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        tableDialog.dismiss();
-                        tipDialog.show();
-                    }
-                });
 
-                final Button cancelTip = (Button) tipDialog.findViewById(R.id.btn_tip_cancel);
-                final Button placeOrderTip = (Button) tipDialog.findViewById(R.id.btn_tip_place_order);
-
+                return true;
             }
         });
     }

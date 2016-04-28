@@ -82,10 +82,14 @@ public class ModalDialog extends Dialog implements android.view.View.OnClickList
         modalListView = (ListView) findViewById(R.id.modal_listview);
         modalListView.setAdapter(adapter);
 
-        String basePrice =  item.getPrices().split(",")[0];
-        if (basePrice == null) basePrice = item.getPrices();
+        String[] basePrice = item.getPriceArray();
+        //if (basePrice == null) basePrice = item.getPrices();
+        String basePriceWithoutVAT;
 
-        basePrice = new DecimalFormat("0.00").format(Double.parseDouble(basePrice));
+        if (CategoryManager.isDinein())
+            basePriceWithoutVAT = new DecimalFormat("0.00").format(Double.parseDouble(basePrice[0]));
+        else
+            basePriceWithoutVAT = new DecimalFormat("0.00").format(Double.parseDouble(basePrice[1]));
 
         if (!isEvent) {
             if (item.getServings() != null && !item.getServings().isEmpty()) {
@@ -125,18 +129,25 @@ public class ModalDialog extends Dialog implements android.view.View.OnClickList
 
                     try {
                         boolean servingIdAdded = false;
+                        boolean parentAdded = false;
 
                         OrderListItem orderListItem = new OrderListItem();
+                        boolean servingExists = false;
 
                         for (ModalListItem modalItem : modalItems) {
-                            boolean servingExists = false;
 
-                            if(modalItem.getProductType().equals("CHOICE")) {
+                            if(modalItem.getProductType().equals("CHOICE") && !parentAdded) {
                                 JSONObject parentItem = new JSONObject();
                                 parentItem.put("amount", 1);
                                 parentItem.put("objectId", modalItem.getBaseObjectId());
                                 parentItem.put("modifiers", new JSONArray());
 
+                                if (CategoryManager.isDinein())
+                                    orderManager.addToDineIn(parentItem);
+                                else
+                                    orderManager.addToTakeAway(parentItem);
+
+                                parentAdded = true;
                             }
 
                             if (modalItem.getType() == Constants.Type.QUANTITY) {
@@ -145,7 +156,10 @@ public class ModalDialog extends Dialog implements android.view.View.OnClickList
                             }
 
                             else if (modalItem.getType() == Constants.Type.SERVING) {
-                                orderItem.put("objectId", modalItem.getSelectedOptionItem().getObjectId());
+                                if (modalItem.getSelectedOptionItem() instanceof ServingListItem)
+                                    orderItem.put("objectId", ((ServingListItem) modalItem.getSelectedOptionItem()).getObjectId());
+                                else
+                                    orderItem.put("objectId", modalItem.getSelectedOptionItem().getBaseObjectId());
 
                                 orderListItem.setOptions(modalItem.getSelectedOptionItem().getOptionName());
                                 orderListItem.setModPrices(new DecimalFormat("0.00").format(modalItem.getSelectedOptionItem().getPrice()));
@@ -167,14 +181,20 @@ public class ModalDialog extends Dialog implements android.view.View.OnClickList
                             }
 
                             if (!servingExists && !servingIdAdded) {
-                                orderItem.put("objectId", modalItem.getSelectedOptionItem().getObjectId());
+                                orderItem.put("objectId", modalItem.getSelectedOptionItem().getBaseObjectId());
                                 servingIdAdded = true;
                             }
 
                             orderListItem.setName(modalItem.getBaseItemName());
-                            orderListItem.setBasePrice(modalItem.getBaseItemPrice());
                             orderListItem.setProductType(modalItem.getProductType());
-                            orderListItem.setBaseTaxRate(modalItem.getBaseTaxRate());
+                            if (CategoryManager.isDinein()) {
+                                orderListItem.setBasePrice(modalItem.getBaseItemPrice()[0]);
+                                orderListItem.setBaseTaxRate(modalItem.getBaseTaxRate()[0]);
+                            } else {
+                                orderListItem.setBasePrice(modalItem.getBaseItemPrice()[1]);
+                                orderListItem.setBaseTaxRate(modalItem.getBaseTaxRate()[1]);
+                            }
+
                         }
 
                         orderListItem.updatePrices();

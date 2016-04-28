@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
+import com.tastingroomdelmar.TastingRoomDelMar.utils.CategoryManager;
 import com.tastingroomdelmar.TastingRoomDelMar.utils.Constants;
 
 /**
@@ -27,12 +28,18 @@ public class ItemListObject implements Comparable<ItemListObject> {
     private String altName;
     private String objectId;
     private String prices;
-    private double taxRate;
+    private double[] taxRate = new double[2];
+    private double deliveryTaxRate;
+    private double takeawayTaxRate;
     private String verietal;
     private String productType;
     private JSONArray categoryArray;
     private JSONArray additionsArray;
     private JSONArray servingsArray;
+
+    private String[] priceArray = new String[2];
+    private String deliveryPriceWOVAT;
+    private String takeawayPriceWOVAT;
 
     private String additionTitle;
 
@@ -46,8 +53,21 @@ public class ItemListObject implements Comparable<ItemListObject> {
         name = obj.getString("name");
         altName = obj.getString("info");
         prices = obj.getString("prices");
+
+        deliveryPriceWOVAT = new DecimalFormat("0.00").format(obj.getNumber("deliveryPriceWithoutVat").doubleValue());
+        takeawayPriceWOVAT =  new DecimalFormat("0.00").format(obj.getNumber("takeawayPriceWithoutVat").doubleValue());
+
+        priceArray[0] = deliveryPriceWOVAT;
+        priceArray[1] = takeawayPriceWOVAT;
+
         productType = obj.getString("productType");
-        taxRate = Double.parseDouble(obj.getString("taxClass").split("-")[1]);
+
+        deliveryTaxRate = Double.parseDouble(obj.getString("deliveryTaxClass").split("-")[1]);
+        takeawayTaxRate = Double.parseDouble(obj.getString("takeawayTaxClass").split("-")[1]);
+
+        taxRate[0] = deliveryTaxRate;
+        taxRate[1] = takeawayTaxRate;
+
         if (prices == null || prices.isEmpty()) prices = obj.getNumber("price") + "";
         categoryArray = obj.getJSONArray("categories");
         additionsArray = obj.getJSONArray("additions");
@@ -71,6 +91,8 @@ public class ItemListObject implements Comparable<ItemListObject> {
 
     public JSONArray getCategoryArray() { return categoryArray; }
 
+    public String[] getPriceArray() { return this.priceArray; }
+
     public String getVerietal() { return verietal; }
 
     public void setVerietal(String v) {
@@ -79,7 +101,7 @@ public class ItemListObject implements Comparable<ItemListObject> {
 
     public String getProductType() { return productType; }
 
-    public double getTaxRate() { return taxRate; }
+    public double[] getTaxRate() { return taxRate; }
 
     private void storeServings() {
         servingList = new ArrayList<>();
@@ -92,6 +114,7 @@ public class ItemListObject implements Comparable<ItemListObject> {
                     public void done(ParseObject object, ParseException e) {
                         if (e == null) {
                             servingList.add(new ServingListItem(object));
+                            Log.d(TAG, "Serving ObjectId: " + object.getObjectId());
                             Log.d(TAG, "Serving: " + object.getString("info"));
 
                             Collections.sort(servingList, new MyComparator());
@@ -132,14 +155,16 @@ public class ItemListObject implements Comparable<ItemListObject> {
                     String additionId = valueObject.getJSONObject(j).getString("id");
                     String additionDetailName = valueObject.getJSONObject(j).getString("name");
                     String additionDetailPrice = valueObject.getJSONObject(j).getString("price");
-                    String additionDetailPriceWithoutVat = valueObject.getJSONObject(j).getString("priceWithoutVAT");
+                    String[] additionDetailPriceWithoutVat = {valueObject.getJSONObject(j).getString("priceWithoutVAT")};
 
                     if (additionDetailPrice.equals("0")) additionDetailPrice = "";
                     else additionDetailPrice = "  +" + additionDetailPrice;
 
                     additionList.add(new AdditionListItem(additionDetailName + additionDetailPrice, getObjectId(),modifierId, additionId,
                             !additionDetailPrice.equals("") ? Double.parseDouble(additionDetailPrice): 0,
-                            !additionDetailPriceWithoutVat.equals("") ? Double.parseDouble(additionDetailPriceWithoutVat) : 0,
+                            !additionDetailPriceWithoutVat[0].equals("") ?
+                                    new double[]{Double.parseDouble(additionDetailPriceWithoutVat[0]),Double.parseDouble(additionDetailPriceWithoutVat[0])} :
+                                    new double[]{0,0},
                             this.taxRate));
 
                     Log.d(TAG, "addition detail name: " + additionDetailName);
@@ -155,7 +180,10 @@ public class ItemListObject implements Comparable<ItemListObject> {
 
                 basePrice = new DecimalFormat("0.00").format(Double.parseDouble(basePrice));
 
-                additionOptions.add(new ModalListItem(getObjectId(), getName(), basePrice, getTaxRate(), Constants.Type.ADDITION, Constants.OTHER, getAdditionTitle(), additionList));
+                if (CategoryManager.isDinein())
+                    additionOptions.add(new ModalListItem(getObjectId(), getName(), priceArray, getTaxRate(), Constants.Type.ADDITION, Constants.OTHER, getAdditionTitle(), additionList));
+                else
+                    additionOptions.add(new ModalListItem(getObjectId(), getName(), priceArray, getTaxRate(), Constants.Type.ADDITION, Constants.OTHER, getAdditionTitle(), additionList));
             }
         } catch (JSONException e) {
             e.printStackTrace();

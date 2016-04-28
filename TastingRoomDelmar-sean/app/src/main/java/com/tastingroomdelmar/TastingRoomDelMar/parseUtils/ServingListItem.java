@@ -1,6 +1,7 @@
 package com.tastingroomdelmar.TastingRoomDelMar.parseUtils;
 
 import com.parse.ParseObject;
+import com.tastingroomdelmar.TastingRoomDelMar.utils.CategoryManager;
 
 import java.text.DecimalFormat;
 
@@ -10,22 +11,25 @@ import java.text.DecimalFormat;
 public class ServingListItem extends OptionListItem {
     private String name;
     private double price;
+    private String objectId;
 
     public ServingListItem(ParseObject obj) {
         super(obj.getString("info") + " " +
-                new DecimalFormat("0.00").format(obj.getNumber("price").doubleValue()),
+                (CategoryManager.isDinein() ?
+                        new DecimalFormat("0.00").format(obj.getNumber("deliveryPriceWithoutVat").doubleValue()):new DecimalFormat("0.00").format(obj.getNumber("takeawayPriceWithoutVat").doubleValue())),
                 obj.getObjectId(),
                 null,
                 null,
                 obj.getNumber("price").doubleValue(),
-                obj.getNumber("priceWithoutVat").doubleValue(),
-                Double.parseDouble(obj.getString("taxClass").split("-")[1])
+                new double[]{obj.getNumber("deliveryPriceWithoutVat").doubleValue(),obj.getNumber("takeawayPriceWithoutVat").doubleValue()},
+                new double[]{Double.parseDouble(obj.getString("deliveryTaxClass").split("-")[1]),Double.parseDouble(obj.getString("takeawayTaxClass").split("-")[1])}
               );
 
 
         /* String objectOrModifierId, String modifierValueId, double price, double priceWithoutVat*/
         name = obj.getString("info");
         price = obj.getNumber("price").doubleValue();
+        objectId = obj.getObjectId();
     }
 
     public double getPrice() {
@@ -36,4 +40,5 @@ public class ServingListItem extends OptionListItem {
         return name + " " + new DecimalFormat("0.00").format(price);
     }
 
+    public String getObjectId() { return objectId; }
 }

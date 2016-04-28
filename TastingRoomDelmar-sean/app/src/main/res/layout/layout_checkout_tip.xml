@@ -70,7 +70,7 @@
                 android:textColor="@color/colorPrimary"/>
 
             <TextView
-                android:id="@+id/tv_tax_subtotal"
+                android:id="@+id/tv_tip_tax"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
@@ -81,6 +81,7 @@
         </RelativeLayout>
 
         <RelativeLayout
+            android:id="@+id/rl_tip_gratuity"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -99,7 +100,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:layout_alignParentEnd="true"
-                android:text="2.00"
+                android:text="0.00"
                 android:textColor="@color/colorPrimary"/>
 
         </RelativeLayout>
@@ -132,7 +133,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:text="Gratuity"
+            android:text="Gratuity (Adjust below. Default 15%)"
             android:textColor="@color/colorPrimary"/>
 
         <org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
@@ -141,7 +142,8 @@
             android:layout_height="wrap_content"
             app:dsb_min="0"
             app:dsb_max="100"
-            app:dsb_indicatorFormatter="%d%%"/>
+            app:dsb_indicatorFormatter="%d%%"
+            />
 
     </LinearLayout>
 

@@ -8,10 +8,10 @@ public class AdditionListItem extends OptionListItem {
     public String modifierId;
     public String modifierValueId;
     public double price;
-    public double priceWithoutVat;
-    public double taxRate;
+    public double[] priceWithoutVat;
+    public double[] taxRate;
 
-    public AdditionListItem(String name, String objectId, String modifierId, String modifierValueId, double price, double priceWithoutVat, double taxRate) {
+    public AdditionListItem(String name, String objectId, String modifierId, String modifierValueId, double price, double[] priceWithoutVat, double[] taxRate) {
         super(name, objectId, modifierId, modifierValueId, price, priceWithoutVat, taxRate);
 
         this.objectId = objectId;
@@ -22,6 +22,7 @@ public class AdditionListItem extends OptionListItem {
         this.taxRate = taxRate;
     }
 
+    public String getObjectId() { return this.objectId; }
 
 
 }
