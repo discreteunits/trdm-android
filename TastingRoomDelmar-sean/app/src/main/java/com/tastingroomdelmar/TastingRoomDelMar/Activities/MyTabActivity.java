@@ -2,6 +2,7 @@ package com.tastingroomdelmar.TastingRoomDelMar.Activities;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -9,17 +10,21 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.baoyz.swipemenulistview.SwipeMenuListView;
+import com.parse.ParseUser;
 import com.tastingroomdelmar.TastingRoomDelMar.ListViewAdapters.OrderListViewAdapter;
 import com.tastingroomdelmar.TastingRoomDelMar.R;
 import com.tastingroomdelmar.TastingRoomDelMar.parseUtils.OrderListItem;
+import com.tastingroomdelmar.TastingRoomDelMar.utils.Constants;
 import com.tastingroomdelmar.TastingRoomDelMar.utils.FontManager;
 import com.tastingroomdelmar.TastingRoomDelMar.utils.OrderManager;
 
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
+import org.json.JSONException;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -38,6 +43,10 @@ public class MyTabActivity extends AppCompatActivity {
     TextView mTVTotal;
 
     Context mContext;
+
+    Constants.CheckoutType checkoutType;
+    String tableNumber;
+    double tipAmount; // by default
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -75,7 +84,7 @@ public class MyTabActivity extends AppCompatActivity {
         mTVTotal.setTypeface(FontManager.nexa);
         mTVTotal.setTypeface(mTVTotal.getTypeface(), Typeface.BOLD);
 
-        OrderManager orderManager = OrderManager.getSingleton();
+        final OrderManager orderManager = OrderManager.getSingleton();
 
         if (orderManager == null) {
             Toast.makeText(this, "There was an error retrieving your order. Please try again", Toast.LENGTH_SHORT).show();
@@ -118,6 +127,7 @@ public class MyTabActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 checkoutOptionDialog.dismiss();
+                checkoutType = Constants.CheckoutType.STRIPE;
                 tableDialog.show();
             }
         });
@@ -126,6 +136,8 @@ public class MyTabActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 checkoutOptionDialog.dismiss();
+                checkoutType = Constants.CheckoutType.SERVER;
+                tableDialog.show();
             }
         });
 
@@ -138,6 +150,7 @@ public class MyTabActivity extends AppCompatActivity {
 
         final Button cancelTable = (Button) tableDialog.findViewById(R.id.btn_table_cancel);
         final Button placeOrderTable = (Button) tableDialog.findViewById(R.id.btn_table_place_order);
+        final EditText etTableNumber = (EditText) tableDialog.findViewById(R.id.et_table_number);
 
         cancelTable.setTypeface(FontManager.nexa);
         placeOrderTable.setTypeface(FontManager.nexa);
@@ -152,7 +165,13 @@ public class MyTabActivity extends AppCompatActivity {
         placeOrderTable.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (etTableNumber.getText().toString().isEmpty()) {
+                    Toast.makeText(MyTabActivity.this, "Please enter table number!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 tableDialog.dismiss();
+                tableNumber = etTableNumber.getText().toString();
                 tipDialog.show();
             }
         });
@@ -175,6 +194,8 @@ public class MyTabActivity extends AppCompatActivity {
         tvTotal.setTypeface(FontManager.nexa);
         tvTotal.setTypeface(mTVTotal.getTypeface(), Typeface.BOLD);
 
+        tipAmount = 0.15; // by default
+
         tvSubTotal.setText(formattedSubtotal);
         tvTax.setText(formattedTax);
         tvTotal.setText(formattedGrandtotal);
@@ -183,6 +204,8 @@ public class MyTabActivity extends AppCompatActivity {
             @Override
             public void onProgressChanged(DiscreteSeekBar seekBar, int value, boolean fromUser) {
                 double afterTip = subtotal * value/100;
+                tipAmount = value/100.0;
+
                 double totalAfterTip = grandtotal + afterTip;
                 final String gratuity = new DecimalFormat("0.00").format(afterTip);
                 final String grandTotal = new DecimalFormat("0.00").format(totalAfterTip);
@@ -198,6 +221,45 @@ public class MyTabActivity extends AppCompatActivity {
         });
 
         seekBar.setProgress(15); // default
+
+        final Dialog userDialog = new Dialog(mContext);
+        userDialog.setContentView(R.layout.layout_checkout_no_user);
+
+        Button loginButton = (Button) userDialog.findViewById(R.id.btn_closeout_user_login);
+        Button createUserButton = (Button) userDialog.findViewById(R.id.btn_closeout_user_create_user);
+        Button userCancelButton = (Button) userDialog.findViewById(R.id.btn_closeout_user_cancel);
+
+        loginButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(MyTabActivity.this, LoginActivity.class);
+                i.putExtra("ORIGIN", "MyTabActivity");
+
+                startActivity(i);
+
+                userDialog.dismiss();
+            }
+        });
+
+        createUserButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(MyTabActivity.this, SignUpLoginActivity.class);
+                i.putExtra("LOGIN_OR_SIGNUP", Constants.SIGNUP_FLAG);
+                i.putExtra("ORIGIN", "MyTabActivity");
+
+                startActivity(i);
+
+                userDialog.dismiss();
+            }
+        });
+
+        userCancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                userDialog.dismiss();
+            }
+        });
 
         orderButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -223,7 +285,18 @@ public class MyTabActivity extends AppCompatActivity {
         placeOrderTip.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
+                if (ParseUser.getCurrentUser() == null) {
+                    userDialog.show();
+                    return true;
+                }
 
+                try {
+                    orderManager.setUser(ParseUser.getCurrentUser());
+                    orderManager.setCommons(checkoutType, tableNumber, tipAmount, ParseUser.getCurrentUser().getString("firstName") + " @ Table" + tableNumber );
+                    orderManager.printOrder();
+                } catch (JSONException e) { e.printStackTrace(); }
+
+                tipDialog.dismiss();
 
                 return true;
             }

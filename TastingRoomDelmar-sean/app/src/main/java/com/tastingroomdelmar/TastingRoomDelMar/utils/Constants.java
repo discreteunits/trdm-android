@@ -21,4 +21,6 @@ public class Constants {
     public static final String BEBA = "bebasReg";
     public static final String OPENSANS_LIGHT = "openSansLight";
     public static final String OPENSANS_ITALIC = "openItalic";
+
+    public enum CheckoutType {STRIPE, SERVER}
 }

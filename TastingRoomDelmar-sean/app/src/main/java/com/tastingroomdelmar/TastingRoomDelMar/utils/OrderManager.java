@@ -94,7 +94,7 @@ public class OrderManager {
      * @throws JSONException if user id was not found
      */
     public void setUser(ParseUser user) throws JSONException {
-
+        topLevelObject.put("userId", user.getObjectId());
     }
 
     public void addToDineIn(JSONObject dineInObj) {
@@ -105,11 +105,15 @@ public class OrderManager {
         takeawayOrderItems.put(takeAwayObj);
     }
 
-    public void setCommons(String checkoutMethod, String table, String tipPercent, String note)
+    public void setCommons(Constants.CheckoutType checkoutType, String table, double tipPercent, String note)
     throws JSONException {
+        String checkoutMethod;
+        if (checkoutType == Constants.CheckoutType.STRIPE) checkoutMethod = "stripe";
+        else checkoutMethod = "server";
+
         for(int i = 0; i < ordersArray.length(); i++) {
             JSONObject orderTypeItem = ordersArray.getJSONObject(i);
-            orderTypeItem.put("checkoutMethod", checkoutMethod);
+            orderTypeItem.getJSONObject("body").put("checkoutMethod", checkoutMethod);
             orderTypeItem.put("table", table);
             orderTypeItem.put("tipPercent", tipPercent);
             orderTypeItem.getJSONObject("body").put("note", note);

@@ -26,6 +26,7 @@ import com.parse.ParseFacebookUtils;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 import com.parse.SignUpCallback;
+import com.stripe.Stripe;
 import com.tastingroomdelmar.TastingRoomDelMar.R;
 import io.fabric.sdk.android.Fabric;
 import com.tastingroomdelmar.TastingRoomDelMar.parseUtils.ParseUtility;
@@ -46,6 +47,8 @@ public class LoginActivity extends AppCompatActivity {
 
     ImageButton mFBLoginButton;
 
+    String origin;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,6 +60,9 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         setContentView(R.layout.activity_login);
+
+        final Intent currentIntent = getIntent();
+        origin = currentIntent.getStringExtra("ORIGIN");
 
         if (ParseUser.getCurrentUser() != null) {
             Intent intent = new Intent(LoginActivity.this, Tier1Activity.class);
@@ -95,8 +101,13 @@ public class LoginActivity extends AppCompatActivity {
                             } else {
                                 Log.d(TAG, "User logged in through Facebook!");
 
-                                Intent intent = new Intent(LoginActivity.this, Tier1Activity.class);
-                                startActivity(intent);
+                                if (origin == null) {
+                                    Intent intent = new Intent(LoginActivity.this, Tier1Activity.class);
+                                    startActivity(intent);
+                                } else {
+                                    Intent intent = new Intent(LoginActivity.this, MyTabActivity.class);
+                                    startActivity(intent);
+                                }
                             }
                         }
                     });
@@ -113,6 +124,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent = new Intent(LoginActivity.this, SignUpLoginActivity.class);
                 intent.putExtra("LOGIN_OR_SIGNUP", Constants.SIGNUP_FLAG);
+                intent.putExtra("ORIGIN", origin);
                 startActivity(intent);
             }
         });
@@ -122,6 +134,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent = new Intent(LoginActivity.this, SignUpLoginActivity.class);
                 intent.putExtra("LOGIN_OR_SIGNUP", Constants.LOGIN_FLAG);
+                intent.putExtra("ORIGIN", origin);
                 startActivity(intent);
             }
         });
@@ -176,7 +189,15 @@ public class LoginActivity extends AppCompatActivity {
                                 public void done(ParseException e) {
                                     if (e == null) {
                                         Toast.makeText(getApplicationContext(), "Thanks! Signing in now", Toast.LENGTH_SHORT).show();
-                                        startActivity(new Intent(LoginActivity.this, Tier1Activity.class));
+
+                                        if (origin == null) {
+                                            Intent intent = new Intent(LoginActivity.this, Tier1Activity.class);
+                                            startActivity(intent);
+                                        } else {
+                                            Intent intent = new Intent(LoginActivity.this, MyTabActivity.class);
+                                            startActivity(intent);
+                                        }
+
                                     } else {
                                         e.printStackTrace();
                                         Toast.makeText(getApplicationContext(), e.getMessage().replace("java.lang.IllegalArgumentException: ", ""), Toast.LENGTH_SHORT).show();

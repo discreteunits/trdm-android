@@ -16,7 +16,7 @@ public class ServingListItem extends OptionListItem {
     public ServingListItem(ParseObject obj) {
         super(obj.getString("info") + " " +
                 (CategoryManager.isDinein() ?
-                        new DecimalFormat("0.00").format(obj.getNumber("deliveryPriceWithoutVat").doubleValue()):new DecimalFormat("0.00").format(obj.getNumber("takeawayPriceWithoutVat").doubleValue())),
+                        new DecimalFormat("0.00").format(obj.getNumber("deliveryPriceWithoutVat").doubleValue()) : new DecimalFormat("0.00").format(obj.getNumber("takeawayPriceWithoutVat").doubleValue())),
                 obj.getObjectId(),
                 null,
                 null,
@@ -28,7 +28,10 @@ public class ServingListItem extends OptionListItem {
 
         /* String objectOrModifierId, String modifierValueId, double price, double priceWithoutVat*/
         name = obj.getString("info");
-        price = obj.getNumber("price").doubleValue();
+        if (CategoryManager.isDinein())
+            price = obj.getNumber("deliveryPriceWithoutVat").doubleValue();
+        else
+            price = obj.getNumber("takeawayPriceWithoutVat").doubleValue();
         objectId = obj.getObjectId();
     }
 

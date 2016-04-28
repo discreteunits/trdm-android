@@ -100,6 +100,7 @@ public class SignUpSecondActivity extends AppCompatActivity {
         Intent i = getIntent();
         final String email = i.getStringExtra("email");
         final String password = i.getStringExtra("password");
+        final String origin = i.getStringExtra("ORIGIN");
 
 
 
@@ -135,8 +136,14 @@ public class SignUpSecondActivity extends AppCompatActivity {
                                 installation.put("user", ParseUser.getCurrentUser());
                                 installation.saveInBackground();
 
+
                                 Toast.makeText(getApplicationContext(), "Thanks! Signing in now", Toast.LENGTH_SHORT).show();
-                                startActivity(new Intent(SignUpSecondActivity.this, Tier1Activity.class));
+
+                                if (origin == null) {
+                                    startActivity(new Intent(SignUpSecondActivity.this, Tier1Activity.class));
+                                } else {
+                                    startActivity(new Intent(SignUpSecondActivity.this, MyTabActivity.class));
+                                }
                             } else {
                                 e.printStackTrace();
                                 Toast.makeText(getApplicationContext(), e.getMessage().replace("java.lang.IllegalArgumentException: ", ""), Toast.LENGTH_SHORT).show();

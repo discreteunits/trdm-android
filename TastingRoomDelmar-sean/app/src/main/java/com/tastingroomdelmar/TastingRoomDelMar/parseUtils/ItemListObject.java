@@ -54,16 +54,22 @@ public class ItemListObject implements Comparable<ItemListObject> {
         altName = obj.getString("info");
         prices = obj.getString("prices");
 
-        deliveryPriceWOVAT = new DecimalFormat("0.00").format(obj.getNumber("deliveryPriceWithoutVat").doubleValue());
-        takeawayPriceWOVAT =  new DecimalFormat("0.00").format(obj.getNumber("takeawayPriceWithoutVat").doubleValue());
+        productType = obj.getString("productType");
+
+        if(productType.equals("CHOICE")) {
+            deliveryPriceWOVAT = new DecimalFormat("0.00").format(obj.getNumber("priceWithoutVat").doubleValue());
+            takeawayPriceWOVAT = new DecimalFormat("0.00").format(obj.getNumber("priceWithoutVat").doubleValue());
+            deliveryTaxRate = Double.parseDouble(obj.getString("taxClass").split("-")[1]);
+            takeawayTaxRate = Double.parseDouble(obj.getString("taxClass").split("-")[1]);
+        } else {
+            deliveryPriceWOVAT = new DecimalFormat("0.00").format(obj.getNumber("deliveryPriceWithoutVat").doubleValue());
+            takeawayPriceWOVAT = new DecimalFormat("0.00").format(obj.getNumber("takeawayPriceWithoutVat").doubleValue());
+            deliveryTaxRate = Double.parseDouble(obj.getString("deliveryTaxClass").split("-")[1]);
+            takeawayTaxRate = Double.parseDouble(obj.getString("takeawayTaxClass").split("-")[1]);
+        }
 
         priceArray[0] = deliveryPriceWOVAT;
         priceArray[1] = takeawayPriceWOVAT;
-
-        productType = obj.getString("productType");
-
-        deliveryTaxRate = Double.parseDouble(obj.getString("deliveryTaxClass").split("-")[1]);
-        takeawayTaxRate = Double.parseDouble(obj.getString("takeawayTaxClass").split("-")[1]);
 
         taxRate[0] = deliveryTaxRate;
         taxRate[1] = takeawayTaxRate;

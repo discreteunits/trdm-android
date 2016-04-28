@@ -39,6 +39,8 @@ public class SignUpLoginActivity extends AppCompatActivity {
     EditText mEditTextEmail;
     EditText mEditTextPassword;
 
+    String origin;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -93,6 +95,7 @@ public class SignUpLoginActivity extends AppCompatActivity {
 
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
+            origin = extras.getString("ORIGIN");
             int flagSignupOrLogin = extras.getInt("LOGIN_OR_SIGNUP");
 
             if (flagSignupOrLogin == Constants.SIGNUP_FLAG) {
@@ -137,6 +140,7 @@ public class SignUpLoginActivity extends AppCompatActivity {
         Intent intent = new Intent(SignUpLoginActivity.this, SignUpSecondActivity.class);
         intent.putExtra("email", email);
         intent.putExtra("password", password);
+        intent.putExtra("ORIGIN", origin);
 
         startActivity(intent);
     }
@@ -154,7 +158,12 @@ public class SignUpLoginActivity extends AppCompatActivity {
                     installation.saveInBackground();
 
                     Toast.makeText(getApplicationContext(), "Thanks! Logging in now", Toast.LENGTH_SHORT).show();
-                    startActivity(new Intent(SignUpLoginActivity.this, Tier1Activity.class));
+
+                    if (origin == null) {
+                        startActivity(new Intent(SignUpLoginActivity.this, Tier1Activity.class));
+                    } else {
+                        startActivity(new Intent(SignUpLoginActivity.this, MyTabActivity.class));
+                    }
                 } else {
                     Toast.makeText(getApplicationContext(), "Username or password is wrong", Toast.LENGTH_SHORT).show();
                 }
