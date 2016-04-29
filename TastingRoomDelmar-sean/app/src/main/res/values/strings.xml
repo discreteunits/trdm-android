@@ -15,7 +15,8 @@
     <string name="action_settings">Settings</string>
 
     <string-array name="drawer">
-        <item>Menu</item>
+        <item>Dine in</item>
+        <item>Takeaway</item>
         <item>Events</item>
         <item>My Tab</item>
         <item>Payment</item>

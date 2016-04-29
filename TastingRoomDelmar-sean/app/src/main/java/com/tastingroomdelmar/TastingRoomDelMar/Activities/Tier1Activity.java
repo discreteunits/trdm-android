@@ -90,9 +90,14 @@ public class Tier1Activity extends AppCompatActivity {
         drawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                if (i == 2) {
-                    Intent intent = new Intent(Tier1Activity.this, MyTabActivity.class);
-                    startActivity(intent);
+                switch (i) {
+                    case 0: break; // Menu
+                    case 1: break; // Events
+                    case 2: Intent intent = new Intent(Tier1Activity.this, MyTabActivity.class);
+                            startActivity(intent);
+                            break;
+                    case 3: break; // Payment
+                    case 4: break; // Settings
                 }
             }
         });
