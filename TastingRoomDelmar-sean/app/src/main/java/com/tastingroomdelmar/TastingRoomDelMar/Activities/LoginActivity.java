@@ -1,5 +1,6 @@
 package com.tastingroomdelmar.TastingRoomDelMar.Activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -19,7 +20,9 @@ import com.facebook.AccessToken;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.HttpMethod;
+import com.parse.FunctionCallback;
 import com.parse.LogInCallback;
+import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
 
@@ -32,11 +35,14 @@ import io.fabric.sdk.android.Fabric;
 import com.tastingroomdelmar.TastingRoomDelMar.parseUtils.ParseUtility;
 import com.tastingroomdelmar.TastingRoomDelMar.utils.Constants;
 import com.tastingroomdelmar.TastingRoomDelMar.utils.FontManager;
+import com.tastingroomdelmar.TastingRoomDelMar.utils.PaymentManager;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
 
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = LoginActivity.class.getSimpleName();
@@ -48,6 +54,10 @@ public class LoginActivity extends AppCompatActivity {
     ImageButton mFBLoginButton;
 
     String origin;
+
+    HashMap<String, String> cardObject;
+
+    Context mContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,10 +71,13 @@ public class LoginActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_login);
 
+        mContext = this;
+
         final Intent currentIntent = getIntent();
         origin = currentIntent.getStringExtra("ORIGIN");
 
         if (ParseUser.getCurrentUser() != null) {
+            fetchCreditCard();
             Intent intent = new Intent(LoginActivity.this, Tier1Activity.class);
             startActivity(intent);
         }
@@ -220,4 +233,26 @@ public class LoginActivity extends AppCompatActivity {
             mFBLoginButton.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.logout_with_fb));
         }
     }
+
+    public void fetchCreditCard() {
+        HashMap<String, String> params = new HashMap<>();
+        String userObjectId = ParseUser.getCurrentUser().getObjectId();
+        params.put("userId", userObjectId);
+        ParseCloud.callFunctionInBackground("fetchCardForStripeCustomer", params, new FunctionCallback<HashMap<String, String>>() {
+            @Override
+            public void done(HashMap<String, String> object, ParseException e) {
+                if (e == null) {
+                    Log.d(TAG, object.get("brand"));
+                    cardObject = object;
+                    PaymentManager.getSingleton().setPaymentMethod(object);
+                    parseUtility.setHasCreditcard(true);
+                } else {
+                    e.printStackTrace();
+                    parseUtility.setHasCreditcard(false);
+                }
+            }
+        });
+    }
+
+
 }

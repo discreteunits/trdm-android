@@ -68,6 +68,10 @@
             android:theme="@style/AppTheme"
             android:screenOrientation="portrait"
             android:configChanges="keyboardHidden|orientation|screenSize"/>
+        <activity android:name=".Activities.PaymentActivity"
+            android:theme="@style/AppTheme"
+            android:screenOrientation="portrait"
+            android:configChanges="keyboardHidden|orientation|screenSize"/>
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="52fa462b37fc0c005e5599806fd96b167f34f913" />

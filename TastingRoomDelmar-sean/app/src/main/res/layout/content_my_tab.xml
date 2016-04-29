@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context=".Activities.MyTabActivity"
+    tools:showIn="@layout/activity_my_tab">
+
+    <RelativeLayout
+        android:id="@+id/mytab_rl_dine_in"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tv_qty_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:text="QTY"
+            android:textColor="@color/colorPrimary"
+            android:textSize="18sp"/>
+
+        <TextView
+            android:id="@+id/tv_item_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:text="ITEM"
+            android:textColor="@color/colorPrimary"
+            android:textSize="18sp"/>
+
+        <TextView
+            android:id="@+id/tv_price_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:text="PRICE"
+            android:textColor="@color/colorPrimary"
+            android:textSize="18sp"/>
+
+    </RelativeLayout>
+
+    <com.baoyz.swipemenulistview.SwipeMenuListView
+        android:id="@+id/mytab_listView"
+        android:layout_below="@+id/mytab_rl_dine_in"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/mytab_ll_pricing"/>
+    
+    <LinearLayout
+        android:id="@+id/mytab_ll_pricing"
+        android:layout_above="@+id/mytab_btn_order"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/tv_subtotal_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:text="SUBTOTAL"
+                android:textColor="@color/colorPrimary"
+                android:textSize="18sp"/>
+
+            <TextView
+                android:id="@+id/tv_subtotal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:textColor="@color/colorPrimary"
+                android:textSize="18sp"/>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/tv_tax_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:text="TAX"
+                android:textColor="@color/colorPrimary"
+                android:textSize="18sp"/>
+
+            <TextView
+                android:id="@+id/tv_tax"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:textColor="@color/colorPrimary"
+                android:textSize="18sp"/>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/tv_total_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:text="TOTAL"
+                android:textColor="@color/colorPrimary"
+                android:textSize="18sp"/>
+
+            <TextView
+                android:id="@+id/tv_total"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:textColor="@color/colorPrimary"
+                android:textSize="18sp"/>
+        </RelativeLayout>
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/mytab_btn_order"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/green_soft_corner_button"
+        android:text="Place Order"
+        android:textAllCaps="false"
+        android:textSize="25sp"
+        />
+</RelativeLayout>

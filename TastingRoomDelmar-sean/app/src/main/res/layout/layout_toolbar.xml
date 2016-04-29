@@ -7,53 +7,76 @@
     android:layout_gravity="end"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <ImageView
-        android:id="@+id/up_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_home_up"
-        android:layout_gravity="center_vertical|start"
-        android:visibility="visible" />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/tv_prev_activity"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@color/white"
-        android:text="s1"
-        android:paddingTop="5dp"
-        android:paddingLeft="5dp"
-        android:textSize="17sp"
-        android:layout_gravity="start" />
+        <ImageView
+            android:id="@+id/up_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_alignParentLeft="true"
+            android:src="@drawable/ic_home_up"
+            android:visibility="visible" />
 
-    <TextView
-        android:id="@+id/tv_curr_activity"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@color/white"
-        android:text="s2"
-        android:paddingTop="5dp"
-        android:textSize="30sp"
-        android:layout_gravity="center" />
+        <TextView
+            android:id="@+id/tv_prev_activity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/up_button"
+            android:textColor="@color/white"
+            android:text="s1"
+            android:paddingTop="5dp"
+            android:paddingLeft="5dp"
+            android:textSize="17sp" />
 
-    <ImageButton
-        android:id="@+id/nav_button"
-        android:layout_width="22dp"
-        android:layout_height="22dp"
-        android:layout_marginRight="10dp"
-        android:layout_marginEnd="10dp"
-        android:contentDescription="@string/content_description_drawer"
-        android:src="@drawable/hamburger"
-        android:layout_gravity="end" />
+        <TextView
+            android:id="@+id/tv_curr_activity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:textColor="@color/white"
+            android:text="s2"
+            android:paddingTop="5dp"
+            android:textSize="30sp"
+            />
 
-    <ImageButton
-        android:id="@+id/current_order"
-        android:layout_width="25dp"
-        android:layout_height="25dp"
-        android:layout_marginRight="5dp"
-        android:layout_marginEnd="5dp"
-        android:contentDescription="@string/content_description_tab"
-        android:src="@drawable/current_order"
-        android:layout_gravity="end" />
+        <ImageButton
+            android:id="@+id/nav_button"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="10dp"
+            android:layout_marginEnd="10dp"
+            android:contentDescription="@string/content_description_drawer"
+            android:src="@drawable/hamburger" />
+
+        <ImageButton
+            android:id="@+id/current_order"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="15dp"
+            android:layout_marginEnd="15dp"
+            android:layout_toLeftOf="@+id/nav_button"
+            android:contentDescription="@string/content_description_tab"
+            android:src="@drawable/current_order"
+            android:layout_gravity="end" />
+
+        <TextView
+            android:id="@+id/tab_badge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/current_order"
+            android:layout_marginLeft="-25dp"
+            android:layout_marginTop="10dp"
+            android:text="1"
+            android:textSize="10sp"
+            android:background="@drawable/badge_item_count"/>
+
+    </RelativeLayout>
 
 </android.support.v7.widget.Toolbar>

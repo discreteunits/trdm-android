@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="10dp"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context=".Activities.PaymentActivity"
+    tools:showIn="@layout/activity_payment">
+
+    <Button
+        android:id="@+id/btn_payment_method"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:text="+Add Payment Method"
+        android:textColor="@color/colorPrimary"
+        android:paddingRight="20dp"
+        android:paddingLeft="20dp"
+        android:drawableLeft="@drawable/ic_card_default"
+        android:drawablePadding="10dp"
+        android:gravity="start|center_vertical"/>
+
+    <TextView
+        android:id="@+id/tv_payment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:layout_below="@+id/btn_payment_method"
+        android:text="Press the card information to change/update payment method"
+        android:textColor="@color/colorPrimary"
+        android:textSize="15sp"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tv_payment"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tv_card_num"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:paddingLeft="10dp"
+            android:text="CARD NUMBER"
+            android:textSize="20sp"
+            android:textColor="@color/colorPrimary"
+            android:textScaleX="0.9"/>
+
+        <EditText
+            android:id="@+id/et_card_num"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/tv_card_num"
+            android:layout_toEndOf="@+id/tv_card_num"
+            android:layout_marginStart="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:paddingRight="15dp"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:inputType="number"
+            android:hint="4111 1231 1582 1823"
+            android:drawableLeft="@drawable/ic_card_default"
+            android:drawablePadding="10dp"
+            android:textColor="@color/colorPrimary"
+            android:textSize="20sp"
+            android:nextFocusDown="@+id/et_card_exp_mm"/>
+
+        <TextView
+            android:id="@+id/tv_card_exp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@+id/tv_card_num"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:paddingLeft="10dp"
+            android:text="EXP"
+            android:textSize="20sp"
+            android:textColor="@color/colorPrimary"
+            android:textScaleX="0.9"/>
+
+        <EditText
+            android:id="@+id/et_card_exp_mm"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tv_card_num"
+            android:layout_toRightOf="@+id/tv_card_exp"
+            android:layout_toEndOf="@+id/tv_card_exp"
+            android:layout_alignLeft="@+id/et_card_num"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:paddingRight="15dp"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:inputType="number"
+            android:hint="MM"
+            android:textColor="@color/colorPrimary"
+            android:textSize="20sp"
+            android:nextFocusDown="@+id/et_card_exp_yyyy"/>
+
+        <EditText
+            android:id="@+id/et_card_exp_yyyy"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tv_card_num"
+            android:layout_toRightOf="@+id/et_card_exp_mm"
+            android:layout_toEndOf="@+id/et_card_exp_mm"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:paddingRight="15dp"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:inputType="number"
+            android:hint="YYYY"
+            android:textColor="@color/colorPrimary"
+            android:textSize="20sp"
+            android:nextFocusDown="@+id/et_card_cvc"/>
+
+        <TextView
+            android:id="@+id/tv_card_cvc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@+id/tv_card_exp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:paddingLeft="10dp"
+            android:text="CVC/CVV"
+            android:textSize="20sp"
+            android:textColor="@color/colorPrimary"
+            android:textScaleX="0.9"/>
+
+        <EditText
+            android:id="@+id/et_card_cvc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tv_card_exp"
+            android:layout_toRightOf="@+id/tv_card_cvc"
+            android:layout_toEndOf="@+id/tv_card_cvc"
+            android:layout_alignLeft="@+id/et_card_num"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:paddingRight="15dp"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:inputType="number"
+            android:hint="123"
+            android:textColor="@color/colorPrimary"
+            android:textSize="20sp" />
+
+    </RelativeLayout>
+
+    <Button
+        android:id="@+id/btn_save_payment_method"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:text="Save"
+        android:textAllCaps="false"
+        android:background="@drawable/green_soft_corner_button"
+        android:textSize="25sp"/>
+</RelativeLayout>

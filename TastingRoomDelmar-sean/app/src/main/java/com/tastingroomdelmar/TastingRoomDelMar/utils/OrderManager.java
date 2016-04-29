@@ -34,7 +34,17 @@ public class OrderManager {
     double taxPrice;
     double totalPrice;
 
+    static int orderCount;
+
     private static ArrayList<OrderListItem> orderListItems;
+
+    public interface OrderCountListener {
+        void onOrderCountChanged(int count);
+    }
+
+    OrderCountListener orderCountListener;
+
+    public void setOrderCountListener(OrderCountListener listener) { orderCountListener = listener; }
 
     private static OrderManager singleton;
 
@@ -99,10 +109,20 @@ public class OrderManager {
 
     public void addToDineIn(JSONObject dineInObj) {
         dineinOrderItems.put(dineInObj);
+
+        orderCount++;
+
+        if (orderCountListener != null)
+            orderCountListener.onOrderCountChanged(orderCount);
     }
 
     public void addToTakeAway(JSONObject takeAwayObj) {
         takeawayOrderItems.put(takeAwayObj);
+
+        orderCount++;
+
+        if (orderCountListener != null)
+            orderCountListener.onOrderCountChanged(orderCount);
     }
 
     public void setCommons(Constants.CheckoutType checkoutType, String table, double tipPercent, String note)
@@ -113,7 +133,7 @@ public class OrderManager {
 
         for(int i = 0; i < ordersArray.length(); i++) {
             JSONObject orderTypeItem = ordersArray.getJSONObject(i);
-            orderTypeItem.getJSONObject("body").put("checkoutMethod", checkoutMethod);
+            orderTypeItem.put("checkoutMethod", checkoutMethod);
             orderTypeItem.put("table", table);
             orderTypeItem.put("tipPercent", tipPercent);
             orderTypeItem.getJSONObject("body").put("note", note);
@@ -139,4 +159,8 @@ public class OrderManager {
     }
 
     public double getTaxPrice() { return taxPrice; }
+
+    public JSONObject getFinalizedOrderObject() {
+        return topLevelObject;
+    }
 }

@@ -6,15 +6,22 @@ import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.baoyz.swipemenulistview.SwipeMenuListView;
+import com.parse.FunctionCallback;
+import com.parse.ParseCloud;
+import com.parse.ParseException;
 import com.parse.ParseUser;
 import com.tastingroomdelmar.TastingRoomDelMar.ListViewAdapters.OrderListViewAdapter;
 import com.tastingroomdelmar.TastingRoomDelMar.R;
@@ -22,17 +29,21 @@ import com.tastingroomdelmar.TastingRoomDelMar.parseUtils.OrderListItem;
 import com.tastingroomdelmar.TastingRoomDelMar.utils.Constants;
 import com.tastingroomdelmar.TastingRoomDelMar.utils.FontManager;
 import com.tastingroomdelmar.TastingRoomDelMar.utils.OrderManager;
+import com.tastingroomdelmar.TastingRoomDelMar.utils.PaymentManager;
 
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by Sean on 4/17/16.
  */
 public class MyTabActivity extends AppCompatActivity {
+    private static final String CURRENT_ACTIVITY = "My Tab";
 
     SwipeMenuListView orderListView;
     OrderListViewAdapter adapter;
@@ -56,6 +67,30 @@ public class MyTabActivity extends AppCompatActivity {
         mContext = this;
 
         if (FontManager.getSingleton() == null) new FontManager(this);
+
+        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        final ActionBar actionBar = getSupportActionBar();
+
+        if (actionBar != null)
+            actionBar.setDisplayShowTitleEnabled(false);
+
+        final ImageView mIVUp = (ImageView) findViewById(R.id.up_button);
+        mIVUp.setVisibility(View.GONE);
+
+        final TextView mTVPreviousActivityName = (TextView) findViewById(R.id.tv_prev_activity);
+        final TextView mTVCurrentActivityName = (TextView) findViewById(R.id.tv_curr_activity);
+
+        mTVPreviousActivityName.setVisibility(View.GONE);
+        mTVCurrentActivityName.setText(CURRENT_ACTIVITY);
+        mTVCurrentActivityName.setTypeface(FontManager.nexa);
+
+        final ImageButton mImageButtonDrawer = (ImageButton) findViewById(R.id.nav_button);
+        final ImageButton mImageButtonTab = (ImageButton) findViewById(R.id.current_order);
+
+        mImageButtonDrawer.setVisibility(View.GONE);
+        mImageButtonTab.setVisibility(View.GONE);
 
         /* fixed text views */
         final TextView qtyLabel = (TextView) findViewById(R.id.tv_qty_label);
@@ -294,6 +329,15 @@ public class MyTabActivity extends AppCompatActivity {
                     orderManager.setUser(ParseUser.getCurrentUser());
                     orderManager.setCommons(checkoutType, tableNumber, tipAmount, ParseUser.getCurrentUser().getString("firstName") + " @ Table" + tableNumber );
                     orderManager.printOrder();
+
+                    if (PaymentManager.getSingleton().getPaymentMethod() == null) {
+                        Toast.makeText(mContext, "No payment method found", Toast.LENGTH_SHORT).show();
+
+                        Intent i = new Intent(MyTabActivity.this, PaymentActivity.class);
+                        startActivity(i);
+                    } else {
+                        placeOrder();
+                    }
                 } catch (JSONException e) { e.printStackTrace(); }
 
                 tipDialog.dismiss();
@@ -310,5 +354,24 @@ public class MyTabActivity extends AppCompatActivity {
         public TextView tvOption;
         public TextView tvBasePrice;
         public TextView tvModPrice;
+    }
+
+    private void placeOrder() {
+        HashMap<String, String> params = new HashMap<>();
+        //String userObjectId = ParseUser.getCurrentUser().getObjectId();
+        params.put("order", OrderManager.getSingleton().getFinalizedOrderObject().toString());
+        Log.d(CURRENT_ACTIVITY, OrderManager.getSingleton().getFinalizedOrderObject().toString());
+        ParseCloud.callFunctionInBackground("placeOrders", params, new FunctionCallback<HashMap<String, String>>() {
+            @Override
+            public void done(HashMap<String, String> object, ParseException e) {
+                if (e == null) {
+                    //Log.d(CURRENT_ACTIVITY, object.get("brand"));
+                    Toast.makeText(mContext, "Order Placed Successfully", Toast.LENGTH_SHORT).show();
+                } else {
+                    e.printStackTrace();
+                    Toast.makeText(mContext, "There was an error while placing order", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 }

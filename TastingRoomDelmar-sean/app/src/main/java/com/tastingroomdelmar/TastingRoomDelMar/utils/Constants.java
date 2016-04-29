@@ -23,4 +23,9 @@ public class Constants {
     public static final String OPENSANS_ITALIC = "openItalic";
 
     public enum CheckoutType {STRIPE, SERVER}
+
+    public static final String VISA = "Visa";
+    public static final String MASTER = "MasterCard";
+    public static final String DISCOVER = "Discover";
+    public static final String AMEX = "American Express";
 }

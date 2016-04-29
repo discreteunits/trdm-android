@@ -33,5 +33,6 @@
     <string name="title_activity_tier2">Tier2Activity</string>
     <string name="title_activity_tier3">Tier3Activity</string>
     <string name="add_to_tab">Add to Tab</string>
+    <string name="com.stripe.test_key" translatable="false">sk_test_MHddUiqC3wVU9KCswN9pzSLn</string>
     <string name="com.stripe.publishable_key" translatable="false">pk_live_QXBEAVF6Pl18ZRcXngMr1NAr</string>
 </resources>

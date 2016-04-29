@@ -118,13 +118,16 @@ public class Tier3Activity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 switch (i) {
-                    case 0: break; // Menu
-                    case 1: break; // Events
-                    case 2: Intent intent = new Intent(Tier3Activity.this, MyTabActivity.class);
-                        startActivity(intent);
+                    case 0: break; // Dinein
+                    case 1: break; // Takeaway
+                    case 2: break; // Events
+                    case 3: Intent tabIntent = new Intent(Tier3Activity.this, MyTabActivity.class);
+                        startActivity(tabIntent);
                         break;
-                    case 3: break; // Payment
-                    case 4: break; // Settings
+                    case 4: Intent paymentIntent = new Intent(Tier3Activity.this, PaymentActivity.class);
+                        startActivity(paymentIntent);
+                        break; // Payment
+                    case 5: break; // Settings
                 }
             }
         });

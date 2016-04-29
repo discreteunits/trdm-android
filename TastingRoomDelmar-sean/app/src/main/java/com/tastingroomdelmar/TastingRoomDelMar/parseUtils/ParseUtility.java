@@ -9,6 +9,7 @@ import com.parse.ParseFacebookUtils;
 import com.parse.ParseInstallation;
 import com.parse.ParseUser;
 
+import com.stripe.Stripe;
 import com.tastingroomdelmar.TastingRoomDelMar.R;
 
 /**
@@ -17,8 +18,17 @@ import com.tastingroomdelmar.TastingRoomDelMar.R;
 public class ParseUtility {
     private Context mContext;
 
+    private boolean hasCreditcard;
+
+    private static ParseUtility singleton;
+
     public ParseUtility(Context context) {
         mContext = context;
+        singleton = this;
+    }
+
+    public static ParseUtility getSingleton() {
+        return singleton;
     }
 
     public void init() {
@@ -39,5 +49,13 @@ public class ParseUtility {
             installation.put("user", ParseUser.getCurrentUser());
             installation.saveInBackground();
         }
+    }
+
+    public boolean getHasCreditCard() {
+        return hasCreditcard;
+    }
+
+    public void setHasCreditcard(boolean b) {
+        hasCreditcard = b;
     }
 }
