@@ -39,6 +39,8 @@ public class Tier2Activity extends AppCompatActivity {
     private static final String TAG = Tier2Activity.class.getSimpleName();
 
     DrawerLayout drawer;
+    ListView drawerListView;
+
     ArrayList<ListObject> listItem = new ArrayList<>();
     Tier2ListViewAdapter adapter;
 
@@ -103,6 +105,22 @@ public class Tier2Activity extends AppCompatActivity {
                     drawer.closeDrawer(GravityCompat.END);
                 } else {
                     drawer.openDrawer(GravityCompat.END);
+                }
+            }
+        });
+
+        drawerListView = (ListView) findViewById(R.id.right_drawer);
+        drawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                switch (i) {
+                    case 0: break; // Menu
+                    case 1: break; // Events
+                    case 2: Intent intent = new Intent(Tier2Activity.this, MyTabActivity.class);
+                        startActivity(intent);
+                        break;
+                    case 3: break; // Payment
+                    case 4: break; // Settings
                 }
             }
         });
