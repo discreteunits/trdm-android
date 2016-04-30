@@ -16,12 +16,26 @@ public class OrderListItem {
     private String modPrices;
     private double taxRate;
 
+    private String objectId;
+
     private boolean isBPcalced = false;
     private boolean isMPcalced = false;
 
+    private boolean isChoice = false;
+    private boolean isDineIn = true;
+
     private String productType;
 
+    private double itemPriceSum = 0;
+    private double itemTaxPrice = 0;
+
     OrderManager mOrderManager = OrderManager.getSingleton();
+
+    public void setObjectId(String objectId) { this.objectId = objectId; }
+    public String getObjectId() { return objectId; }
+
+    public void setIsDineIn(boolean isDineIn) { this.isDineIn = isDineIn; }
+    public boolean getIsDineIn() { return isDineIn; }
 
     public void setQty(String qty) { this.qty = qty; }
     public String getQty() { return qty; }
@@ -82,6 +96,9 @@ public class OrderListItem {
                 int qty = Integer.parseInt(this.qty);
 
                 basePrice = basePrice * qty;
+                itemPriceSum += basePrice;
+                itemTaxPrice += basePrice * (getBaseTaxRate() / 100);
+
                 mOrderManager.addToSubTotal(basePrice);
                 mOrderManager.addToTax(basePrice * (getBaseTaxRate() / 100));
                 this.basePrice = new DecimalFormat("0.00").format((basePrice));
@@ -111,6 +128,9 @@ public class OrderListItem {
                         calculatedModPrices += new DecimalFormat("0.00").format(calculatedModPrice) + "\n";
                     }
 
+                    itemPriceSum += calculatedModPrice;
+                    itemTaxPrice += calculatedModPrice * (getBaseTaxRate() / 100);
+
                     mOrderManager.addToSubTotal(calculatedModPrice);
                     mOrderManager.addToTax(calculatedModPrice * (getBaseTaxRate() / 100));
 
@@ -124,5 +144,18 @@ public class OrderListItem {
 
             this.modPrices = calculatedModPrices;
         }
+    }
+
+    public void setIsChoice(boolean isChoice) { this.isChoice = isChoice; }
+
+    public boolean getIsChoice() { return isChoice; }
+
+    /* returns basePrice + modPrices */
+    public double getItemPriceSum() {
+        return itemPriceSum;
+    }
+
+    public double getItemTaxPrice() {
+        return itemTaxPrice;
     }
 }

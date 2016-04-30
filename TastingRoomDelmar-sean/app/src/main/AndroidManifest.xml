@@ -14,19 +14,22 @@
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />
-        <meta-data android:name="com.parse.push.notification_icon"
-            android:resource="@drawable/ic_notification"/>
-        <meta-data android:name="com.parse.push.gcm_sender_id"
-            android:value="id:879366615813" />;
-
+        <meta-data
+            android:name="com.parse.push.notification_icon"
+            android:resource="@drawable/ic_notification" />
+        <meta-data
+            android:name="com.parse.push.gcm_sender_id"
+            android:value="id:879366615813" />
+        ;
         <provider
             android:name="com.facebook.FacebookContentProvider"
             android:authorities="com.facebook.app.FacebookContentProvider457105024484728"
             android:exported="true" />
 
-        <activity android:name=".Activities.LoginActivity"
-            android:screenOrientation="portrait"
-            android:configChanges="keyboardHidden|orientation|screenSize">
+        <activity
+            android:name=".Activities.LoginActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -37,44 +40,61 @@
             android:name="com.facebook.FacebookActivity"
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
             android:label="@string/app_name"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar"
-            />
-        <activity android:name=".Activities.SignUpLoginActivity"
-        android:screenOrientation="portrait"
-        android:configChanges="keyboardHidden|orientation|screenSize"/>
-        <activity android:name=".Activities.SignUpSecondActivity"
-            android:screenOrientation="portrait"
-            android:configChanges="keyboardHidden|orientation|screenSize"/>
-        <activity android:name=".Activities.Tier1Activity"
-            android:screenOrientation="portrait"
-            android:configChanges="keyboardHidden|orientation|screenSize"/>
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+        <activity
+            android:name=".Activities.SignUpLoginActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Activities.SignUpSecondActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Activities.Tier1Activity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".Activities.Tier2Activity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/title_activity_tier2"
-            android:theme="@style/AppTheme"
             android:screenOrientation="portrait"
-            android:configChanges="keyboardHidden|orientation|screenSize"/>
+            android:theme="@style/AppTheme" />
         <activity
             android:name=".Activities.Tier3Activity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/title_activity_tier3"
-            android:theme="@style/AppTheme"
             android:screenOrientation="portrait"
-            android:configChanges="keyboardHidden|orientation|screenSize"/>
-        <activity android:name=".Activities.Tier4Activity"
-            android:theme="@style/AppTheme"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".Activities.Tier4Activity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait"
-            android:configChanges="keyboardHidden|orientation|screenSize"/>
-        <activity android:name=".Activities.MyTabActivity"
-            android:theme="@style/AppTheme"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".Activities.MyTabActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait"
-            android:configChanges="keyboardHidden|orientation|screenSize"/>
-        <activity android:name=".Activities.PaymentActivity"
-            android:theme="@style/AppTheme"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".Activities.PaymentActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait"
-            android:configChanges="keyboardHidden|orientation|screenSize"/>
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".Activities.SettingsActivity"
+            android:label="@string/title_activity_settings"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:theme="@style/PrefTheme"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".Activities.WebViewActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="portrait"/>
+
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="52fa462b37fc0c005e5599806fd96b167f34f913" />
+
     </application>
 
 </manifest>

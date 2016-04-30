@@ -39,6 +39,7 @@ import com.tastingroomdelmar.TastingRoomDelMar.parseUtils.TopListObject;
 import com.tastingroomdelmar.TastingRoomDelMar.utils.CategoryManager;
 import com.tastingroomdelmar.TastingRoomDelMar.utils.FontManager;
 import com.tastingroomdelmar.TastingRoomDelMar.utils.OIDManager;
+import com.tastingroomdelmar.TastingRoomDelMar.utils.OrderManager;
 
 public class Tier4Activity extends AppCompatActivity {
     private static final String TAG = Tier4Activity.class.getSimpleName();
@@ -56,6 +57,20 @@ public class Tier4Activity extends AppCompatActivity {
     TextView nothing;
 
     String currentActivity = "";
+
+    TextView mBadge;
+
+    @Override
+    protected void onResume() {
+        if (mBadge != null) {
+            if (OrderManager.getSingleton().getOrderCount() == 0)
+                mBadge.setVisibility(View.GONE);
+            else
+                mBadge.setText(OrderManager.getSingleton().getOrderCount() + "");
+        }
+
+        super.onResume();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,12 +90,24 @@ public class Tier4Activity extends AppCompatActivity {
         mIVUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                finish();
+                //finish();
+                onBackPressed();
             }
         });
 
         final TextView mTVPreviousActivityName = (TextView) findViewById(R.id.tv_prev_activity);
         final TextView mTVCurrentActivityName = (TextView) findViewById(R.id.tv_curr_activity);
+        mBadge = (TextView) findViewById(R.id.tab_badge);
+
+        OrderManager.getSingleton().setOrderCountListener(new OrderManager.OrderCountListener() {
+            @Override
+            public void onOrderCountChanged(int count) {
+                if (count == 0)
+                    mBadge.setVisibility(View.GONE);
+                else
+                    mBadge.setText(count+"");
+            }
+        });
 
         if (FontManager.getSingleton() == null) new FontManager(getApplicationContext());
 
@@ -97,7 +124,8 @@ public class Tier4Activity extends AppCompatActivity {
             mTVPreviousActivityName.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    finish();
+                    //finish();
+                    onBackPressed();
                 }
             });
         }
@@ -115,6 +143,14 @@ public class Tier4Activity extends AppCompatActivity {
 
         final ImageButton mImageButtonTab = (ImageButton) findViewById(R.id.current_order);
 
+        mImageButtonTab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent tabIntent = new Intent(Tier4Activity.this, MyTabActivity.class);
+                startActivity(tabIntent);
+            }
+        });
+
         mImageButtonDrawer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -131,16 +167,46 @@ public class Tier4Activity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 switch (i) {
-                    case 0: break; // Dinein
-                    case 1: break; // Takeaway
-                    case 2: break; // Events
+                    case 0: Intent dineinIntent = new Intent(Tier4Activity.this, Tier2Activity.class);
+                        CategoryManager.setDinein(true);
+                        CategoryManager.popAll();
+                        CategoryManager.addToList(CategoryManager.getDineinCategoryId());
+                        OIDManager.popAll();
+                        OIDManager.addToList(OIDManager.getDineinOID());
+                        dineinIntent.putExtra("TIER2_DEST", "Dine In");
+                        startActivity(dineinIntent);
+                        finish();
+                        break; // Dinein
+                    case 1: Intent takeawayintent = new Intent(Tier4Activity.this, Tier2Activity.class);
+                        CategoryManager.setDinein(false);
+                        CategoryManager.popAll();
+                        CategoryManager.addToList(CategoryManager.getTakeawayCategoryId());
+                        OIDManager.popAll();
+                        OIDManager.addToList(OIDManager.getTakeawayOID());
+                        takeawayintent.putExtra("TIER2_DEST", "Take Away");
+                        startActivity(takeawayintent);
+                        finish();
+                        break; // Takeaway
+                    case 2: Intent eventIntent = new Intent(Tier4Activity.this, Tier4Activity.class);
+                        CategoryManager.setDinein(false);
+                        CategoryManager.popAll();
+                        CategoryManager.addToList(CategoryManager.getEventsCategoryId());
+                        OIDManager.popAll();
+                        OIDManager.addToList(OIDManager.getEventsOID());
+                        eventIntent.putExtra("TIER4_DEST", "Events");
+                        eventIntent.putExtra("TIER4_ORIG", currentActivity);
+                        startActivity(eventIntent);
+                        finish();
+                        break; // Events
                     case 3: Intent tabIntent = new Intent(Tier4Activity.this, MyTabActivity.class);
                         startActivity(tabIntent);
                         break;
                     case 4: Intent paymentIntent = new Intent(Tier4Activity.this, PaymentActivity.class);
                         startActivity(paymentIntent);
                         break; // Payment
-                    case 5: break; // Settings
+                    case 5: Intent settingsIntent = new Intent(Tier4Activity.this, SettingsActivity.class);
+                        startActivity(settingsIntent);
+                        break; // Settings
                 }
             }
         });
@@ -174,18 +240,31 @@ public class Tier4Activity extends AppCompatActivity {
         });
     }
 
+//    @Override
+//    protected void onDestroy() {
+//        OIDManager.popFromList();
+//        CategoryManager.popFromList();
+//        super.onDestroy();
+//    }
+
     @Override
-    protected void onDestroy() {
+    public void onBackPressed() {
+        if (drawer.isDrawerOpen(GravityCompat.END)) {
+            drawer.closeDrawer(GravityCompat.END);
+            return;
+        }
+
         OIDManager.popFromList();
         CategoryManager.popFromList();
-        super.onDestroy();
+        super.onBackPressed();
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                finish();
+                //finish();
+                onBackPressed();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

@@ -30,6 +30,7 @@ import com.tastingroomdelmar.TastingRoomDelMar.parseUtils.ListObject;
 import com.tastingroomdelmar.TastingRoomDelMar.utils.CategoryManager;
 import com.tastingroomdelmar.TastingRoomDelMar.utils.FontManager;
 import com.tastingroomdelmar.TastingRoomDelMar.utils.OIDManager;
+import com.tastingroomdelmar.TastingRoomDelMar.utils.OrderManager;
 
 public class Tier1Activity extends AppCompatActivity {
     private static final String TAG = Tier1Activity.class.getSimpleName();
@@ -41,6 +42,20 @@ public class Tier1Activity extends AppCompatActivity {
     Tier1ListViewAdapter adapter;
 
     ProgressBar mProgressBar;
+
+    TextView mBadge;
+
+    @Override
+    protected void onResume() {
+        if (mBadge != null) {
+            if (OrderManager.getSingleton().getOrderCount() == 0)
+                mBadge.setVisibility(View.GONE);
+            else
+                mBadge.setText(OrderManager.getSingleton().getOrderCount() + "");
+        }
+
+        super.onResume();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +75,17 @@ public class Tier1Activity extends AppCompatActivity {
 
         final TextView mTVPreviousActivityName = (TextView) findViewById(R.id.tv_prev_activity);
         final TextView mTVCurrentActivityName = (TextView) findViewById(R.id.tv_curr_activity);
+        mBadge = (TextView) findViewById(R.id.tab_badge);
+
+        OrderManager.getSingleton().setOrderCountListener(new OrderManager.OrderCountListener() {
+            @Override
+            public void onOrderCountChanged(int count) {
+                if (count == 0)
+                    mBadge.setVisibility(View.GONE);
+                else
+                    mBadge.setText(count+"");
+            }
+        });
 
         if (FontManager.getSingleton() == null) new FontManager(getApplicationContext());
 
@@ -74,6 +100,14 @@ public class Tier1Activity extends AppCompatActivity {
         final ImageButton mImageButtonDrawer = (ImageButton) findViewById(R.id.nav_button);
 
         final ImageButton mImageButtonTab = (ImageButton) findViewById(R.id.current_order);
+
+        mImageButtonTab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent tabIntent = new Intent(Tier1Activity.this, MyTabActivity.class);
+                startActivity(tabIntent);
+            }
+        });
 
         mImageButtonDrawer.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -91,16 +125,37 @@ public class Tier1Activity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 switch (i) {
-                    case 0: break; // Dinein
-                    case 1: break; // Takeaway
-                    case 2: break; // Events
+                    case 0: Intent dineinIntent = new Intent(Tier1Activity.this, Tier2Activity.class);
+                        CategoryManager.setDinein(true);
+                        OIDManager.addToList(listItem.get(0).getId());
+                        CategoryManager.addToList(listItem.get(0).getCategoryId());
+                        dineinIntent.putExtra("TIER2_DEST", "Dine In");
+                        startActivity(dineinIntent);
+                        break; // Dinein
+                    case 1: Intent takeawayintent = new Intent(Tier1Activity.this, Tier2Activity.class);
+                        CategoryManager.setDinein(false);
+                        OIDManager.addToList(listItem.get(1).getId());
+                        CategoryManager.addToList(listItem.get(1).getCategoryId());
+                        takeawayintent.putExtra("TIER2_DEST", "Take Away");
+                        startActivity(takeawayintent);
+                        break; // Takeaway
+                    case 2: Intent eventIntent = new Intent(Tier1Activity.this, Tier4Activity.class);
+                        CategoryManager.setDinein(false);
+                        OIDManager.addToList(listItem.get(2).getId());
+                        CategoryManager.addToList(listItem.get(2).getCategoryId());
+                        eventIntent.putExtra("TIER4_DEST", "Events");
+                        eventIntent.putExtra("TIER4_ORIG", "Del Mar");
+                        startActivity(eventIntent);
+                        break; // Events
                     case 3: Intent tabIntent = new Intent(Tier1Activity.this, MyTabActivity.class);
-                            startActivity(tabIntent);
-                            break;
+                        startActivity(tabIntent);
+                        break;
                     case 4: Intent paymentIntent = new Intent(Tier1Activity.this, PaymentActivity.class);
-                            startActivity(paymentIntent);
-                            break; // Payment
-                    case 5: break; // Settings
+                        startActivity(paymentIntent);
+                        break; // Payment
+                    case 5: Intent settingsIntent = new Intent(Tier1Activity.this, SettingsActivity.class);
+                        startActivity(settingsIntent);
+                        break; // Settings
                 }
             }
         });
@@ -149,11 +204,23 @@ public class Tier1Activity extends AppCompatActivity {
         });
     }
 
+//    @Override
+//    protected void onDestroy() {
+//        OIDManager.popFromList();
+//        CategoryManager.popFromList();
+//        super.onDestroy();
+//    }
+
     @Override
-    protected void onDestroy() {
+    public void onBackPressed() {
+        if (drawer.isDrawerOpen(GravityCompat.END)) {
+            drawer.closeDrawer(GravityCompat.END);
+            return;
+        }
+
         OIDManager.popFromList();
         CategoryManager.popFromList();
-        super.onDestroy();
+        super.onBackPressed();
     }
 
     private void getListFromParse() {
@@ -179,6 +246,8 @@ public class Tier1Activity extends AppCompatActivity {
                     }
 
                     Collections.sort(listItem);
+                    OIDManager.setOIDs(listItem.get(0).getId(),listItem.get(1).getId(),listItem.get(2).getId());
+                    CategoryManager.setCategories(listItem.get(0).getCategoryId(),listItem.get(1).getCategoryId(),listItem.get(2).getCategoryId());
                     adapter.notifyDataSetChanged();
                     mProgressBar.setVisibility(View.GONE);
                 } else {

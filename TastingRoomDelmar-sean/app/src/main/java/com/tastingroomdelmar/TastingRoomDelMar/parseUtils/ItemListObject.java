@@ -160,10 +160,10 @@ public class ItemListObject implements Comparable<ItemListObject> {
                 for (int j = 0; j < valueObject.length(); j++) {
                     String additionId = valueObject.getJSONObject(j).getString("id");
                     String additionDetailName = valueObject.getJSONObject(j).getString("name");
-                    String additionDetailPrice = valueObject.getJSONObject(j).getString("price");
-                    String[] additionDetailPriceWithoutVat = {valueObject.getJSONObject(j).getString("priceWithoutVAT")};
+                    String additionDetailPrice = new DecimalFormat("0.00").format(valueObject.getJSONObject(j).getDouble("price"));
+                    String[] additionDetailPriceWithoutVat = {new DecimalFormat("0.00").format(valueObject.getJSONObject(j).getDouble("priceWithoutVAT"))};
 
-                    if (additionDetailPrice.equals("0")) additionDetailPrice = "";
+                    if (additionDetailPrice.equals("0.00")) additionDetailPrice = "";
                     else additionDetailPrice = "  +" + additionDetailPrice;
 
                     additionList.add(new AdditionListItem(additionDetailName + additionDetailPrice, getObjectId(),modifierId, additionId,

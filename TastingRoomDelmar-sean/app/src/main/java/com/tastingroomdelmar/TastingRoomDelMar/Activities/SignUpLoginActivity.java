@@ -1,6 +1,9 @@
 package com.tastingroomdelmar.TastingRoomDelMar.Activities;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -26,8 +29,6 @@ import com.tastingroomdelmar.TastingRoomDelMar.utils.FontManager;
 public class SignUpLoginActivity extends AppCompatActivity {
     private static final String TAG = SignUpLoginActivity.class.getSimpleName();
 
-    //TODO remove drawer. it's only for demo purpose
-
     TextView mTVPreviousActivityName;
     TextView mTVCurrentActivityName;
     TextView mTVQuestion;
@@ -41,10 +42,35 @@ public class SignUpLoginActivity extends AppCompatActivity {
 
     String origin;
 
+    Context mContext;
+
+    @Override
+    protected void onResume() {
+        if (ParseUser.getCurrentUser() != null) {
+            SharedPreferences prefs = PreferenceManager
+                    .getDefaultSharedPreferences(this);
+            SharedPreferences.Editor edit = prefs.edit();
+
+            edit.putString("firstname", ParseUser.getCurrentUser().getString("firstName"));
+            edit.putString("lastname", ParseUser.getCurrentUser().getString("lastName"));
+            edit.putString("mobile", ParseUser.getCurrentUser().getString("mobileNumber"));
+            edit.putString("email", ParseUser.getCurrentUser().getEmail());
+            edit.putBoolean("push", ParseUser.getCurrentUser().getBoolean("pushAllowed"));
+            edit.putBoolean("newsletter", ParseUser.getCurrentUser().getBoolean("marketingAllowed"));
+            edit.apply();
+
+            Intent intent = new Intent(SignUpLoginActivity.this, Tier1Activity.class);
+            startActivity(intent);
+        }
+        super.onResume();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up_login);
+
+        mContext = this;
 
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -101,6 +127,16 @@ public class SignUpLoginActivity extends AppCompatActivity {
             if (flagSignupOrLogin == Constants.SIGNUP_FLAG) {
                 mTVCurrentActivityName.setText(getResources().getString(R.string.signup));
                 mTVQuestion.setText(getResources().getString(R.string.question_signup));
+                mTVQuestion.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(SignUpLoginActivity.this, SignUpLoginActivity.class);
+                        intent.putExtra("LOGIN_OR_SIGNUP", Constants.LOGIN_FLAG);
+                        intent.putExtra("ORIGIN", origin);
+                        startActivity(intent);
+                        finish();
+                    }
+                });
                 mButtonSignupLogin.setText(getResources().getString(R.string.con));
                 mButtonSignupLogin.setBackgroundColor(ContextCompat.getColor(this, R.color.confirmGreen));
                 mButtonSignupLogin.setOnClickListener(new View.OnClickListener() {
@@ -113,6 +149,16 @@ public class SignUpLoginActivity extends AppCompatActivity {
             else {
                 mTVCurrentActivityName.setText(getResources().getString(R.string.login));
                 mTVQuestion.setText(getResources().getString(R.string.question_login));
+                mTVQuestion.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(SignUpLoginActivity.this, SignUpLoginActivity.class);
+                        intent.putExtra("LOGIN_OR_SIGNUP", Constants.SIGNUP_FLAG);
+                        intent.putExtra("ORIGIN", origin);
+                        startActivity(intent);
+                        finish();
+                    }
+                });
                 mButtonSignupLogin.setText(getResources().getString(R.string.login));
                 mButtonSignupLogin.setBackgroundColor(ContextCompat.getColor(this, R.color.grayText));
                 mButtonSignupLogin.setOnClickListener(new View.OnClickListener() {
@@ -156,6 +202,18 @@ public class SignUpLoginActivity extends AppCompatActivity {
                     ParseInstallation installation = ParseInstallation.getCurrentInstallation();
                     installation.put("user", ParseUser.getCurrentUser());
                     installation.saveInBackground();
+
+                    SharedPreferences prefs = PreferenceManager
+                            .getDefaultSharedPreferences(mContext);
+                    SharedPreferences.Editor edit = prefs.edit();
+
+                    edit.putString("firstname", user.getString("firstName"));
+                    edit.putString("lastname", user.getString("lastName"));
+                    edit.putString("mobile", user.getString("mobileNumber"));
+                    edit.putString("email", user.getEmail());
+                    edit.putBoolean("push", user.getBoolean("pushAllowed"));
+                    edit.putBoolean("newsletter", user.getBoolean("marketingAllowed"));
+                    edit.apply();
 
                     Toast.makeText(getApplicationContext(), "Thanks! Logging in now", Toast.LENGTH_SHORT).show();
 

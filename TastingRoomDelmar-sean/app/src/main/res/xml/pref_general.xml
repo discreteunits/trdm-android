@@ -1,0 +1,70 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="MY ACCOUNT">
+        <EditTextPreference
+            android:textColor="@color/colorPrimary"
+            android:title="FIRST NAME"
+            android:key="firstname"
+            android:maxLines="1"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:inputType="text"/>
+        <EditTextPreference
+            android:textColor="@color/colorPrimary"
+            android:title="LAST NAME"
+            android:key="lastname"
+            android:maxLines="1"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:inputType="text"/>
+        <EditTextPreference
+            android:textColor="@color/colorPrimary"
+            android:title="MOBILE NUMBER"
+            android:key="mobile"
+            android:maxLines="1"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:inputType="phone"/>
+        <EditTextPreference
+            android:textColor="@color/colorPrimary"
+            android:title="EMAIL"
+            android:key="email"
+            android:maxLines="1"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:inputType="textEmailAddress"/>
+        <EditTextPreference
+            android:textColor="@color/colorPrimary"
+            android:title="PASSWORD"
+            android:key="password"
+            android:maxLines="1"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:inputType="textPassword"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="NOTIFICATIONS">
+        <CheckBoxPreference
+            android:textColor="@color/colorPrimary"
+            android:title="PUSH NOTIFICATIONS"
+            android:key="push" />
+        <CheckBoxPreference
+            android:textColor="@color/colorPrimary"
+            android:title="NEWSLETTER"
+            android:key="newsletter" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="MORE INFORMATION">
+        <Preference
+            android:title="PRIVACY POLICY"
+            android:key="privacypolicy" />
+        <Preference
+            android:title="TERMS OF USE"
+            android:key="termsofuse" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="ACCOUNT ACTIONS">
+        <Preference
+            android:title="LOGOUT"
+            android:key="logout"/>
+    </PreferenceCategory>
+</PreferenceScreen>

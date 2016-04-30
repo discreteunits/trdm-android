@@ -17,6 +17,7 @@ import com.tastingroomdelmar.TastingRoomDelMar.Activities.Tier4Activity;
 import com.tastingroomdelmar.TastingRoomDelMar.Dialogs.ModalDialog;
 import com.tastingroomdelmar.TastingRoomDelMar.R;
 import com.tastingroomdelmar.TastingRoomDelMar.parseUtils.ItemListObject;
+import com.tastingroomdelmar.TastingRoomDelMar.utils.CategoryManager;
 import com.tastingroomdelmar.TastingRoomDelMar.utils.FontManager;
 
 /**
@@ -76,7 +77,10 @@ public class Tier4ListViewAdapter extends ArrayAdapter<ItemListObject> implement
         if (item != null) {
             viewHolder.tvName.setText(item.getName());
             viewHolder.tvInfo.setText(item.getAltName());
-            viewHolder.tvOption.setText(item.getPrices());
+            if (CategoryManager.isDinein())
+                viewHolder.tvOption.setText(item.getPriceArray()[0]);
+            else
+                viewHolder.tvOption.setText(item.getPriceArray()[1]);
             viewHolder.tvVerietal.setText(item.getVerietal());
 
             viewHolder.btnAddToTab.setOnClickListener(new View.OnClickListener() {

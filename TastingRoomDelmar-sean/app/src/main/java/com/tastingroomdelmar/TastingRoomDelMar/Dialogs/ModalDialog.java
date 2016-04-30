@@ -22,6 +22,7 @@ import com.tastingroomdelmar.TastingRoomDelMar.ListViewAdapters.ModalListViewAda
 import com.tastingroomdelmar.TastingRoomDelMar.R;
 import com.tastingroomdelmar.TastingRoomDelMar.parseUtils.ItemListObject;
 import com.tastingroomdelmar.TastingRoomDelMar.parseUtils.ModalListItem;
+import com.tastingroomdelmar.TastingRoomDelMar.parseUtils.OptionListItem;
 import com.tastingroomdelmar.TastingRoomDelMar.parseUtils.OrderListItem;
 import com.tastingroomdelmar.TastingRoomDelMar.parseUtils.ServingListItem;
 import com.tastingroomdelmar.TastingRoomDelMar.utils.CategoryManager;
@@ -83,17 +84,11 @@ public class ModalDialog extends Dialog implements android.view.View.OnClickList
         modalListView.setAdapter(adapter);
 
         String[] basePrice = item.getPriceArray();
-        //if (basePrice == null) basePrice = item.getPrices();
-        String basePriceWithoutVAT;
 
-        if (CategoryManager.isDinein())
-            basePriceWithoutVAT = new DecimalFormat("0.00").format(Double.parseDouble(basePrice[0]));
-        else
-            basePriceWithoutVAT = new DecimalFormat("0.00").format(Double.parseDouble(basePrice[1]));
-
+        ArrayList<OptionListItem> servings = item.getServings();
         if (!isEvent) {
-            if (item.getServings() != null && !item.getServings().isEmpty()) {
-                modalItems.add(new ModalListItem(item.getObjectId(), item.getName(), basePrice, item.getTaxRate(),Constants.Type.SERVING, item.getProductType(), Constants.SERVING, item.getServings()));
+            if (servings != null && !servings.isEmpty()) {
+                modalItems.add(new ModalListItem(item.getObjectId(), item.getName(), basePrice, item.getTaxRate(),Constants.Type.SERVING, item.getProductType(), Constants.SERVING, servings));
             }
 
             if (item.getAdditions() != null && !item.getAdditions().isEmpty()) {
@@ -103,8 +98,8 @@ public class ModalDialog extends Dialog implements android.view.View.OnClickList
 
             modalItems.add(new ModalListItem(item.getName(), basePrice, item.getTaxRate(), item.getProductType(), item.getObjectId()));
         } else {
-            if (item.getServings() != null && !item.getServings().isEmpty()) {
-                modalItems.add(new ModalListItem(item.getObjectId(), item.getName(), basePrice, item.getTaxRate(), Constants.Type.SERVING, item.getProductType(), Constants.BOX_OFFICE, item.getServings()));
+            if (servings != null && !servings.isEmpty()) {
+                modalItems.add(new ModalListItem(item.getObjectId(), item.getName(), basePrice, item.getTaxRate(), Constants.Type.SERVING, item.getProductType(), Constants.BOX_OFFICE, servings));
             }
             modalItems.add(new ModalListItem(item.getName(), basePrice, item.getTaxRate(), item.getProductType(), item.getObjectId()));
         }
@@ -130,6 +125,7 @@ public class ModalDialog extends Dialog implements android.view.View.OnClickList
                     try {
                         boolean servingIdAdded = false;
                         boolean parentAdded = false;
+                        boolean parentOrderIdAdded = false;
 
                         OrderListItem orderListItem = new OrderListItem();
                         boolean servingExists = false;
@@ -143,23 +139,32 @@ public class ModalDialog extends Dialog implements android.view.View.OnClickList
                                 parentItem.put("modifiers", new JSONArray());
 
                                 if (CategoryManager.isDinein())
-                                    orderManager.addToDineIn(parentItem);
+                                    orderManager.addToDineIn(true, parentItem);
                                 else
-                                    orderManager.addToTakeAway(parentItem);
+                                    orderManager.addToTakeAway(true, parentItem);
 
+                                orderListItem.setIsChoice(true);
+                                orderListItem.setObjectId(modalItem.getBaseObjectId());
+                                parentOrderIdAdded = true;
                                 parentAdded = true;
                             }
 
                             if (modalItem.getType() == Constants.Type.QUANTITY) {
-                                orderItem.put("amount", modalItem.getSelectedOptionItem().getOptionName());
+                                orderItem.put("amount", Integer.parseInt(modalItem.getSelectedOptionItem().getOptionName()));
                                 orderListItem.setQty(modalItem.getSelectedOptionItem().getOptionName());
                             }
 
                             else if (modalItem.getType() == Constants.Type.SERVING) {
-                                if (modalItem.getSelectedOptionItem() instanceof ServingListItem)
+                                if (modalItem.getSelectedOptionItem() instanceof ServingListItem) {
                                     orderItem.put("objectId", ((ServingListItem) modalItem.getSelectedOptionItem()).getObjectId());
-                                else
+                                    if (!parentOrderIdAdded)
+                                        orderListItem.setObjectId(((ServingListItem) modalItem.getSelectedOptionItem()).getObjectId());
+                                }
+                                else {
                                     orderItem.put("objectId", modalItem.getSelectedOptionItem().getBaseObjectId());
+                                    if (!parentOrderIdAdded)
+                                        orderListItem.setObjectId(modalItem.getSelectedOptionItem().getBaseObjectId());
+                                }
 
                                 orderListItem.setOptions(modalItem.getSelectedOptionItem().getOptionName());
                                 orderListItem.setModPrices(new DecimalFormat("0.00").format(modalItem.getSelectedOptionItem().getPrice()));
@@ -170,8 +175,8 @@ public class ModalDialog extends Dialog implements android.view.View.OnClickList
                                 JSONObject modifierObject = new JSONObject();
                                 modifierObject.put("modifierId", modalItem.getSelectedOptionItem().getModifierId());
                                 modifierObject.put("modifierValueId", modalItem.getSelectedOptionItem().getModifierValueId());
-                                modifierObject.put("price", new DecimalFormat("0.00").format(modalItem.getSelectedOptionItem().getPrice()));
-                                modifierObject.put("priceWithoutVat", modalItem.getSelectedOptionItem().getPriceWithoutVat());
+                                modifierObject.put("price", modalItem.getSelectedOptionItem().getPrice());
+                                modifierObject.put("priceWithoutVat", modalItem.getSelectedOptionItem().getPriceWithoutVat()[0]);
 
                                 orderListItem.setOptions(modalItem.getTitle() + " (" + modalItem.getSelectedOptionItem().getOptionName() + ")" + "\n");
                                 orderListItem.setModPrices(modalItem.getSelectedOptionItem().getPrice() == 0 ?
@@ -182,6 +187,8 @@ public class ModalDialog extends Dialog implements android.view.View.OnClickList
 
                             if (!servingExists && !servingIdAdded) {
                                 orderItem.put("objectId", modalItem.getSelectedOptionItem().getBaseObjectId());
+                                if (!parentOrderIdAdded)
+                                    orderListItem.setObjectId(modalItem.getSelectedOptionItem().getBaseObjectId());
                                 servingIdAdded = true;
                             }
 
@@ -197,6 +204,11 @@ public class ModalDialog extends Dialog implements android.view.View.OnClickList
 
                         }
 
+                        if (CategoryManager.isDinein())
+                            orderListItem.setIsDineIn(true);
+                        else
+                            orderListItem.setIsDineIn(false);
+
                         orderListItem.updatePrices();
                         orderManager.addToOrderList(orderListItem);
                     } catch (Exception e1) {
@@ -206,9 +218,9 @@ public class ModalDialog extends Dialog implements android.view.View.OnClickList
                     orderItem.put("modifiers", modifiers);
 
                     if (CategoryManager.isDinein())
-                        orderManager.addToDineIn(orderItem);
+                        orderManager.addToDineIn(false, orderItem);
                     else
-                        orderManager.addToTakeAway(orderItem);
+                        orderManager.addToTakeAway(false, orderItem);
 
                     orderManager.printOrder();
 

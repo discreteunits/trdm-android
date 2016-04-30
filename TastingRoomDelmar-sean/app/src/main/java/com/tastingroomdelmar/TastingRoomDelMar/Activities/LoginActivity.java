@@ -2,9 +2,11 @@ package com.tastingroomdelmar.TastingRoomDelMar.Activities;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
+import android.preference.PreferenceManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -78,6 +80,19 @@ public class LoginActivity extends AppCompatActivity {
 
         if (ParseUser.getCurrentUser() != null) {
             fetchCreditCard();
+
+            SharedPreferences prefs = PreferenceManager
+                    .getDefaultSharedPreferences(this);
+            SharedPreferences.Editor edit = prefs.edit();
+
+            edit.putString("firstname", ParseUser.getCurrentUser().getString("firstName"));
+            edit.putString("lastname", ParseUser.getCurrentUser().getString("lastName"));
+            edit.putString("mobile", ParseUser.getCurrentUser().getString("mobileNumber"));
+            edit.putString("email", ParseUser.getCurrentUser().getEmail());
+            edit.putBoolean("push", ParseUser.getCurrentUser().getBoolean("pushAllowed"));
+            edit.putBoolean("newsletter", ParseUser.getCurrentUser().getBoolean("marketingAllowed"));
+            edit.apply();
+
             Intent intent = new Intent(LoginActivity.this, Tier1Activity.class);
             startActivity(intent);
         }
@@ -113,6 +128,18 @@ public class LoginActivity extends AppCompatActivity {
                                 getAndSaveUserDetailsFromFB();
                             } else {
                                 Log.d(TAG, "User logged in through Facebook!");
+
+                                SharedPreferences prefs = PreferenceManager
+                                        .getDefaultSharedPreferences(mContext);
+                                SharedPreferences.Editor edit = prefs.edit();
+
+                                edit.putString("firstname", user.getString("firstName"));
+                                edit.putString("lastname", user.getString("lastName"));
+                                edit.putString("mobile", user.getString("mobileNumber"));
+                                edit.putString("email", user.getEmail());
+                                edit.putBoolean("push", user.getBoolean("pushAllowed"));
+                                edit.putBoolean("newsletter", user.getBoolean("marketingAllowed"));
+                                edit.apply();
 
                                 if (origin == null) {
                                     Intent intent = new Intent(LoginActivity.this, Tier1Activity.class);
@@ -192,7 +219,7 @@ public class LoginActivity extends AppCompatActivity {
                             String name = response.getJSONObject().getString("name");
                             Log.d(TAG, "name: "+ name);
 
-                            ParseUser user = ParseUser.getCurrentUser();
+                            final ParseUser user = ParseUser.getCurrentUser();
                             user.setUsername(id);
                             user.put("firstName", name.split(" ")[0]);
                             user.put("lastName", name.split(" ")[name.split(" ").length - 1]);
@@ -202,6 +229,18 @@ public class LoginActivity extends AppCompatActivity {
                                 public void done(ParseException e) {
                                     if (e == null) {
                                         Toast.makeText(getApplicationContext(), "Thanks! Signing in now", Toast.LENGTH_SHORT).show();
+
+                                        SharedPreferences prefs = PreferenceManager
+                                                .getDefaultSharedPreferences(mContext);
+                                        SharedPreferences.Editor edit = prefs.edit();
+
+                                        edit.putString("firstname", user.getString("firstName"));
+                                        edit.putString("lastname", user.getString("lastName"));
+                                        edit.putString("mobile", user.getString("mobileNumber"));
+                                        edit.putString("email", user.getEmail());
+                                        edit.putBoolean("push", user.getBoolean("pushAllowed"));
+                                        edit.putBoolean("newsletter", user.getBoolean("marketingAllowed"));
+                                        edit.apply();
 
                                         if (origin == null) {
                                             Intent intent = new Intent(LoginActivity.this, Tier1Activity.class);

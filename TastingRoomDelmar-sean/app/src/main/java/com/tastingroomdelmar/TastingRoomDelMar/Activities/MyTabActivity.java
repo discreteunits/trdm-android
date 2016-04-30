@@ -3,13 +3,17 @@ package com.tastingroomdelmar.TastingRoomDelMar.Activities;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -18,6 +22,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.baoyz.swipemenulistview.SwipeMenu;
+import com.baoyz.swipemenulistview.SwipeMenuCreator;
+import com.baoyz.swipemenulistview.SwipeMenuItem;
 import com.baoyz.swipemenulistview.SwipeMenuListView;
 import com.parse.FunctionCallback;
 import com.parse.ParseCloud;
@@ -33,7 +40,6 @@ import com.tastingroomdelmar.TastingRoomDelMar.utils.PaymentManager;
 
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -57,7 +63,10 @@ public class MyTabActivity extends AppCompatActivity {
 
     Constants.CheckoutType checkoutType;
     String tableNumber;
-    double tipAmount; // by default
+    double subtotal;
+    double tax;
+    double tipAmount;
+    double grandtotal;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -77,12 +86,20 @@ public class MyTabActivity extends AppCompatActivity {
             actionBar.setDisplayShowTitleEnabled(false);
 
         final ImageView mIVUp = (ImageView) findViewById(R.id.up_button);
-        mIVUp.setVisibility(View.GONE);
+        mIVUp.setVisibility(View.VISIBLE);
+        mIVUp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //finish();
+                onBackPressed();
+            }
+        });
 
         final TextView mTVPreviousActivityName = (TextView) findViewById(R.id.tv_prev_activity);
         final TextView mTVCurrentActivityName = (TextView) findViewById(R.id.tv_curr_activity);
 
-        mTVPreviousActivityName.setVisibility(View.GONE);
+        mTVPreviousActivityName.setText("Back");
+        mTVPreviousActivityName.setTypeface(FontManager.nexa);
         mTVCurrentActivityName.setText(CURRENT_ACTIVITY);
         mTVCurrentActivityName.setTypeface(FontManager.nexa);
 
@@ -126,16 +143,63 @@ public class MyTabActivity extends AppCompatActivity {
             return;
         }
 
+        SwipeMenuCreator swipeMenuCreator = new SwipeMenuCreator() {
+
+            @Override
+            public void create(SwipeMenu menu) {
+                // create "delete" item
+                SwipeMenuItem deleteItem = new SwipeMenuItem(
+                        getApplicationContext());
+                // set item background
+                deleteItem.setBackground(new ColorDrawable(Color.rgb(0xF9,
+                        0x3F, 0x25)));
+                // set item width
+                deleteItem.setWidth(dp2px(90));
+                // set a icon
+                deleteItem.setIcon(R.drawable.ic_delete_forever_white_48dp);
+                // add to menu
+                menu.addMenuItem(deleteItem);
+            }
+        };
+
         orderListItems = orderManager.getOrderListItems();
         adapter = new OrderListViewAdapter(this, orderListItems);
 
         orderListView = (SwipeMenuListView) findViewById(R.id.mytab_listView);
+        orderListView.setMenuCreator(swipeMenuCreator);
+
+        orderListView.setOnMenuItemClickListener(new SwipeMenuListView.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(int position, SwipeMenu menu, int index) {
+                switch (index) {
+                    case 0:
+                        final OrderListItem item = orderListItems.get(position);
+                        subtotal = subtotal - item.getItemPriceSum();
+                        tax = tax - item.getItemTaxPrice();
+                        grandtotal = subtotal + tax;
+
+                        mTVSubtotal.setText(new DecimalFormat("0.00").format(subtotal));
+                        mTVTax.setText(new DecimalFormat("0.00").format(tax));
+                        mTVTotal.setText(new DecimalFormat("0.00").format(grandtotal));
+
+                        orderManager.addToSubTotal((-1) * item.getItemPriceSum());
+                        orderManager.addToTax((-1) * item.getItemTaxPrice());
+
+                        orderManager.removeItem(item.getIsDineIn(), item.getIsChoice(), item.getObjectId());
+                        orderListItems.remove(position);
+                        adapter.notifyDataSetChanged();
+                        break;
+                }
+                return true;
+            }
+        });
+
         orderListView.setAdapter(adapter);
         adapter.notifyDataSetChanged();
 
-        final double subtotal = orderManager.getSubTotalPrice();
-        final double tax = orderManager.getTaxPrice();
-        final double grandtotal = subtotal + tax;
+        subtotal = orderManager.getSubTotalPrice();
+        tax = orderManager.getTaxPrice();
+        grandtotal = subtotal + tax;
 
         final String formattedSubtotal = new DecimalFormat("0.00").format(subtotal);
         final String formattedTax = new DecimalFormat("0.00").format(tax);
@@ -229,7 +293,7 @@ public class MyTabActivity extends AppCompatActivity {
         tvTotal.setTypeface(FontManager.nexa);
         tvTotal.setTypeface(mTVTotal.getTypeface(), Typeface.BOLD);
 
-        tipAmount = 0.15; // by default
+        tipAmount = 0.18; // by default
 
         tvSubTotal.setText(formattedSubtotal);
         tvTax.setText(formattedTax);
@@ -255,7 +319,7 @@ public class MyTabActivity extends AppCompatActivity {
             public void onStopTrackingTouch(DiscreteSeekBar seekBar){}
         });
 
-        seekBar.setProgress(15); // default
+        seekBar.setProgress(18); // default
 
         final Dialog userDialog = new Dialog(mContext);
         userDialog.setContentView(R.layout.layout_checkout_no_user);
@@ -327,14 +391,18 @@ public class MyTabActivity extends AppCompatActivity {
 
                 try {
                     orderManager.setUser(ParseUser.getCurrentUser());
-                    orderManager.setCommons(checkoutType, tableNumber, tipAmount, ParseUser.getCurrentUser().getString("firstName") + " @ Table" + tableNumber );
+                    orderManager.setCommons(checkoutType, tableNumber, tipAmount, ParseUser.getCurrentUser().getString("firstName") + " @ Table " + tableNumber );
                     orderManager.printOrder();
 
-                    if (PaymentManager.getSingleton().getPaymentMethod() == null) {
-                        Toast.makeText(mContext, "No payment method found", Toast.LENGTH_SHORT).show();
+                    if (checkoutType == Constants.CheckoutType.STRIPE) {
+                        if (PaymentManager.getSingleton().getPaymentMethod() == null) {
+                            Toast.makeText(mContext, "No payment method found", Toast.LENGTH_SHORT).show();
 
-                        Intent i = new Intent(MyTabActivity.this, PaymentActivity.class);
-                        startActivity(i);
+                            Intent i = new Intent(MyTabActivity.this, PaymentActivity.class);
+                            startActivity(i);
+                        } else {
+                            placeOrder();
+                        }
                     } else {
                         placeOrder();
                     }
@@ -359,19 +427,27 @@ public class MyTabActivity extends AppCompatActivity {
     private void placeOrder() {
         HashMap<String, String> params = new HashMap<>();
         //String userObjectId = ParseUser.getCurrentUser().getObjectId();
-        params.put("order", OrderManager.getSingleton().getFinalizedOrderObject().toString());
+        params.put("orders", OrderManager.getSingleton().getFinalizedOrderObject().toString());
         Log.d(CURRENT_ACTIVITY, OrderManager.getSingleton().getFinalizedOrderObject().toString());
         ParseCloud.callFunctionInBackground("placeOrders", params, new FunctionCallback<HashMap<String, String>>() {
             @Override
             public void done(HashMap<String, String> object, ParseException e) {
                 if (e == null) {
-                    //Log.d(CURRENT_ACTIVITY, object.get("brand"));
                     Toast.makeText(mContext, "Order Placed Successfully", Toast.LENGTH_SHORT).show();
+                    OrderManager.clearOrders();
+                    orderListItems.clear();
+                    adapter.notifyDataSetChanged();
+                    finish(); //TODO not tested.
                 } else {
                     e.printStackTrace();
                     Toast.makeText(mContext, "There was an error while placing order", Toast.LENGTH_SHORT).show();
                 }
             }
         });
+    }
+
+    private int dp2px(int dp) {
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp,
+                getResources().getDisplayMetrics());
     }
 }

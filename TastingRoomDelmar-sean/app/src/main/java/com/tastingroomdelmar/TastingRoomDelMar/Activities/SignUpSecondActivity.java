@@ -2,7 +2,9 @@ package com.tastingroomdelmar.TastingRoomDelMar.Activities;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -29,6 +31,28 @@ import com.tastingroomdelmar.TastingRoomDelMar.utils.FontManager;
  */
 public class SignUpSecondActivity extends AppCompatActivity {
     Context mContext;
+
+    @Override
+    protected void onResume() {
+        if (ParseUser.getCurrentUser() != null) {
+            SharedPreferences prefs = PreferenceManager
+                    .getDefaultSharedPreferences(this);
+            SharedPreferences.Editor edit = prefs.edit();
+
+            edit.putString("firstname", ParseUser.getCurrentUser().getString("firstName"));
+            edit.putString("lastname", ParseUser.getCurrentUser().getString("lastName"));
+            edit.putString("mobile", ParseUser.getCurrentUser().getString("mobileNumber"));
+            edit.putString("email", ParseUser.getCurrentUser().getEmail());
+            edit.putBoolean("push", ParseUser.getCurrentUser().getBoolean("pushAllowed"));
+            edit.putBoolean("newsletter", ParseUser.getCurrentUser().getBoolean("marketingAllowed"));
+            edit.apply();
+
+            Intent intent = new Intent(SignUpSecondActivity.this, Tier1Activity.class);
+            startActivity(intent);
+        }
+        super.onResume();
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -136,6 +160,17 @@ public class SignUpSecondActivity extends AppCompatActivity {
                                 installation.put("user", ParseUser.getCurrentUser());
                                 installation.saveInBackground();
 
+                                SharedPreferences prefs = PreferenceManager
+                                        .getDefaultSharedPreferences(mContext);
+                                SharedPreferences.Editor edit = prefs.edit();
+
+                                edit.putString("firstname", user.getString("firstName"));
+                                edit.putString("lastname", user.getString("lastName"));
+                                edit.putString("mobile", user.getString("mobileNumber"));
+                                edit.putString("email", user.getEmail());
+                                edit.putBoolean("push", user.getBoolean("pushAllowed"));
+                                edit.putBoolean("newsletter", user.getBoolean("marketingAllowed"));
+                                edit.apply();
 
                                 Toast.makeText(getApplicationContext(), "Thanks! Signing in now", Toast.LENGTH_SHORT).show();
 

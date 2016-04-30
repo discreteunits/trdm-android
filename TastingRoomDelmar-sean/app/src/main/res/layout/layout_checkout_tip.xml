@@ -133,7 +133,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:text="Gratuity (Adjust below. Default 15%)"
+            android:text="Gratuity (Adjust below. Default 18%)"
             android:textColor="@color/colorPrimary"/>
 
         <org.adw.library.widgets.discreteseekbar.DiscreteSeekBar

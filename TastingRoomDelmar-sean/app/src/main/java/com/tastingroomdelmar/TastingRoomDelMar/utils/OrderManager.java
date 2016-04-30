@@ -107,19 +107,19 @@ public class OrderManager {
         topLevelObject.put("userId", user.getObjectId());
     }
 
-    public void addToDineIn(JSONObject dineInObj) {
+    public void addToDineIn(boolean isParent, JSONObject dineInObj) {
         dineinOrderItems.put(dineInObj);
 
-        orderCount++;
+        if (!isParent) orderCount++;
 
         if (orderCountListener != null)
             orderCountListener.onOrderCountChanged(orderCount);
     }
 
-    public void addToTakeAway(JSONObject takeAwayObj) {
+    public void addToTakeAway(boolean isParent, JSONObject takeAwayObj) {
         takeawayOrderItems.put(takeAwayObj);
 
-        orderCount++;
+        if (!isParent) orderCount++;
 
         if (orderCountListener != null)
             orderCountListener.onOrderCountChanged(orderCount);
@@ -134,7 +134,7 @@ public class OrderManager {
         for(int i = 0; i < ordersArray.length(); i++) {
             JSONObject orderTypeItem = ordersArray.getJSONObject(i);
             orderTypeItem.put("checkoutMethod", checkoutMethod);
-            orderTypeItem.put("table", table);
+            orderTypeItem.put("table", Integer.parseInt(table));
             orderTypeItem.put("tipPercent", tipPercent);
             orderTypeItem.getJSONObject("body").put("note", note);
         }
@@ -162,5 +162,71 @@ public class OrderManager {
 
     public JSONObject getFinalizedOrderObject() {
         return topLevelObject;
+    }
+
+    public int getOrderCount() {
+        return orderCount;
+    }
+
+    private JSONArray removeFromJSONArray(JSONArray original, int index) {
+        JSONArray output = new JSONArray();
+        int len = original.length();
+        for (int i = 0; i < len; i++)   {
+            if (i != index) {
+                try {
+                    output.put(original.get(i));
+                } catch (JSONException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+        return output;
+    }
+
+    public void removeItem(boolean isDineIn, boolean isChoiceItem, String id) {
+        if (isDineIn) {
+            for (int i = 0; i < dineinOrderItems.length(); i++) {
+                try {
+                    String objectId = dineinOrderItems.getJSONObject(i).getString("objectId");
+                    if (objectId.equals(id)) {
+                        dineinOrderItems = removeFromJSONArray(dineinOrderItems, i);
+                        orderCount--;
+
+                        if (isChoiceItem)
+                            dineinOrderItems = removeFromJSONArray(dineinOrderItems, i); // i -> next index because it's already one size smaller
+
+                        dineinBodyObject.put("orderItems", dineinOrderItems);
+                        break;
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        } else {
+            for (int i = 0; i < takeawayOrderItems.length(); i++) {
+                try {
+                    String objectId = takeawayOrderItems.getJSONObject(i).getString("objectId");
+                    if (objectId.equals(id)) {
+                        takeawayOrderItems = removeFromJSONArray(takeawayOrderItems, i);
+                        orderCount--;
+
+                        if (isChoiceItem)
+                            takeawayOrderItems = removeFromJSONArray(takeawayOrderItems, i); // i -> next index because it's already one size smaller
+
+                        takeawayBodyObject.put("orderItems", takeawayOrderItems);
+                        break;
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        printOrder();
+    }
+
+    public static void clearOrders() {
+        singleton = null; // clear it up
+        singleton = new OrderManager();
     }
 }

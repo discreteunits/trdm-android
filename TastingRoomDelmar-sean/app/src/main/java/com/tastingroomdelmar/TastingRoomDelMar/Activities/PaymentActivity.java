@@ -252,6 +252,7 @@ public class PaymentActivity extends AppCompatActivity {
             }
 
             public void onError(Exception error) {
+                Toast.makeText(mContext, error.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
                 Log.d("Stripe", error.getLocalizedMessage());
             }
         });

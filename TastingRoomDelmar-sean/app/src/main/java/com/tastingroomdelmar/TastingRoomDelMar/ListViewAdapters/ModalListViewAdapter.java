@@ -105,10 +105,6 @@ public class ModalListViewAdapter extends ArrayAdapter<ModalListItem> {
                 }
 
                 ((OptionListItem) optionItem).setSelected(true);
-            } else {
-                for (OptionListItem oli : optionList) {
-                    oli.setSelected(false);
-                }
             }
 
             Log.d(TAG, "selected option name: " + ((OptionListItem) optionItem).getOptionName());

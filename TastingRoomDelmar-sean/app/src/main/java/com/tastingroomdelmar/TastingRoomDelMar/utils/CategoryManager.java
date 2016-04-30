@@ -15,6 +15,10 @@ public class CategoryManager {
 
     private static String verietal = "";
 
+    private static String dinein;
+    private static String takeaway;
+    private static String events;
+
     private static ArrayList<String> list = new ArrayList<>();
 
     private static ArrayList<String> allList = new ArrayList<>();
@@ -32,6 +36,13 @@ public class CategoryManager {
     public static void popFromList() {
         if (list.size() > 0)
             list.remove(list.size()-1);
+        printCategory();
+    }
+
+    public static void popAll() {
+        list.clear();
+        list = new ArrayList<>();
+
         printCategory();
     }
 
@@ -86,4 +97,22 @@ public class CategoryManager {
     }
 
     public static boolean isDinein() { return isDinein; }
+
+    public static void setCategories(String d, String t, String e) {
+        dinein = d;
+        takeaway = t;
+        events = e;
+    }
+
+    public static String getDineinCategoryId() {
+        return dinein;
+    }
+
+    public static String getTakeawayCategoryId() {
+        return takeaway;
+    }
+
+    public static String getEventsCategoryId() {
+        return events;
+    }
 }
