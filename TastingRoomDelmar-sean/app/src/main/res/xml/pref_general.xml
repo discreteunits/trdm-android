@@ -60,6 +60,9 @@
         <Preference
             android:title="TERMS OF USE"
             android:key="termsofuse" />
+        <Preference
+            android:title="APP INFO"
+            android:key="appinfo" />
     </PreferenceCategory>
 
     <PreferenceCategory android:title="ACCOUNT ACTIONS">

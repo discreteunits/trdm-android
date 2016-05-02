@@ -39,7 +39,9 @@ import com.tastingroomdelmar.TastingRoomDelMar.utils.OrderManager;
 import com.tastingroomdelmar.TastingRoomDelMar.utils.PaymentManager;
 
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
+import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -391,7 +393,7 @@ public class MyTabActivity extends AppCompatActivity {
 
                 try {
                     orderManager.setUser(ParseUser.getCurrentUser());
-                    orderManager.setCommons(checkoutType, tableNumber, tipAmount, ParseUser.getCurrentUser().getString("firstName") + " @ Table " + tableNumber );
+                    orderManager.saveCommons(checkoutType, tableNumber, tipAmount, ParseUser.getCurrentUser().getString("firstName") + " @ Table " + tableNumber );
                     orderManager.printOrder();
 
                     if (checkoutType == Constants.CheckoutType.STRIPE) {
@@ -424,11 +426,14 @@ public class MyTabActivity extends AppCompatActivity {
         public TextView tvModPrice;
     }
 
+    //TODO figure out how to make it non-string val
     private void placeOrder() {
         HashMap<String, String> params = new HashMap<>();
         //String userObjectId = ParseUser.getCurrentUser().getObjectId();
-        params.put("orders", OrderManager.getSingleton().getFinalizedOrderObject().toString());
-        Log.d(CURRENT_ACTIVITY, OrderManager.getSingleton().getFinalizedOrderObject().toString());
+        JSONArray finalOrderArray = OrderManager.getSingleton().getFinalizedOrderObject();
+        params.put("userId", ParseUser.getCurrentUser().getObjectId());
+        params.put("orders", finalOrderArray.toString());
+        Log.d(CURRENT_ACTIVITY, finalOrderArray.toString());
         ParseCloud.callFunctionInBackground("placeOrders", params, new FunctionCallback<HashMap<String, String>>() {
             @Override
             public void done(HashMap<String, String> object, ParseException e) {

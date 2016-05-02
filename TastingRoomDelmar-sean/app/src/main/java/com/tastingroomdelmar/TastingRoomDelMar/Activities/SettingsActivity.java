@@ -4,6 +4,7 @@ package com.tastingroomdelmar.TastingRoomDelMar.Activities;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.EditTextPreference;
@@ -17,6 +18,7 @@ import android.util.Log;
 import android.view.MenuItem;
 
 import com.parse.ParseUser;
+import com.tastingroomdelmar.TastingRoomDelMar.BuildConfig;
 import com.tastingroomdelmar.TastingRoomDelMar.R;
 
 /**
@@ -213,6 +215,21 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                     Intent i = new Intent(getActivity(), WebViewActivity.class);
                     i.putExtra("TARGET","Terms & Conditions");
                     startActivity(i);
+                    return true;
+                }
+            });
+
+            findPreference("appinfo").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
+                    alertDialogBuilder.setTitle("APP INFO");
+                    alertDialogBuilder.setMessage("Tasting Room Del Mar\nVersion: v" + BuildConfig.VERSION_NAME +"\nMADE IN SAN DIEGO");
+
+                    alertDialogBuilder.setNegativeButton("Okay", null);
+
+                    AlertDialog alertDialog = alertDialogBuilder.create();
+                    alertDialog.show();
                     return true;
                 }
             });

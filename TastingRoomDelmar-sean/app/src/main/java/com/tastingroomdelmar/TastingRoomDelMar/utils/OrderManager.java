@@ -36,6 +36,10 @@ public class OrderManager {
 
     static int orderCount;
 
+    static int numDinein = 0;
+    static int numTakeaway = 0;
+
+
     private static ArrayList<OrderListItem> orderListItems;
 
     public interface OrderCountListener {
@@ -67,8 +71,8 @@ public class OrderManager {
                 topLevelObject.put("userId", "");
                 topLevelObject.put("orders", this.ordersArray);
 
-                ordersArray.put(dineinObject);
-                ordersArray.put(takeawayObject);
+                //ordersArray.put(dineinObject);
+                //ordersArray.put(takeawayObject);
 
                 dineinObject.put("body", dineinBodyObject);
                 takeawayObject.put("body", takeawayBodyObject);
@@ -110,6 +114,8 @@ public class OrderManager {
     public void addToDineIn(boolean isParent, JSONObject dineInObj) {
         dineinOrderItems.put(dineInObj);
 
+        numDinein++;
+
         if (!isParent) orderCount++;
 
         if (orderCountListener != null)
@@ -119,13 +125,26 @@ public class OrderManager {
     public void addToTakeAway(boolean isParent, JSONObject takeAwayObj) {
         takeawayOrderItems.put(takeAwayObj);
 
+        numTakeaway++;
+
         if (!isParent) orderCount++;
 
         if (orderCountListener != null)
             orderCountListener.onOrderCountChanged(orderCount);
     }
 
-    public void setCommons(Constants.CheckoutType checkoutType, String table, double tipPercent, String note)
+    Constants.CheckoutType checkoutType;
+    String table;
+    double tipPercent;
+    String note;
+    public void saveCommons(Constants.CheckoutType checkoutType, String table, double tipPercent, String note) {
+        this.checkoutType = checkoutType;
+        this.table = table;
+        this.tipPercent = tipPercent;
+        this.note = note;
+    }
+
+    private void setCommons(Constants.CheckoutType checkoutType, String table, double tipPercent, String note)
     throws JSONException {
         String checkoutMethod;
         if (checkoutType == Constants.CheckoutType.STRIPE) checkoutMethod = "stripe";
@@ -134,7 +153,7 @@ public class OrderManager {
         for(int i = 0; i < ordersArray.length(); i++) {
             JSONObject orderTypeItem = ordersArray.getJSONObject(i);
             orderTypeItem.put("checkoutMethod", checkoutMethod);
-            orderTypeItem.put("table", Integer.parseInt(table));
+            orderTypeItem.put("table", table);
             orderTypeItem.put("tipPercent", tipPercent);
             orderTypeItem.getJSONObject("body").put("note", note);
         }
@@ -160,8 +179,19 @@ public class OrderManager {
 
     public double getTaxPrice() { return taxPrice; }
 
-    public JSONObject getFinalizedOrderObject() {
-        return topLevelObject;
+    public JSONArray getFinalizedOrderObject() {
+
+        if (numDinein > 0) ordersArray.put(dineinObject);
+
+        if (numTakeaway > 0) ordersArray.put(takeawayObject);
+
+        try {
+            setCommons(checkoutType, table, tipPercent, note);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return ordersArray;
     }
 
     public int getOrderCount() {
@@ -191,10 +221,12 @@ public class OrderManager {
                     if (objectId.equals(id)) {
                         dineinOrderItems = removeFromJSONArray(dineinOrderItems, i);
                         orderCount--;
+                        numDinein--;
 
-                        if (isChoiceItem)
+                        if (isChoiceItem) {
                             dineinOrderItems = removeFromJSONArray(dineinOrderItems, i); // i -> next index because it's already one size smaller
-
+                            numDinein--;
+                        }
                         dineinBodyObject.put("orderItems", dineinOrderItems);
                         break;
                     }
@@ -209,10 +241,12 @@ public class OrderManager {
                     if (objectId.equals(id)) {
                         takeawayOrderItems = removeFromJSONArray(takeawayOrderItems, i);
                         orderCount--;
+                        numTakeaway--;
 
-                        if (isChoiceItem)
+                        if (isChoiceItem) {
                             takeawayOrderItems = removeFromJSONArray(takeawayOrderItems, i); // i -> next index because it's already one size smaller
-
+                            numTakeaway--;
+                        }
                         takeawayBodyObject.put("orderItems", takeawayOrderItems);
                         break;
                     }
