@@ -8,15 +8,17 @@
     android:background="@drawable/modal">
 
     <TextView
+        android:id="@+id/tv_tip_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="ADD GRATUITY"
         android:layout_gravity="center"
         android:layout_marginTop="10dp"
-        android:textSize="25sp"
+        android:textSize="30sp"
         android:textColor="@color/colorPrimary"/>
 
     <TextView
+        android:id="@+id/tv_tip_msg"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="We hope you enjoyed your experience at Tasting Room Del Mar! Come back soon!"
@@ -25,6 +27,8 @@
         android:layout_marginTop="5dp"
         android:layout_marginBottom="5dp"
         android:textSize="15sp"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp"
         android:textColor="@color/colorPrimary"/>
 
     <LinearLayout
@@ -43,6 +47,7 @@
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
                 android:text="SUBTOTAL"
+                android:textSize="20sp"
                 android:textColor="@color/colorPrimary"/>
 
             <TextView
@@ -52,6 +57,7 @@
                 android:layout_alignParentRight="true"
                 android:layout_alignParentEnd="true"
                 android:text="10.00"
+                android:textSize="20sp"
                 android:textColor="@color/colorPrimary"/>
 
         </RelativeLayout>
@@ -67,6 +73,7 @@
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
                 android:text="TAX"
+                android:textSize="20sp"
                 android:textColor="@color/colorPrimary"/>
 
             <TextView
@@ -76,6 +83,7 @@
                 android:layout_alignParentRight="true"
                 android:layout_alignParentEnd="true"
                 android:text="0.80"
+                android:textSize="20sp"
                 android:textColor="@color/colorPrimary"/>
 
         </RelativeLayout>
@@ -92,6 +100,7 @@
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
                 android:text="GRATUITY"
+                android:textSize="20sp"
                 android:textColor="@color/colorPrimary"/>
 
             <TextView
@@ -101,6 +110,7 @@
                 android:layout_alignParentRight="true"
                 android:layout_alignParentEnd="true"
                 android:text="0.00"
+                android:textSize="20sp"
                 android:textColor="@color/colorPrimary"/>
 
         </RelativeLayout>
@@ -116,6 +126,7 @@
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
                 android:text="TOTAL"
+                android:textSize="20sp"
                 android:textColor="@color/colorPrimary"/>
 
             <TextView
@@ -125,6 +136,7 @@
                 android:layout_alignParentRight="true"
                 android:layout_alignParentEnd="true"
                 android:text="12.80"
+                android:textSize="20sp"
                 android:textColor="@color/colorPrimary"/>
 
         </RelativeLayout>
@@ -135,6 +147,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:text="Gratuity (Adjust below. Default 18%)"
+            android:textSize="18sp"
             android:textColor="@color/colorPrimary"/>
 
         <org.adw.library.widgets.discreteseekbar.DiscreteSeekBar

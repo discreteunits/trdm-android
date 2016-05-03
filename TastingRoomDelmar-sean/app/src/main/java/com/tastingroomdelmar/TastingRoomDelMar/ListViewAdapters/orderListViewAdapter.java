@@ -53,6 +53,8 @@ public class OrderListViewAdapter extends ArrayAdapter<OrderListItem> {
             viewHolder.tvModPrice.setTypeface(FontManager.nexa);
 
             viewHolder.tvName.setTypeface(FontManager.bebasReg);
+
+            rowView.setTag(viewHolder);
         } else {
             viewHolder = (MyTabActivity.OrderItemViewHolder) rowView.getTag();
         }

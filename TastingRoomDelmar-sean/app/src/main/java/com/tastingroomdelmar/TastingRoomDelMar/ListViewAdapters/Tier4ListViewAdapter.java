@@ -68,6 +68,8 @@ public class Tier4ListViewAdapter extends ArrayAdapter<ItemListObject> implement
             viewHolder.tvOption.setTypeface(FontManager.openSansItalic);
             viewHolder.btnAddToTab.setTypeface(FontManager.nexa);
 
+            rowView.setTag(viewHolder);
+
         } else {
             viewHolder = (Tier4Activity.ItemViewHolder) rowView.getTag();
         }

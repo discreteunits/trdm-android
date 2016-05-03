@@ -27,4 +27,6 @@ public class PaymentManager {
     public void setPaymentMethod(HashMap<String, String> object) {
         paymentMethod = object;
     }
+
+    public void clearPaymentMethod() { paymentMethod = null; }
 }

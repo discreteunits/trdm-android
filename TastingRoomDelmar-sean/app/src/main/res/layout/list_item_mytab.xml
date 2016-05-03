@@ -2,7 +2,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="10dp">
+    android:padding="10dp"
+    android:background="#00FFFFFF">
 
     <TextView
         android:id="@+id/mytab_list_item_qty"
@@ -19,7 +20,8 @@
         android:layout_height="wrap_content"
         android:layout_toRightOf="@+id/mytab_list_item_qty"
         android:layout_marginLeft="15dp"
-        android:text="The Blue Burger..."
+        android:layout_marginRight="40dp"
+        android:text="Buger"
         android:textSize="22sp"
         android:textColor="@color/colorPrimary"/>
 

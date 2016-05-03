@@ -9,6 +9,7 @@ import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -63,6 +64,8 @@ public class MyTabActivity extends AppCompatActivity {
     TextView mTVTax;
     TextView mTVTotal;
 
+    Dialog loadingDialog;
+
     Context mContext;
 
     Constants.CheckoutType checkoutType;
@@ -104,6 +107,13 @@ public class MyTabActivity extends AppCompatActivity {
 
         mTVPreviousActivityName.setText("Back");
         mTVPreviousActivityName.setTypeface(FontManager.nexa);
+        mTVPreviousActivityName.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
+
         mTVCurrentActivityName.setText(CURRENT_ACTIVITY);
         mTVCurrentActivityName.setTypeface(FontManager.nexa);
 
@@ -142,8 +152,16 @@ public class MyTabActivity extends AppCompatActivity {
 
         final OrderManager orderManager = OrderManager.getSingleton();
 
-        if (orderManager == null) {
-            Toast.makeText(this, "There was an error retrieving your order. Please try again", Toast.LENGTH_SHORT).show();
+        if (orderManager == null || orderManager.getOrderCount() == 0) {
+            Toast.makeText(this, "Looks like you don't have any items on your tab", Toast.LENGTH_SHORT).show();
+            orderButton.setText("Back to menu");
+            orderButton.setBackground(ContextCompat.getDrawable(mContext, R.drawable.gray_soft_corner_button));
+            orderButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    finish();
+                }
+            });
             return;
         }
 
@@ -192,6 +210,11 @@ public class MyTabActivity extends AppCompatActivity {
                         orderManager.removeItem(item.getIsDineIn(), item.getIsChoice(), item.getObjectId());
                         orderListItems.remove(position);
                         adapter.notifyDataSetChanged();
+
+                        if (orderManager.getOrderCount() == 0) {
+                            orderButton.setText("Back to menu");
+                            orderButton.setBackground(ContextCompat.getDrawable(mContext, R.drawable.gray_soft_corner_button));
+                        }
                         break;
                 }
                 return true;
@@ -216,9 +239,16 @@ public class MyTabActivity extends AppCompatActivity {
         final Dialog checkoutOptionDialog = new Dialog(mContext);
         checkoutOptionDialog.setContentView(R.layout.layout_checkout_options);
 
+        final TextView tvCloseoutTitle = (TextView) checkoutOptionDialog.findViewById(R.id.tv_closeout_title);
+        final TextView tvCloseoutMsg = (TextView) checkoutOptionDialog.findViewById(R.id.tv_closeout_msg);
         final Button closeoutNow = (Button) checkoutOptionDialog.findViewById(R.id.btn_closeout_now);
         final Button closeoutServer = (Button) checkoutOptionDialog.findViewById(R.id.btn_closeout_server);
         final Button cancelCheckout = (Button) checkoutOptionDialog.findViewById(R.id.btn_closeout_cancel);
+        tvCloseoutTitle.setTypeface(FontManager.bebasBold);
+        tvCloseoutMsg.setTypeface(FontManager.openSansLight);
+        closeoutNow.setTypeface(FontManager.openSansBold);
+        closeoutServer.setTypeface(FontManager.openSansBold);
+        cancelCheckout.setTypeface(FontManager.openSansBold);
 
         final Dialog tableDialog = new Dialog(mContext);
         tableDialog.setContentView(R.layout.layout_checkout_table);
@@ -226,13 +256,35 @@ public class MyTabActivity extends AppCompatActivity {
         final Dialog tipDialog = new Dialog(mContext);
         tipDialog.setContentView(R.layout.layout_checkout_tip);
 
+        loadingDialog = new Dialog(mContext);
+        loadingDialog.setContentView(R.layout.layout_checkout_loading);
+        loadingDialog.setCancelable(false);
+        loadingDialog.setCanceledOnTouchOutside(false);
+
+        final TextView tvPlacingOrder = (TextView) loadingDialog.findViewById(R.id.tv_placing_order);
+        tvPlacingOrder.setTypeface(FontManager.nexa);
+
         final Button cancelTip = (Button) tipDialog.findViewById(R.id.btn_tip_cancel);
         final Button placeOrderTip = (Button) tipDialog.findViewById(R.id.btn_tip_place_order);
+        final TextView tvTipTitle = (TextView) tipDialog.findViewById(R.id.tv_tip_title);
+        final TextView tvTipMsg = (TextView) tipDialog.findViewById(R.id.tv_tip_msg);
+        final TextView tvSubTotalLabel = (TextView) tipDialog.findViewById(R.id.tv_tip_subtotal_label);
         final TextView tvSubTotal = (TextView) tipDialog.findViewById(R.id.tv_tip_subtotal);
+        final TextView tvTaxLabel = (TextView) tipDialog.findViewById(R.id.tv_tip_tax_label);
         final TextView tvTax = (TextView) tipDialog.findViewById(R.id.tv_tip_tax);
+        final TextView tvGratuityLabel = (TextView) tipDialog.findViewById(R.id.tv_tip_tip_label);
         final TextView tvGratuity = (TextView) tipDialog.findViewById(R.id.tv_tip_tip);
+        final TextView tvTotalLabel = (TextView) tipDialog.findViewById(R.id.tv_tip_total_label);
         final TextView tvTotal = (TextView) tipDialog.findViewById(R.id.tv_tip_total);
         final TextView tvGratuityGuide = (TextView) tipDialog.findViewById(R.id.tv_tip_guide_label);
+        tvTipTitle.setTypeface(FontManager.bebasBold);
+        tvTipMsg.setTypeface(FontManager.openSansLight);
+        tvSubTotalLabel.setTypeface(FontManager.bebasReg);
+        tvGratuityLabel.setTypeface(FontManager.bebasBold);
+        tvTaxLabel.setTypeface(FontManager.bebasReg);
+        tvTotalLabel.setTypeface(FontManager.bebasBold);
+        tvGratuityGuide.setTypeface(FontManager.bebasReg);
+
         final DiscreteSeekBar seekBar = (DiscreteSeekBar) tipDialog.findViewById(R.id.seekbar_tip);
         seekBar.setOnProgressChangeListener(new DiscreteSeekBar.OnProgressChangeListener() {
             @Override
@@ -259,9 +311,11 @@ public class MyTabActivity extends AppCompatActivity {
             public void onClick(View view) {
                 checkoutOptionDialog.dismiss();
                 checkoutType = Constants.CheckoutType.STRIPE;
+                tvTipTitle.setText("ADD GRATUITY");
                 seekBar.setVisibility(View.VISIBLE);
                 tvGratuityGuide.setVisibility(View.VISIBLE);
                 tvGratuity.setVisibility(View.VISIBLE);
+                tvGratuityLabel.setVisibility(View.VISIBLE);
                 tipAmount = 0.18; // by default
                 seekBar.setProgress(18); // default
                 tableDialog.show();
@@ -273,9 +327,11 @@ public class MyTabActivity extends AppCompatActivity {
             public void onClick(View view) {
                 checkoutOptionDialog.dismiss();
                 checkoutType = Constants.CheckoutType.SERVER;
+                tvTipTitle.setText("THANK YOU");
                 seekBar.setVisibility(View.GONE);
                 tvGratuityGuide.setVisibility(View.GONE);
-                tvGratuity.setVisibility(View.GONE); //TODO make the gratuity label gone and change texts for the tab.
+                tvGratuity.setVisibility(View.GONE);
+                tvGratuityLabel.setVisibility(View.GONE);
                 tipAmount = 0; // by default
                 seekBar.setProgress(0); // default
                 tableDialog.show();
@@ -292,9 +348,14 @@ public class MyTabActivity extends AppCompatActivity {
         final Button cancelTable = (Button) tableDialog.findViewById(R.id.btn_table_cancel);
         final Button placeOrderTable = (Button) tableDialog.findViewById(R.id.btn_table_place_order);
         final EditText etTableNumber = (EditText) tableDialog.findViewById(R.id.et_table_number);
+        final TextView tvTableTitle = (TextView) tableDialog.findViewById(R.id.tv_table_title);
+        final TextView tvTableMsg = (TextView) tableDialog.findViewById(R.id.tv_table_counter);
 
         cancelTable.setTypeface(FontManager.nexa);
         placeOrderTable.setTypeface(FontManager.nexa);
+        etTableNumber.setTypeface(FontManager.bebasBold);
+        tvTableTitle.setTypeface(FontManager.bebasBold);
+        tvTableMsg.setTypeface(FontManager.openSansLight);
 
         cancelTable.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -330,14 +391,20 @@ public class MyTabActivity extends AppCompatActivity {
         tvTax.setText(formattedTax);
         tvTotal.setText(formattedGrandtotal);
 
-
-
         final Dialog userDialog = new Dialog(mContext);
         userDialog.setContentView(R.layout.layout_checkout_no_user);
 
+        TextView tvUserTitle = (TextView) userDialog.findViewById(R.id.tv_checkout_user_title);
+        TextView tvUserMsg = (TextView) userDialog.findViewById(R.id.tv_checkout_user_msg);
         Button loginButton = (Button) userDialog.findViewById(R.id.btn_closeout_user_login);
         Button createUserButton = (Button) userDialog.findViewById(R.id.btn_closeout_user_create_user);
         Button userCancelButton = (Button) userDialog.findViewById(R.id.btn_closeout_user_cancel);
+
+        tvUserTitle.setTypeface(FontManager.bebasBold);
+        tvUserMsg.setTypeface(FontManager.openSansLight);
+        loginButton.setTypeface(FontManager.openSansBold);
+        createUserButton.setTypeface(FontManager.openSansBold);
+        userCancelButton.setTypeface(FontManager.openSansBold);
 
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -374,7 +441,11 @@ public class MyTabActivity extends AppCompatActivity {
         orderButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                checkoutOptionDialog.show();
+                if (orderManager.getOrderCount() == 0) {
+                    finish();
+                } else {
+                    checkoutOptionDialog.show();
+                }
             }
         });
 
@@ -435,26 +506,27 @@ public class MyTabActivity extends AppCompatActivity {
         public TextView tvModPrice;
     }
 
-    //TODO figure out how to make it non-string val
     private void placeOrder() {
+        loadingDialog.show();
         Map<String, Object> params = OrderManager.getSingleton().getFinalizedOrderObject();
-        //String finalOrderArray = OrderManager.getSingleton().getFinalizedOrderObject();
-        //params.put("userId", ParseUser.getCurrentUser().getObjectId());
-        //params.put("orders", OrderManager.getSingleton().getFinalizedOrderObject());
-        //Log.d(CURRENT_ACTIVITY, finalOrderArray);
         ParseCloud.callFunctionInBackground("placeOrders", params, new FunctionCallback<String>() {
             @Override
             public void done(String object, ParseException e) {
                 if (e == null) {
-                    Toast.makeText(mContext, "Order Placed Successfully", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mContext, "Order Placed Successfully!", Toast.LENGTH_SHORT).show();
                     Log.d(CURRENT_ACTIVITY, object);
                     OrderManager.clearOrders();
                     orderListItems.clear();
                     adapter.notifyDataSetChanged();
-                    finish(); //TODO not tested.
+
+                    loadingDialog.dismiss();
+
+                    Intent intent = new Intent(MyTabActivity.this, Tier1Activity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
                 } else {
                     e.printStackTrace();
-                    Toast.makeText(mContext, "There was an error while placing order", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mContext, "There was an error while placing order :( Please try again.", Toast.LENGTH_SHORT).show();
                 }
             }
         });

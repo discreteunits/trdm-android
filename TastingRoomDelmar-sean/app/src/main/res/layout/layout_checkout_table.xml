@@ -8,12 +8,13 @@
     android:background="@drawable/modal">
 
     <TextView
+        android:id="@+id/tv_table_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="ENTER TABLE NUMBER"
         android:layout_gravity="center"
         android:layout_marginTop="10dp"
-        android:textSize="25sp"
+        android:textSize="30sp"
         android:textColor="@color/colorPrimary"/>
 
     <EditText
@@ -33,12 +34,13 @@
         android:textColor="@color/colorPrimary"/>
 
     <TextView
-        android:id="@+id/cb_table_counter"
+        android:id="@+id/tv_table_counter"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:gravity="center"
         android:text="Enter table 99 to pickup at the bar"
+        android:textSize="15sp"
         android:layout_marginBottom="10dp"
         android:textColor="@color/colorPrimary"/>
 

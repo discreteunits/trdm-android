@@ -10,4 +10,5 @@
     <color name="dark_grey">#4d4d4d</color>
     <color name="light_grey">#dedede</color>
     <color name="light_dark_grey">#b0b0b0</color>
+    <color name="danger_red">#F44336</color>
 </resources>

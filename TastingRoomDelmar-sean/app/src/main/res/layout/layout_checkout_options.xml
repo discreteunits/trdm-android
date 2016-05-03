@@ -7,15 +7,17 @@
     android:background="@drawable/modal">
 
     <TextView
+        android:id="@+id/tv_closeout_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Checkout Options"
+        android:text="CHECKOUT OPTIONS"
         android:layout_gravity="center"
         android:layout_marginTop="10dp"
-        android:textSize="25sp"
+        android:textSize="30sp"
         android:textColor="@color/colorPrimary"/>
 
     <TextView
+        android:id="@+id/tv_closeout_msg"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Please select your desired checkout method below."

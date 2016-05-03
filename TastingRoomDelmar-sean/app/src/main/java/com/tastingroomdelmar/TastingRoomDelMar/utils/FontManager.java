@@ -14,6 +14,7 @@ public class FontManager {
     public static Typeface bebasBold;
     public static Typeface openSansLight;
     public static Typeface openSansItalic;
+    public static Typeface openSansBold;
 
     public static FontManager singleton;
 
@@ -25,6 +26,7 @@ public class FontManager {
         bebasBold = Typeface.createFromAsset(assetManager, "fonts/bebas/BebasNeue Bold.otf");
         openSansLight = Typeface.createFromAsset(assetManager, "fonts/open-sans/OpenSans-Light.ttf");
         openSansItalic = Typeface.createFromAsset(assetManager, "fonts/open-sans/OpenSans-Italic.ttf");
+        openSansBold = Typeface.createFromAsset(assetManager, "fonts/open-sans/OpenSans-Bold.ttf");
 
         singleton = this;
     }

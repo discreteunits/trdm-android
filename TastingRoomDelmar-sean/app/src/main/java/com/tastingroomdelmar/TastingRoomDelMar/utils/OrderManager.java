@@ -59,6 +59,7 @@ public class OrderManager {
     /* Setup all the structures needed */
     public OrderManager() {
         if (singleton == null) {
+            orderCount = 0;
             orderListItems = new ArrayList<>();
 
             topLevelObject = new JSONObject();
@@ -173,12 +174,14 @@ public class OrderManager {
 
     public void addToSubTotal(double price) {
         subTotalPrice += price;
+        if (subTotalPrice < 0) subTotalPrice = 0;
     }
 
     public double getSubTotalPrice() { return subTotalPrice; }
 
     public void addToTax(double taxPrice) {
         this.taxPrice += taxPrice;
+        if (this.taxPrice < 0) this.taxPrice = 0;
     }
 
     public double getTaxPrice() { return taxPrice; }

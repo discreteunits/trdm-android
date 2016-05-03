@@ -50,6 +50,13 @@ public class WebViewActivity extends AppCompatActivity {
 
         mTVPreviousActivityName.setText("Back");
         mTVPreviousActivityName.setTypeface(FontManager.nexa);
+        mTVPreviousActivityName.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
+
         mTVCurrentActivityName.setText(target);
         mTVCurrentActivityName.setTypeface(FontManager.nexa);
 
