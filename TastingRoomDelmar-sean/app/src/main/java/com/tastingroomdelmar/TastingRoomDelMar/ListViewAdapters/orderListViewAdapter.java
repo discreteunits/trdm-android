@@ -61,7 +61,12 @@ public class OrderListViewAdapter extends ArrayAdapter<OrderListItem> {
 
         viewHolder.tvQty.setText(orderListItem.getQty());
         viewHolder.tvName.setText(orderListItem.getName());
-        viewHolder.tvOption.setText(orderListItem.getOptions());
+
+        if (orderListItem.getIsDineIn())
+            viewHolder.tvOption.setText(orderListItem.getOptions());
+        else
+            viewHolder.tvOption.setText(orderListItem.getOptions()+"\nTakeaway");
+
         viewHolder.tvBasePrice.setText(orderListItem.getBasePrice());
         viewHolder.tvModPrice.setText(orderListItem.getModPrices());
 

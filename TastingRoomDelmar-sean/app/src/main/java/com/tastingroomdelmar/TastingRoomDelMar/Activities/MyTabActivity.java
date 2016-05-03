@@ -45,7 +45,9 @@ import org.json.JSONObject;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by Sean on 4/17/16.
@@ -224,11 +226,44 @@ public class MyTabActivity extends AppCompatActivity {
         final Dialog tipDialog = new Dialog(mContext);
         tipDialog.setContentView(R.layout.layout_checkout_tip);
 
+        final Button cancelTip = (Button) tipDialog.findViewById(R.id.btn_tip_cancel);
+        final Button placeOrderTip = (Button) tipDialog.findViewById(R.id.btn_tip_place_order);
+        final TextView tvSubTotal = (TextView) tipDialog.findViewById(R.id.tv_tip_subtotal);
+        final TextView tvTax = (TextView) tipDialog.findViewById(R.id.tv_tip_tax);
+        final TextView tvGratuity = (TextView) tipDialog.findViewById(R.id.tv_tip_tip);
+        final TextView tvTotal = (TextView) tipDialog.findViewById(R.id.tv_tip_total);
+        final TextView tvGratuityGuide = (TextView) tipDialog.findViewById(R.id.tv_tip_guide_label);
+        final DiscreteSeekBar seekBar = (DiscreteSeekBar) tipDialog.findViewById(R.id.seekbar_tip);
+        seekBar.setOnProgressChangeListener(new DiscreteSeekBar.OnProgressChangeListener() {
+            @Override
+            public void onProgressChanged(DiscreteSeekBar seekBar, int value, boolean fromUser) {
+                double afterTip = subtotal * value/100;
+                tipAmount = value/100.0;
+
+                double totalAfterTip = grandtotal + afterTip;
+                final String gratuity = new DecimalFormat("0.00").format(afterTip);
+                final String grandTotal = new DecimalFormat("0.00").format(totalAfterTip);
+                tvGratuity.setText(gratuity);
+                tvTotal.setText(grandTotal);
+            }
+
+            @Override
+            public void onStartTrackingTouch(DiscreteSeekBar seekBar){}
+
+            @Override
+            public void onStopTrackingTouch(DiscreteSeekBar seekBar){}
+        });
+
         closeoutNow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 checkoutOptionDialog.dismiss();
                 checkoutType = Constants.CheckoutType.STRIPE;
+                seekBar.setVisibility(View.VISIBLE);
+                tvGratuityGuide.setVisibility(View.VISIBLE);
+                tvGratuity.setVisibility(View.VISIBLE);
+                tipAmount = 0.18; // by default
+                seekBar.setProgress(18); // default
                 tableDialog.show();
             }
         });
@@ -238,6 +273,11 @@ public class MyTabActivity extends AppCompatActivity {
             public void onClick(View view) {
                 checkoutOptionDialog.dismiss();
                 checkoutType = Constants.CheckoutType.SERVER;
+                seekBar.setVisibility(View.GONE);
+                tvGratuityGuide.setVisibility(View.GONE);
+                tvGratuity.setVisibility(View.GONE); //TODO make the gratuity label gone and change texts for the tab.
+                tipAmount = 0; // by default
+                seekBar.setProgress(0); // default
                 tableDialog.show();
             }
         });
@@ -277,15 +317,6 @@ public class MyTabActivity extends AppCompatActivity {
             }
         });
 
-
-        final Button cancelTip = (Button) tipDialog.findViewById(R.id.btn_tip_cancel);
-        final Button placeOrderTip = (Button) tipDialog.findViewById(R.id.btn_tip_place_order);
-        final TextView tvSubTotal = (TextView) tipDialog.findViewById(R.id.tv_tip_subtotal);
-        final TextView tvTax = (TextView) tipDialog.findViewById(R.id.tv_tip_tax);
-        final TextView tvGratuity = (TextView) tipDialog.findViewById(R.id.tv_tip_tip);
-        final TextView tvTotal = (TextView) tipDialog.findViewById(R.id.tv_tip_total);
-        final DiscreteSeekBar seekBar = (DiscreteSeekBar) tipDialog.findViewById(R.id.seekbar_tip);
-
         cancelTip.setTypeface(FontManager.nexa);
         placeOrderTip.setTypeface(FontManager.nexa);
         tvSubTotal.setTypeface(FontManager.nexa);
@@ -295,33 +326,11 @@ public class MyTabActivity extends AppCompatActivity {
         tvTotal.setTypeface(FontManager.nexa);
         tvTotal.setTypeface(mTVTotal.getTypeface(), Typeface.BOLD);
 
-        tipAmount = 0.18; // by default
-
         tvSubTotal.setText(formattedSubtotal);
         tvTax.setText(formattedTax);
         tvTotal.setText(formattedGrandtotal);
 
-        seekBar.setOnProgressChangeListener(new DiscreteSeekBar.OnProgressChangeListener() {
-            @Override
-            public void onProgressChanged(DiscreteSeekBar seekBar, int value, boolean fromUser) {
-                double afterTip = subtotal * value/100;
-                tipAmount = value/100.0;
 
-                double totalAfterTip = grandtotal + afterTip;
-                final String gratuity = new DecimalFormat("0.00").format(afterTip);
-                final String grandTotal = new DecimalFormat("0.00").format(totalAfterTip);
-                tvGratuity.setText(gratuity);
-                tvTotal.setText(grandTotal);
-            }
-
-            @Override
-            public void onStartTrackingTouch(DiscreteSeekBar seekBar){}
-
-            @Override
-            public void onStopTrackingTouch(DiscreteSeekBar seekBar){}
-        });
-
-        seekBar.setProgress(18); // default
 
         final Dialog userDialog = new Dialog(mContext);
         userDialog.setContentView(R.layout.layout_checkout_no_user);
@@ -428,17 +437,17 @@ public class MyTabActivity extends AppCompatActivity {
 
     //TODO figure out how to make it non-string val
     private void placeOrder() {
-        HashMap<String, String> params = new HashMap<>();
-        //String userObjectId = ParseUser.getCurrentUser().getObjectId();
-        JSONArray finalOrderArray = OrderManager.getSingleton().getFinalizedOrderObject();
-        params.put("userId", ParseUser.getCurrentUser().getObjectId());
-        params.put("orders", finalOrderArray.toString());
-        Log.d(CURRENT_ACTIVITY, finalOrderArray.toString());
-        ParseCloud.callFunctionInBackground("placeOrders", params, new FunctionCallback<HashMap<String, String>>() {
+        Map<String, Object> params = OrderManager.getSingleton().getFinalizedOrderObject();
+        //String finalOrderArray = OrderManager.getSingleton().getFinalizedOrderObject();
+        //params.put("userId", ParseUser.getCurrentUser().getObjectId());
+        //params.put("orders", OrderManager.getSingleton().getFinalizedOrderObject());
+        //Log.d(CURRENT_ACTIVITY, finalOrderArray);
+        ParseCloud.callFunctionInBackground("placeOrders", params, new FunctionCallback<String>() {
             @Override
-            public void done(HashMap<String, String> object, ParseException e) {
+            public void done(String object, ParseException e) {
                 if (e == null) {
                     Toast.makeText(mContext, "Order Placed Successfully", Toast.LENGTH_SHORT).show();
+                    Log.d(CURRENT_ACTIVITY, object);
                     OrderManager.clearOrders();
                     orderListItems.clear();
                     adapter.notifyDataSetChanged();
