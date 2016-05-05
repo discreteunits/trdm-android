@@ -155,7 +155,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:dsb_min="0"
-            app:dsb_max="100"
+            app:dsb_max="200"
             app:dsb_indicatorFormatter="%d%%"
             />
 

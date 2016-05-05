@@ -2,6 +2,7 @@ package com.tastingroomdelmar.TastingRoomDelMar.parseUtils;
 
 import android.content.Context;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.facebook.FacebookSdk;
 import com.parse.Parse;
@@ -50,19 +51,25 @@ public class ParseUtility {
         ParseInstallation.getCurrentInstallation().saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
-                if (e!= null) e.printStackTrace();
+                if (e!= null) {
+                    Log.d("ParseUtility", "ERRORROROROROROROROROROR");
+                    e.printStackTrace();
+                }
             }
         });
 
         if (ParseUser.getCurrentUser() != null) {
             ParseInstallation installation = ParseInstallation.getCurrentInstallation();
             installation.put("user", ParseUser.getCurrentUser());
-            installation.saveInBackground(new SaveCallback() {
-                @Override
-                public void done(ParseException e) {
-                    if (e!= null) e.printStackTrace();
-                }
-            });
+
+            try {
+                installation.save();
+            } catch (ParseException e) {
+                    Toast.makeText(mContext, "There was an error logging in. Please login again", Toast.LENGTH_SHORT).show();
+                    ParseUser.logOut();
+                    Log.d("ParseUtility", "ERRORROROROROROROROROROR");
+                    e.printStackTrace();
+            }
         }
     }
 

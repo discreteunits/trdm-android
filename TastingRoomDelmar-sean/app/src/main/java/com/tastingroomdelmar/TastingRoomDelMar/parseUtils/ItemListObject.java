@@ -147,8 +147,8 @@ public class ItemListObject implements Comparable<ItemListObject> {
                 final String additionName = additionsArray.getJSONObject(i).getString("displayName");
                 final String modifierId = additionsArray.getJSONObject(i).getString("id");
 
-                if (!additionName.equals("") || !additionName.equals("null")) additionTitle = additionName;
-                else continue;
+                if (additionName.equals("") || additionName.equals("null")) continue;
+                else  additionTitle = additionName;
 
                 Log.d(TAG, "Addition Name: " + additionName);
                 final JSONArray valueObject = additionsArray.getJSONObject(i).getJSONArray("values");

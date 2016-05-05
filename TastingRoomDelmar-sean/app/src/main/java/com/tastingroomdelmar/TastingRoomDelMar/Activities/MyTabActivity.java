@@ -34,8 +34,10 @@ import com.parse.ParseUser;
 import com.tastingroomdelmar.TastingRoomDelMar.ListViewAdapters.OrderListViewAdapter;
 import com.tastingroomdelmar.TastingRoomDelMar.R;
 import com.tastingroomdelmar.TastingRoomDelMar.parseUtils.OrderListItem;
+import com.tastingroomdelmar.TastingRoomDelMar.utils.CategoryManager;
 import com.tastingroomdelmar.TastingRoomDelMar.utils.Constants;
 import com.tastingroomdelmar.TastingRoomDelMar.utils.FontManager;
+import com.tastingroomdelmar.TastingRoomDelMar.utils.OIDManager;
 import com.tastingroomdelmar.TastingRoomDelMar.utils.OrderManager;
 import com.tastingroomdelmar.TastingRoomDelMar.utils.PaymentManager;
 
@@ -295,6 +297,7 @@ public class MyTabActivity extends AppCompatActivity {
                 double totalAfterTip = grandtotal + afterTip;
                 final String gratuity = new DecimalFormat("0.00").format(afterTip);
                 final String grandTotal = new DecimalFormat("0.00").format(totalAfterTip);
+                tvGratuityLabel.setText("GRATUITY (" + value + "%)");
                 tvGratuity.setText(gratuity);
                 tvTotal.setText(grandTotal);
             }
@@ -517,7 +520,12 @@ public class MyTabActivity extends AppCompatActivity {
                     Log.d(CURRENT_ACTIVITY, object);
                     OrderManager.clearOrders();
                     orderListItems.clear();
+
                     adapter.notifyDataSetChanged();
+
+                    CategoryManager.setDinein(false);
+                    CategoryManager.popAll();
+                    OIDManager.popAll();
 
                     loadingDialog.dismiss();
 

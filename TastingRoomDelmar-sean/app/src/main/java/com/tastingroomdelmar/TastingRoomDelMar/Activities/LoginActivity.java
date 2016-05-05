@@ -29,6 +29,7 @@ import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
 
 import com.parse.ParseInstallation;
+import com.parse.ParseSession;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 import com.parse.SignUpCallback;
@@ -153,7 +154,7 @@ public class LoginActivity extends AppCompatActivity {
                         }
                     });
                 } else {
-                    ParseUser.logOutInBackground();
+                    ParseUser.logOutInBackground(); //TODO maybe add callback
                     Toast.makeText(LoginActivity.this, "Logged out successfully", Toast.LENGTH_SHORT).show();
                     mFBLoginButton.setImageDrawable(ContextCompat.getDrawable(appCompatActivity, R.drawable.login_with_fb));
                 }
@@ -217,10 +218,14 @@ public class LoginActivity extends AppCompatActivity {
                             Log.d(TAG, "id: " + id);
 
                             String name = response.getJSONObject().getString("name");
-                            Log.d(TAG, "name: "+ name);
+                            Log.d(TAG, "name: " + name);
+
+                            String email = response.getJSONObject().getString("email");
+                            Log.d(TAG, "email: " + email);
 
                             final ParseUser user = ParseUser.getCurrentUser();
                             user.setUsername(id);
+                            user.setEmail(email);
                             user.put("firstName", name.split(" ")[0]);
                             user.put("lastName", name.split(" ")[name.split(" ").length - 1]);
 

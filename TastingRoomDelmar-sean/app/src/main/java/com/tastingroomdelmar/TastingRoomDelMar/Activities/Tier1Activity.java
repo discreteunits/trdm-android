@@ -7,6 +7,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
@@ -80,7 +81,10 @@ public class Tier1Activity extends AppCompatActivity {
             installation.saveInBackground(new SaveCallback() {
                 @Override
                 public void done(ParseException e) {
-                    if (e!= null) e.printStackTrace();
+                    if (e!= null) {
+                        Log.d(TAG, "ERRORROROROROROROROROROR");
+                        e.printStackTrace();
+                    }
                 }
             });
         }
@@ -275,6 +279,7 @@ public class Tier1Activity extends AppCompatActivity {
                     adapter.notifyDataSetChanged();
                     mProgressBar.setVisibility(View.GONE);
                 } else {
+                    Log.d(TAG, "ERRORROROROROROROROROROR");
                     e.printStackTrace();
                 }
             }
