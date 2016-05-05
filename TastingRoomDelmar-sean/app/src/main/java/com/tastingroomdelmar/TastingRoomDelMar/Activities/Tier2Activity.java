@@ -268,8 +268,14 @@ public class Tier2Activity extends AppCompatActivity {
                         //Log.d(TAG, "parse object name : " + objects.getString("name"));
                         //Log.d(TAG, "objectId : " + objects.getObjectId());
                         ParseObject categoryObject = objects.getParseObject("category");
+                        String state = "";
+                        try {
+                            state = categoryObject.fetchIfNeeded().getString("state");
+                        } catch (ParseException e1) {
+                            e1.printStackTrace();
+                        }
 
-
+                        if (state.equals("idle")) continue;
 
                         try {
                             JSONArray arr = objects.getJSONArray("parentTiers");

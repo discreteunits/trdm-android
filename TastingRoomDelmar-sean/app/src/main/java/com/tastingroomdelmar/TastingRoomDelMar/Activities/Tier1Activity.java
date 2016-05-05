@@ -18,6 +18,7 @@ import android.widget.TextView;
 
 import com.parse.FindCallback;
 import com.parse.ParseException;
+import com.parse.ParseInstallation;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 
@@ -25,6 +26,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.parse.ParseUser;
+import com.parse.SaveCallback;
 import com.tastingroomdelmar.TastingRoomDelMar.R;
 import com.tastingroomdelmar.TastingRoomDelMar.ListViewAdapters.Tier1ListViewAdapter;
 import com.tastingroomdelmar.TastingRoomDelMar.parseUtils.ListObject;
@@ -70,6 +73,17 @@ public class Tier1Activity extends AppCompatActivity {
 
         if (actionBar != null)
             actionBar.setDisplayShowTitleEnabled(false);
+
+        if (ParseUser.getCurrentUser() != null) {
+            ParseInstallation installation = ParseInstallation.getCurrentInstallation();
+            installation.put("user", ParseUser.getCurrentUser());
+            installation.saveInBackground(new SaveCallback() {
+                @Override
+                public void done(ParseException e) {
+                    if (e!= null) e.printStackTrace();
+                }
+            });
+        }
 
         final ImageView mIVUp = (ImageView) findViewById(R.id.up_button);
         mIVUp.setVisibility(View.GONE);
@@ -236,6 +250,14 @@ public class Tier1Activity extends AppCompatActivity {
                         //Log.d(TAG, "objectId : " + objects.getObjectId());
 
                         ParseObject categoryObject = objects.getParseObject("category");
+                        String state = "";
+                        try {
+                            state = categoryObject.fetchIfNeeded().getString("state");
+                        } catch (ParseException e1) {
+                            e1.printStackTrace();
+                        }
+
+                        if (state.equals("idle")) continue;
 
                         listItem.add(new ListObject(
                                 objects.getInt("sortOrder"),

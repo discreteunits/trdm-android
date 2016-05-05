@@ -52,22 +52,6 @@ public class ModalListItem {
         type = Constants.Type.QUANTITY;
     }
 
-    public ModalListItem(String baseItemName, String[] baseItemPrice) {
-        this.title = Constants.QUANTITY;
-        this.baseItemName = baseItemName;
-        this.baseItemPrice = baseItemPrice;
-
-        quantityList = new ArrayList<>();
-
-        for (int i = 1; i < 11; i++) {
-            quantityList.add(new OptionListItem((i+"")));
-        }
-
-        quantityList.get(0).setSelected(true);
-
-        type = Constants.Type.QUANTITY;
-    }
-
     public String getTitle() { return title; }
 
     public ArrayList<OptionListItem> getOptionList() {

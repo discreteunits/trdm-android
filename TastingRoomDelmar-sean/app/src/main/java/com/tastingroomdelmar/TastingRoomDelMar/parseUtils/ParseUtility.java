@@ -1,14 +1,19 @@
 package com.tastingroomdelmar.TastingRoomDelMar.parseUtils;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.facebook.FacebookSdk;
 import com.parse.Parse;
 import com.parse.ParseACL;
+import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
 import com.parse.ParseInstallation;
+import com.parse.ParsePushBroadcastReceiver;
 import com.parse.ParseUser;
 
+import com.parse.PushService;
+import com.parse.SaveCallback;
 import com.stripe.Stripe;
 import com.tastingroomdelmar.TastingRoomDelMar.R;
 
@@ -42,12 +47,22 @@ public class ParseUtility {
         ParseACL.setDefaultACL(defaultACL, true);
 
         // Save the current Installation to Parse.
-        ParseInstallation.getCurrentInstallation().saveInBackground();
+        ParseInstallation.getCurrentInstallation().saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if (e!= null) e.printStackTrace();
+            }
+        });
 
         if (ParseUser.getCurrentUser() != null) {
             ParseInstallation installation = ParseInstallation.getCurrentInstallation();
             installation.put("user", ParseUser.getCurrentUser());
-            installation.saveInBackground();
+            installation.saveInBackground(new SaveCallback() {
+                @Override
+                public void done(ParseException e) {
+                    if (e!= null) e.printStackTrace();
+                }
+            });
         }
     }
 

@@ -28,6 +28,7 @@ import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
 
+import com.parse.ParseInstallation;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 import com.parse.SignUpCallback;
@@ -201,7 +202,6 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void getAndSaveUserDetailsFromFB() {
-        // Suggested by https://disqus.com/by/dominiquecanlas/
         Bundle parameters = new Bundle();
         parameters.putString("fields", "id,email,name");
         new GraphRequest(

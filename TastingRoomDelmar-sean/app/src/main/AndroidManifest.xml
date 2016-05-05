@@ -15,6 +15,13 @@
     <uses-feature android:name="android.hardware.camera.autofocus" android:required="false" />
     <uses-feature android:name="android.hardware.camera.flash" android:required="false" />
 
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+
+    <permission android:protectionLevel="signature"
+        android:name="com.tastingroomdelmar.TastingRoomDelMar.permission.C2D_MESSAGE" />
+    <uses-permission android:name="com.tastingroomdelmar.TastingRoomDelMar.permission.C2D_MESSAGE" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -27,10 +34,7 @@
         <meta-data
             android:name="com.parse.push.notification_icon"
             android:resource="@drawable/ic_notification" />
-        <meta-data
-            android:name="com.parse.push.gcm_sender_id"
-            android:value="id:879366615813" />
-        ;
+
         <provider
             android:name="com.facebook.FacebookContentProvider"
             android:authorities="com.facebook.app.FacebookContentProvider457105024484728"
@@ -112,6 +116,30 @@
             android:name="io.fabric.ApiKey"
             android:value="52fa462b37fc0c005e5599806fd96b167f34f913" />
 
+        <service android:name="com.parse.PushService" />
+        <receiver android:name="com.parse.ParsePushBroadcastReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.parse.push.intent.RECEIVE" />
+                <action android:name="com.parse.push.intent.DELETE" />
+                <action android:name="com.parse.push.intent.OPEN" />
+            </intent-filter>
+        </receiver>
+
+        <receiver
+            android:name="com.parse.GcmBroadcastReceiver"
+            android:permission="com.google.android.c2dm.permission.SEND">
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+                <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
+
+                <category android:name="com.tastingroomdelmar.TastingRoomDelMar" />
+            </intent-filter>
+        </receiver>
+
+        <meta-data
+            android:name="com.parse.push.gcm_sender_id"
+            android:value="id:879366615813" />
     </application>
 
 </manifest>

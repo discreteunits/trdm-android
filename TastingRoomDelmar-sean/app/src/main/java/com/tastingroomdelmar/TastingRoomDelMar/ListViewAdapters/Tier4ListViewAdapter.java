@@ -76,6 +76,10 @@ public class Tier4ListViewAdapter extends ArrayAdapter<ItemListObject> implement
 
         final ItemListObject item = items.get(position);
 
+        //TODO TODO TODO TODO___PHASE 2___TODO TODO TODO TODO//
+        viewHolder.tvVerietal.setVisibility(View.GONE);
+        //TODO TODO TODO TODO___PHASE 2___TODO TODO TODO TODO//
+
         if (item != null) {
             viewHolder.tvName.setText(item.getName());
             viewHolder.tvInfo.setText(item.getAltName());

@@ -17,6 +17,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.parse.FindCallback;
+import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
@@ -264,43 +265,53 @@ public class Tier3Activity extends AppCompatActivity {
         query.findInBackground(new FindCallback<ParseObject>() {
             public void done(List<ParseObject> objectList, ParseException e) {
                 if (e == null) {
-                    for(ParseObject objects : objectList) {
-                        String name = objects.getString("name");
-                        String objectId = objects.getObjectId();
-                        int sortOrder = objects.getInt("sortOrder");
-                        ParseObject categoryObject = objects.getParseObject("category");
+                    for(final ParseObject objects : objectList) {
+                        final ParseObject categoryObject = objects.getParseObject("category");
 
-                        //Log.d(TAG, "parse object name : " + name);
-                        //Log.d(TAG, "ObjectId : " + objectId);
-                        try {
-                            JSONArray arr = objects.getJSONArray("parentTiers");
+                        categoryObject.fetchIfNeededInBackground(new GetCallback<ParseObject>() {
+                            @Override
+                            public void done(ParseObject object, ParseException e) {
+                                String state = "";
+                                state = object.getString("state");
 
-                            CategoryManager.addToAllList(categoryObject == null ?
-                                    "" : categoryObject.getObjectId());
+                                if (state.equals("idle")) return;
 
-                            for (int i = 0; i < arr.length(); i++) {
-                                if (OIDManager.isInList(arr.getJSONObject(i).getString("objectId"))) {
-                                    listItem.add(new ListObject(
-                                            sortOrder,
-                                            objectId,
-                                            categoryObject == null ?
-                                                    "" : categoryObject.getObjectId(),
-                                            name,
-                                            false));
+                                String name = objects.getString("name");
+                                String objectId = objects.getObjectId();
+                                int sortOrder = objects.getInt("sortOrder");
 
-                                    break;
+
+                                //Log.d(TAG, "parse object name : " + name);
+                                //Log.d(TAG, "ObjectId : " + objectId);
+                                try {
+                                    JSONArray arr = objects.getJSONArray("parentTiers");
+
+                                    CategoryManager.addToAllList(categoryObject == null ?
+                                            "" : categoryObject.getObjectId());
+
+                                    for (int i = 0; i < arr.length(); i++) {
+                                        if (OIDManager.isInList(arr.getJSONObject(i).getString("objectId"))) {
+                                            listItem.add(new ListObject(
+                                                    sortOrder,
+                                                    objectId,
+                                                    categoryObject == null ?
+                                                            "" : categoryObject.getObjectId(),
+                                                    name,
+                                                    false));
+
+                                            Collections.sort(listItem);
+                                            adapter.notifyDataSetChanged();
+
+                                            break;
+                                        }
+                                    }
+                                } catch (JSONException e1) {
+                                    e1.printStackTrace();
                                 }
                             }
-                            //if (OIDManager.isInList(objects.getJSONObject("tier2").getString("Tier2")))
-                            //    listItem.add(new ListObject(sortOrder, objectId, name));
-                        } catch (JSONException e1) {
-                            e1.printStackTrace();
-                        }
+                        });
                     }
 
-                    Collections.sort(listItem);
-
-                    adapter.notifyDataSetChanged();
                     mProgressBar.setVisibility(View.GONE);
                 } else {
                     e.printStackTrace();

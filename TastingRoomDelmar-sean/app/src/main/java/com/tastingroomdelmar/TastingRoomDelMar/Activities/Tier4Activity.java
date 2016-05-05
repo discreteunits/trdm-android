@@ -276,28 +276,40 @@ public class Tier4Activity extends AppCompatActivity {
         query.findInBackground(new FindCallback<ParseObject>() {
             public void done(List<ParseObject> objectList, ParseException e) {
                 if (e == null) {
-                    for(ParseObject objects : objectList) {
-                        String name = objects.getString("name");
-                        JSONArray tier3JSONArray = objects.getJSONArray("parentTiers"); // reds, whites,...
+                    for (final ParseObject objects : objectList) {
+                        ParseObject categoryObject = objects.getParseObject("category");
 
-                        //Log.d(TAG, "parse object name : " + name);
-                        try {
-                            if (tier3JSONArray != null) {
-                                for (int i = 0; i < tier3JSONArray.length(); i++) {
-                                    String objectId = tier3JSONArray.getJSONObject(i).getString("objectId");
+                        categoryObject.fetchIfNeededInBackground(new GetCallback<ParseObject>() {
+                            @Override
+                            public void done(ParseObject object, ParseException e) {
+                                String state = "";
+                                state = object.getString("state");
 
-                                    if (OIDManager.isInList(objectId))
-                                        topListItem.add(new TopListObject(objects));
+                                if (state.equals("idle")) return;
+
+                                String name = objects.getString("name");
+                                JSONArray tier3JSONArray = objects.getJSONArray("parentTiers"); // reds, whites,...
+
+                                //Log.d(TAG, "parse object name : " + name);
+                                try {
+                                    if (tier3JSONArray != null) {
+                                        for (int i = 0; i < tier3JSONArray.length(); i++) {
+                                            String objectId = tier3JSONArray.getJSONObject(i).getString("objectId");
+
+                                            if (OIDManager.isInList(objectId)) {
+                                                topListItem.add(new TopListObject(objects));
+                                                Collections.sort(topListItem);
+                                                topAdapter.notifyDataSetChanged();
+                                            }
+                                        }
+                                    }
+
+                                } catch (JSONException e1) {
+                                    e1.printStackTrace();
                                 }
                             }
-
-                        } catch (JSONException e1) {
-                            e1.printStackTrace();
-                        }
+                        });
                     }
-
-                    if (topListItem.size() > 0)
-                        Collections.sort(topListItem);
 
                     TopListObject fullList = new TopListObject("Full List");
                     fullList.setSelected(true); // default selected
@@ -318,7 +330,9 @@ public class Tier4Activity extends AppCompatActivity {
         query.findInBackground(new FindCallback<ParseObject>() {
             public void done(List<ParseObject> objectList, ParseException e) {
                 if (e == null) {
-                    for(ParseObject objects : objectList) {
+                    for (ParseObject objects : objectList) {
+                        if (objects.getString("state").equals("idle")) continue;
+
                         //TODO update this once db is correctly configured
                         if (objects.getNumber("stockAmount").intValue() < 1) {
                             // skip
@@ -368,7 +382,7 @@ public class Tier4Activity extends AppCompatActivity {
                                             item.setVerietal(object.getString("name"));
                                         } else {
                                             e.printStackTrace(); // usually when there's no result
-                                            item.setVerietal("Unknown");
+                                            item.setVerietal(currentActivity);
                                         }
 
                                         listItem.add(item);
@@ -385,6 +399,7 @@ public class Tier4Activity extends AppCompatActivity {
                             e1.printStackTrace();
                         }
                     }
+                    // TODO move the notifyDataSetChanged to here and test
 
                     if (listItem.size() == 0) {
                         //Log.d(TAG, "Nothing to show");
