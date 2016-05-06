@@ -101,8 +101,10 @@ public class Tier1Activity extends AppCompatActivity {
             public void onOrderCountChanged(int count) {
                 if (count == 0)
                     mBadge.setVisibility(View.GONE);
-                else
-                    mBadge.setText(count+"");
+                else {
+                    mBadge.setVisibility(View.VISIBLE);
+                    mBadge.setText(count + "");
+                }
             }
         });
 

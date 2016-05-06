@@ -17,14 +17,19 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.parse.FindCallback;
 import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseInstallation;
+import com.parse.ParsePush;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import com.tastingroomdelmar.TastingRoomDelMar.R;
 import com.tastingroomdelmar.TastingRoomDelMar.utils.Constants;
 import com.tastingroomdelmar.TastingRoomDelMar.utils.FontManager;
+
+import java.util.List;
 
 public class SignUpLoginActivity extends AppCompatActivity {
     private static final String TAG = SignUpLoginActivity.class.getSimpleName();
@@ -43,24 +48,29 @@ public class SignUpLoginActivity extends AppCompatActivity {
     String origin;
 
     Context mContext;
-
+//TODO CHECK EMAIL
     @Override
     protected void onResume() {
-        if (ParseUser.getCurrentUser() != null) {
+        ParseUser user = ParseUser.getCurrentUser();
+        if (user != null) {
             SharedPreferences prefs = PreferenceManager
                     .getDefaultSharedPreferences(this);
             SharedPreferences.Editor edit = prefs.edit();
 
-            edit.putString("firstname", ParseUser.getCurrentUser().getString("firstName"));
-            edit.putString("lastname", ParseUser.getCurrentUser().getString("lastName"));
-            edit.putString("mobile", ParseUser.getCurrentUser().getString("mobileNumber"));
-            edit.putString("email", ParseUser.getCurrentUser().getEmail());
-            edit.putBoolean("push", ParseUser.getCurrentUser().getBoolean("pushAllowed"));
-            edit.putBoolean("newsletter", ParseUser.getCurrentUser().getBoolean("marketingAllowed"));
+            final String userEmail = user.getEmail();
+
+            edit.putString("firstname", user.getString("firstName"));
+            edit.putString("lastname", user.getString("lastName"));
+            edit.putString("mobile", user.getString("mobileNumber"));
+            edit.putString("email", userEmail);
+            edit.putBoolean("push", user.getBoolean("pushAllowed"));
+            edit.putBoolean("newsletter", user.getBoolean("marketingAllowed"));
             edit.apply();
 
-            Intent intent = new Intent(SignUpLoginActivity.this, Tier1Activity.class);
-            startActivity(intent);
+            if (userEmail != null && userEmail.isEmpty()) {
+                Intent intent = new Intent(SignUpLoginActivity.this, Tier1Activity.class);
+                startActivity(intent);
+            }
         }
         super.onResume();
     }
@@ -119,6 +129,8 @@ public class SignUpLoginActivity extends AppCompatActivity {
 
         mEditTextPassword = (EditText) findViewById(R.id.et_password);
 
+        final View thirdDivider = (View) findViewById(R.id.third_divider);
+
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             origin = extras.getString("ORIGIN");
@@ -137,7 +149,19 @@ public class SignUpLoginActivity extends AppCompatActivity {
                         finish();
                     }
                 });
-                mButtonSignupLogin.setText(getResources().getString(R.string.con));
+
+                if (origin == null) {
+                    mButtonSignupLogin.setText(getResources().getString(R.string.con));
+                    mTVPassword.setVisibility(View.VISIBLE);
+                    mEditTextPassword.setVisibility(View.VISIBLE);
+                    thirdDivider.setVisibility(View.VISIBLE);
+                } else {
+                    mButtonSignupLogin.setText(getResources().getString(R.string.signup));
+                    mTVPassword.setVisibility(View.INVISIBLE);
+                    mEditTextPassword.setVisibility(View.INVISIBLE);
+                    thirdDivider.setVisibility(View.INVISIBLE);
+                }
+
                 mButtonSignupLogin.setBackgroundColor(ContextCompat.getColor(this, R.color.confirmGreen));
                 mButtonSignupLogin.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -183,12 +207,41 @@ public class SignUpLoginActivity extends AppCompatActivity {
             return;
         }
 
-        Intent intent = new Intent(SignUpLoginActivity.this, SignUpSecondActivity.class);
-        intent.putExtra("email", email);
-        intent.putExtra("password", password);
-        intent.putExtra("ORIGIN", origin);
+        ParseQuery<ParseUser> query = ParseUser.getQuery();
+        query.whereEqualTo("email", email);
+        query.findInBackground(new FindCallback<ParseUser>() {
+            @Override
+            public void done(List<ParseUser> objects, ParseException e) {
+                if (e == null) {
+                    if (objects.isEmpty()) {
+                        ParseUser user = ParseUser.getCurrentUser();
+                        user.put("email",email);
+                        user.saveInBackground();
 
-        startActivity(intent);
+                        if (origin != null) {
+                            if (origin.equals("MyTabActivity+email")) {
+                                Toast.makeText(mContext, "Thanks! Signing in now", Toast.LENGTH_SHORT).show();
+                                startActivity(new Intent(SignUpLoginActivity.this, MyTabActivity.class));
+                            } else if (origin.equals("email")) {
+                                Toast.makeText(mContext, "Thanks! Signing in now", Toast.LENGTH_SHORT).show();
+                                startActivity(new Intent(SignUpLoginActivity.this, Tier1Activity.class));
+                            }
+                        } else {
+                            Intent intent = new Intent(SignUpLoginActivity.this, SignUpSecondActivity.class);
+                            intent.putExtra("email", email);
+                            intent.putExtra("password", password);
+                            intent.putExtra("ORIGIN", origin);
+                            startActivity(intent);
+                        }
+                    } else {
+                        Toast.makeText(mContext, "Your email already exists. Try logging in!", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+        });
+
+
+
     }
 
     private void loginUser() {
@@ -202,6 +255,8 @@ public class SignUpLoginActivity extends AppCompatActivity {
                     ParseInstallation installation = ParseInstallation.getCurrentInstallation();
                     installation.put("user", ParseUser.getCurrentUser());
                     installation.saveInBackground();
+
+                    ParsePush.subscribeInBackground("customer");
 
                     SharedPreferences prefs = PreferenceManager
                             .getDefaultSharedPreferences(mContext);

@@ -20,6 +20,9 @@ import android.view.MenuItem;
 import com.parse.ParseUser;
 import com.tastingroomdelmar.TastingRoomDelMar.BuildConfig;
 import com.tastingroomdelmar.TastingRoomDelMar.R;
+import com.tastingroomdelmar.TastingRoomDelMar.utils.CategoryManager;
+import com.tastingroomdelmar.TastingRoomDelMar.utils.OIDManager;
+import com.tastingroomdelmar.TastingRoomDelMar.utils.OrderManager;
 
 /**
  * A {@link PreferenceActivity} that presents a set of application settings. On
@@ -247,6 +250,9 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                         public void onClick(DialogInterface dialog, int which) {
                             ParseUser.logOutInBackground();
 
+                            OrderManager.clearOrders();
+                            OIDManager.popAll();
+                            CategoryManager.popAll();
                             PreferenceManager.getDefaultSharedPreferences(getActivity()).edit().clear().commit();
 
                             Intent newStackIntent = new Intent(getActivity(), LoginActivity.class);

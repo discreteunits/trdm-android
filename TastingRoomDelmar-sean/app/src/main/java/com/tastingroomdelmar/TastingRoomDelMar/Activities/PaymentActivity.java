@@ -93,13 +93,12 @@ public class PaymentActivity extends AppCompatActivity {
             actionBar.setDisplayShowTitleEnabled(false);
 
         loadingDialog = new Dialog(mContext);
-        loadingDialog.setContentView(R.layout.layout_checkout_loading);
+        loadingDialog.setContentView(R.layout.layout_loading_dialog);
         loadingDialog.setCancelable(false);
         loadingDialog.setCanceledOnTouchOutside(false);
 
-        final TextView tvPleaseWait = (TextView) loadingDialog.findViewById(R.id.tv_placing_order);
+        final TextView tvPleaseWait = (TextView) loadingDialog.findViewById(R.id.tv_please_wait);
         tvPleaseWait.setTypeface(FontManager.nexa);
-        tvPleaseWait.setText("Please Wait...");
 
         final ImageView mIVUp = (ImageView) findViewById(R.id.up_button);
         mIVUp.setOnClickListener(new View.OnClickListener() {

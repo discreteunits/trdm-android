@@ -10,6 +10,7 @@ import com.parse.ParseACL;
 import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
 import com.parse.ParseInstallation;
+import com.parse.ParsePush;
 import com.parse.ParsePushBroadcastReceiver;
 import com.parse.ParseUser;
 
@@ -51,7 +52,7 @@ public class ParseUtility {
         ParseInstallation.getCurrentInstallation().saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
-                if (e!= null) {
+                if (e != null) {
                     Log.d("ParseUtility", "ERRORROROROROROROROROROR");
                     e.printStackTrace();
                 }
@@ -64,6 +65,7 @@ public class ParseUtility {
 
             try {
                 installation.save();
+                ParsePush.subscribeInBackground("customer");
             } catch (ParseException e) {
                     Toast.makeText(mContext, "There was an error logging in. Please login again", Toast.LENGTH_SHORT).show();
                     ParseUser.logOut();

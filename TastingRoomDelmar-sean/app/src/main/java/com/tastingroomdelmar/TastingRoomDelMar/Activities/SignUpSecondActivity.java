@@ -20,6 +20,7 @@ import android.widget.Toast;
 
 import com.parse.ParseException;
 import com.parse.ParseInstallation;
+import com.parse.ParsePush;
 import com.parse.ParseUser;
 import com.parse.SignUpCallback;
 
@@ -159,6 +160,8 @@ public class SignUpSecondActivity extends AppCompatActivity {
                                 ParseInstallation installation = ParseInstallation.getCurrentInstallation();
                                 installation.put("user", ParseUser.getCurrentUser());
                                 installation.saveInBackground();
+
+                                ParsePush.subscribeInBackground("customer");
 
                                 SharedPreferences prefs = PreferenceManager
                                         .getDefaultSharedPreferences(mContext);

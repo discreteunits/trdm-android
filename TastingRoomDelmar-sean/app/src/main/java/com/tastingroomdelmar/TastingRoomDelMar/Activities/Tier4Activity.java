@@ -104,8 +104,10 @@ public class Tier4Activity extends AppCompatActivity {
             public void onOrderCountChanged(int count) {
                 if (count == 0)
                     mBadge.setVisibility(View.GONE);
-                else
-                    mBadge.setText(count+"");
+                else {
+                    mBadge.setVisibility(View.VISIBLE);
+                    mBadge.setText(count + "");
+                }
             }
         });
 
@@ -327,13 +329,13 @@ public class Tier4Activity extends AppCompatActivity {
     private void getListFromParse() {
         ParseQuery<ParseObject> query = new ParseQuery<>("Product");
         query.include("categories");
+        query.setLimit(1000);
         query.findInBackground(new FindCallback<ParseObject>() {
             public void done(List<ParseObject> objectList, ParseException e) {
                 if (e == null) {
                     for (ParseObject objects : objectList) {
                         if (objects.getString("state").equals("idle")) continue;
 
-                        //TODO update this once db is correctly configured
                         if (objects.getNumber("stockAmount").intValue() < 1) {
                             // skip
                             continue;
@@ -358,8 +360,11 @@ public class Tier4Activity extends AppCompatActivity {
 
                             addToListFlag = CategoryManager.isInList(categoryList) &&
                                     (productType.equals("CHOICE") || productType.equals("GROUP") ||
-                                     currentActivity.equals("Events") || currentActivity.equals("Merch") ||
-                                    currentActivity.equals("Harvest") || currentActivity.equals("More"));
+                                     (currentActivity.equals("Events")   && (productType.equals("CHOICE") || productType.equals(""))) ||
+                                     (currentActivity.equals("Merch")    && (productType.equals("CHOICE") || productType.equals(""))) ||
+                                     (currentActivity.equals("Harvest")  && (productType.equals("CHOICE") || productType.equals(""))) ||
+                                     (currentActivity.equals("More")    && (productType.equals("CHOICE") || productType.equals("")))
+                                    );
 
                             //Log.d(TAG, "addToListFlag: " + addToListFlag);
 

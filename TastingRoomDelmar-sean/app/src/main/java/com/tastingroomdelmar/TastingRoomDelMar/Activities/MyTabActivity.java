@@ -27,6 +27,7 @@ import com.baoyz.swipemenulistview.SwipeMenu;
 import com.baoyz.swipemenulistview.SwipeMenuCreator;
 import com.baoyz.swipemenulistview.SwipeMenuItem;
 import com.baoyz.swipemenulistview.SwipeMenuListView;
+import com.crashlytics.android.Crashlytics;
 import com.parse.FunctionCallback;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
@@ -533,7 +534,9 @@ public class MyTabActivity extends AppCompatActivity {
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(intent);
                 } else {
+                    Crashlytics.log("MyTabActivity.placeOrder():" + e.getLocalizedMessage());
                     e.printStackTrace();
+                    loadingDialog.dismiss();
                     Toast.makeText(mContext, "There was an error while placing order :( Please try again.", Toast.LENGTH_SHORT).show();
                 }
             }

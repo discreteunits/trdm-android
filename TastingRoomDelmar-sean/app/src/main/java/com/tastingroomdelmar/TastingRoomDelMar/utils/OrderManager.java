@@ -50,9 +50,9 @@ public class OrderManager {
         void onOrderCountChanged(int count);
     }
 
-    OrderCountListener orderCountListener;
+    ArrayList<OrderCountListener> orderCountListenerArray;
 
-    public void setOrderCountListener(OrderCountListener listener) { orderCountListener = listener; }
+    public void setOrderCountListener(OrderCountListener listener) { orderCountListenerArray.add(listener); }
 
     private static OrderManager singleton;
 
@@ -60,6 +60,8 @@ public class OrderManager {
     public OrderManager() {
         if (singleton == null) {
             orderCount = 0;
+            orderCountListenerArray = new ArrayList<>();
+
             orderListItems = new ArrayList<>();
 
             topLevelObject = new JSONObject();
@@ -91,6 +93,9 @@ public class OrderManager {
                 e.printStackTrace();
             }
             singleton = this;
+
+            for (OrderCountListener ocl : orderCountListenerArray)
+                ocl.onOrderCountChanged(orderCount);
         }
     }
 
@@ -123,8 +128,8 @@ public class OrderManager {
 
         if (!isParent) orderCount++;
 
-        if (orderCountListener != null)
-            orderCountListener.onOrderCountChanged(orderCount);
+        for (OrderCountListener ocl : orderCountListenerArray)
+            ocl.onOrderCountChanged(orderCount);
     }
 
     public void addToTakeAway(boolean isParent, JSONObject takeAwayObj) {
@@ -134,8 +139,8 @@ public class OrderManager {
 
         if (!isParent) orderCount++;
 
-        if (orderCountListener != null)
-            orderCountListener.onOrderCountChanged(orderCount);
+        for (OrderCountListener ocl : orderCountListenerArray)
+            ocl.onOrderCountChanged(orderCount);
     }
 
     Constants.CheckoutType checkoutType;
@@ -241,7 +246,12 @@ public class OrderManager {
                             dineinOrderItems = removeFromJSONArray(dineinOrderItems, i); // i -> next index because it's already one size smaller
                             numDinein--;
                         }
+
                         dineinBodyObject.put("orderItems", dineinOrderItems);
+
+                        for (OrderCountListener ocl : orderCountListenerArray)
+                            ocl.onOrderCountChanged(orderCount);
+
                         break;
                     }
                 } catch (JSONException e) {
@@ -261,7 +271,12 @@ public class OrderManager {
                             takeawayOrderItems = removeFromJSONArray(takeawayOrderItems, i); // i -> next index because it's already one size smaller
                             numTakeaway--;
                         }
+
                         takeawayBodyObject.put("orderItems", takeawayOrderItems);
+
+                        for (OrderCountListener ocl : orderCountListenerArray)
+                            ocl.onOrderCountChanged(orderCount);
+
                         break;
                     }
                 } catch (JSONException e) {
