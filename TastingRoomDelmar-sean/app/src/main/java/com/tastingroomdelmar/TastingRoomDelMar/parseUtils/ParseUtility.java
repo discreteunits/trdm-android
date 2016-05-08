@@ -19,6 +19,9 @@ import com.parse.SaveCallback;
 import com.stripe.Stripe;
 import com.tastingroomdelmar.TastingRoomDelMar.R;
 
+import java.io.File;
+import java.lang.reflect.Method;
+
 /**
  * Created by Sean on 2/7/16.
  */
@@ -28,6 +31,8 @@ public class ParseUtility {
     private boolean hasCreditcard;
 
     private static ParseUtility singleton;
+
+    ParseInstallation installation;
 
     public ParseUtility(Context context) {
         mContext = context;
@@ -48,19 +53,9 @@ public class ParseUtility {
         ParseACL defaultACL = new ParseACL();
         ParseACL.setDefaultACL(defaultACL, true);
 
-        // Save the current Installation to Parse.
-        ParseInstallation.getCurrentInstallation().saveInBackground(new SaveCallback() {
-            @Override
-            public void done(ParseException e) {
-                if (e != null) {
-                    Log.d("ParseUtility", "ERRORROROROROROROROROROR");
-                    e.printStackTrace();
-                }
-            }
-        });
+        installation = ParseInstallation.getCurrentInstallation();
 
         if (ParseUser.getCurrentUser() != null) {
-            ParseInstallation installation = ParseInstallation.getCurrentInstallation();
             installation.put("user", ParseUser.getCurrentUser());
 
             try {
@@ -69,7 +64,7 @@ public class ParseUtility {
             } catch (ParseException e) {
                     Toast.makeText(mContext, "There was an error logging in. Please login again", Toast.LENGTH_SHORT).show();
                     ParseUser.logOut();
-                    Log.d("ParseUtility", "ERRORROROROROROROROROROR");
+                    Log.d("ParseUtility", "ERRORROROROROROROROROROR\n" + e.getLocalizedMessage());
                     e.printStackTrace();
             }
         }

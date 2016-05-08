@@ -25,6 +25,7 @@ import com.parse.ParsePush;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
+import com.parse.SaveCallback;
 import com.tastingroomdelmar.TastingRoomDelMar.R;
 import com.tastingroomdelmar.TastingRoomDelMar.utils.Constants;
 import com.tastingroomdelmar.TastingRoomDelMar.utils.FontManager;
@@ -48,7 +49,7 @@ public class SignUpLoginActivity extends AppCompatActivity {
     String origin;
 
     Context mContext;
-//TODO CHECK EMAIL
+
     @Override
     protected void onResume() {
         ParseUser user = ParseUser.getCurrentUser();
@@ -155,11 +156,13 @@ public class SignUpLoginActivity extends AppCompatActivity {
                     mTVPassword.setVisibility(View.VISIBLE);
                     mEditTextPassword.setVisibility(View.VISIBLE);
                     thirdDivider.setVisibility(View.VISIBLE);
+                    mTVQuestion.setVisibility(View.VISIBLE);
                 } else {
                     mButtonSignupLogin.setText(getResources().getString(R.string.signup));
                     mTVPassword.setVisibility(View.INVISIBLE);
                     mEditTextPassword.setVisibility(View.INVISIBLE);
                     thirdDivider.setVisibility(View.INVISIBLE);
+                    mTVQuestion.setVisibility(View.INVISIBLE);
                 }
 
                 mButtonSignupLogin.setBackgroundColor(ContextCompat.getColor(this, R.color.confirmGreen));
@@ -202,46 +205,52 @@ public class SignUpLoginActivity extends AppCompatActivity {
 
         final String password = mEditTextPassword.getText().toString();
 
-        if (email.isEmpty() || password.isEmpty()) {
-            Toast.makeText(this, "Username or Password cannot be empty!", Toast.LENGTH_SHORT).show();
-            return;
+        if (origin == null) {
+            if (email.isEmpty() || password.isEmpty()) {
+                Toast.makeText(this, "Email or Password cannot be empty!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+        } else {
+            if (email.isEmpty()) {
+                Toast.makeText(this, "Email cannot be empty!", Toast.LENGTH_SHORT).show();
+                return;
+            }
         }
 
-        ParseQuery<ParseUser> query = ParseUser.getQuery();
-        query.whereEqualTo("email", email);
-        query.findInBackground(new FindCallback<ParseUser>() {
+        ParseUser user = ParseUser.getCurrentUser();
+        user.setEmail(email);
+        user.setUsername(email);
+        user.saveInBackground(new SaveCallback() {
             @Override
-            public void done(List<ParseUser> objects, ParseException e) {
+            public void done(ParseException e) {
                 if (e == null) {
-                    if (objects.isEmpty()) {
-                        ParseUser user = ParseUser.getCurrentUser();
-                        user.put("email",email);
-                        user.saveInBackground();
+                    SharedPreferences prefs = PreferenceManager
+                            .getDefaultSharedPreferences(mContext);
+                    SharedPreferences.Editor edit = prefs.edit();
+                    edit.putString("email", email);
+                    edit.apply();
 
-                        if (origin != null) {
-                            if (origin.equals("MyTabActivity+email")) {
-                                Toast.makeText(mContext, "Thanks! Signing in now", Toast.LENGTH_SHORT).show();
-                                startActivity(new Intent(SignUpLoginActivity.this, MyTabActivity.class));
-                            } else if (origin.equals("email")) {
-                                Toast.makeText(mContext, "Thanks! Signing in now", Toast.LENGTH_SHORT).show();
-                                startActivity(new Intent(SignUpLoginActivity.this, Tier1Activity.class));
-                            }
-                        } else {
-                            Intent intent = new Intent(SignUpLoginActivity.this, SignUpSecondActivity.class);
-                            intent.putExtra("email", email);
-                            intent.putExtra("password", password);
-                            intent.putExtra("ORIGIN", origin);
-                            startActivity(intent);
+                    if (origin != null) {
+                        if (origin.equals("MyTabActivity+email")) {
+                            Toast.makeText(mContext, "Thanks! Signing in now", Toast.LENGTH_SHORT).show();
+                            startActivity(new Intent(SignUpLoginActivity.this, MyTabActivity.class));
+                        } else if (origin.equals("email")) {
+                            Toast.makeText(mContext, "Thanks! Signing in now", Toast.LENGTH_SHORT).show();
+                            startActivity(new Intent(SignUpLoginActivity.this, Tier1Activity.class));
                         }
                     } else {
-                        Toast.makeText(mContext, "Your email already exists. Try logging in!", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(SignUpLoginActivity.this, SignUpSecondActivity.class);
+                        intent.putExtra("email", email);
+                        intent.putExtra("password", password);
+                        intent.putExtra("ORIGIN", origin);
+                        startActivity(intent);
                     }
+                } else {
+                    e.printStackTrace();
+                    Toast.makeText(mContext, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
         });
-
-
-
     }
 
     private void loginUser() {

@@ -54,7 +54,7 @@
             android:name="com.facebook.FacebookActivity"
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
             android:label="@string/app_name"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+            android:theme="@style/FullTranslucent" />
         <activity
             android:name=".Activities.SignUpLoginActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"

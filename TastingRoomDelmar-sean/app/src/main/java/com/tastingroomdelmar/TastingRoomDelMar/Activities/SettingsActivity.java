@@ -23,6 +23,7 @@ import com.tastingroomdelmar.TastingRoomDelMar.R;
 import com.tastingroomdelmar.TastingRoomDelMar.utils.CategoryManager;
 import com.tastingroomdelmar.TastingRoomDelMar.utils.OIDManager;
 import com.tastingroomdelmar.TastingRoomDelMar.utils.OrderManager;
+import com.tastingroomdelmar.TastingRoomDelMar.utils.PaymentManager;
 
 /**
  * A {@link PreferenceActivity} that presents a set of application settings. On
@@ -253,6 +254,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                             OrderManager.clearOrders();
                             OIDManager.popAll();
                             CategoryManager.popAll();
+                            PaymentManager.getSingleton().clearPaymentMethod();
                             PreferenceManager.getDefaultSharedPreferences(getActivity()).edit().clear().commit();
 
                             Intent newStackIntent = new Intent(getActivity(), LoginActivity.class);

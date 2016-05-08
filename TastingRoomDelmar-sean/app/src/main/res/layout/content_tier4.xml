@@ -13,7 +13,7 @@
         android:id="@+id/lv_top_tier4"
         style="@style/TwoWayView"
         android:layout_width="match_parent"
-        android:layout_height="100dp"
+        android:layout_height="70dp"
         android:drawSelectorOnTop="false" />
 
     <ProgressBar

@@ -57,8 +57,8 @@ public class ItemListObject implements Comparable<ItemListObject> {
         productType = obj.getString("productType");
 
         if(productType.equals("CHOICE")) {
-            deliveryPriceWOVAT = new DecimalFormat("0.00").format(obj.getNumber("priceWithoutVat").doubleValue());
-            takeawayPriceWOVAT = new DecimalFormat("0.00").format(obj.getNumber("priceWithoutVat").doubleValue());
+            deliveryPriceWOVAT = new DecimalFormat("0.00").format(obj.getNumber("deliveryPriceWithoutVat").doubleValue());
+            takeawayPriceWOVAT = new DecimalFormat("0.00").format(obj.getNumber("takeawayPriceWithoutVat").doubleValue());
             deliveryTaxRate = Double.parseDouble(obj.getString("taxClass").split("-")[1]);
             takeawayTaxRate = Double.parseDouble(obj.getString("taxClass").split("-")[1]);
         } else {

@@ -20,10 +20,8 @@ import com.facebook.AccessToken;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.HttpMethod;
-import com.parse.FunctionCallback;
 import com.parse.LogInCallback;
 import com.parse.LogOutCallback;
-import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
 
@@ -33,13 +31,14 @@ import com.parse.SaveCallback;
 import com.tastingroomdelmar.TastingRoomDelMar.R;
 import io.fabric.sdk.android.Fabric;
 import com.tastingroomdelmar.TastingRoomDelMar.parseUtils.ParseUtility;
+import com.tastingroomdelmar.TastingRoomDelMar.utils.CategoryManager;
 import com.tastingroomdelmar.TastingRoomDelMar.utils.Constants;
 import com.tastingroomdelmar.TastingRoomDelMar.utils.FontManager;
+import com.tastingroomdelmar.TastingRoomDelMar.utils.OIDManager;
+import com.tastingroomdelmar.TastingRoomDelMar.utils.OrderManager;
 import com.tastingroomdelmar.TastingRoomDelMar.utils.PaymentManager;
 
 import org.json.JSONException;
-
-import java.util.HashMap;
 
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = LoginActivity.class.getSimpleName();
@@ -51,8 +50,6 @@ public class LoginActivity extends AppCompatActivity {
     ImageButton mFBLoginButton;
 
     String origin;
-
-    HashMap<String, String> cardObject;
 
     Context mContext;
 
@@ -77,8 +74,6 @@ public class LoginActivity extends AppCompatActivity {
 
         ParseUser user = ParseUser.getCurrentUser();
         if (user != null) {
-            fetchCreditCard();
-
             SharedPreferences prefs = PreferenceManager
                     .getDefaultSharedPreferences(this);
             SharedPreferences.Editor edit = prefs.edit();
@@ -93,7 +88,7 @@ public class LoginActivity extends AppCompatActivity {
             edit.apply();
 
             if (userEmail == null || userEmail.isEmpty()) {
-                Toast.makeText(getApplicationContext(), "We could not locate your email address. Please enter one.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "We could not locate your email address. Please enter one.", Toast.LENGTH_LONG).show();
                 Intent intent = new Intent(LoginActivity.this, SignUpLoginActivity.class);
                 intent.putExtra("LOGIN_OR_SIGNUP", Constants.SIGNUP_FLAG);
                 intent.putExtra("ORIGIN", "email");
@@ -103,9 +98,6 @@ public class LoginActivity extends AppCompatActivity {
                 Intent intent = new Intent(LoginActivity.this, Tier1Activity.class);
                 startActivity(intent);
             }
-
-            Intent intent = new Intent(LoginActivity.this, Tier1Activity.class);
-            startActivity(intent);
         }
 
         appCompatActivity = this;
@@ -199,6 +191,12 @@ public class LoginActivity extends AppCompatActivity {
                         @Override
                         public void done(ParseException e) {
                             if (e == null) {
+                                OrderManager.clearOrders();
+                                OIDManager.popAll();
+                                CategoryManager.popAll();
+                                PaymentManager.getSingleton().clearPaymentMethod();
+                                PreferenceManager.getDefaultSharedPreferences(mContext).edit().clear().apply();
+
                                 Toast.makeText(LoginActivity.this, "Logged out successfully", Toast.LENGTH_SHORT).show();
                                 mFBLoginButton.setImageDrawable(ContextCompat.getDrawable(appCompatActivity, R.drawable.login_with_fb));
                             }
@@ -351,26 +349,4 @@ public class LoginActivity extends AppCompatActivity {
             mFBLoginButton.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.logout_with_fb));
         }
     }
-
-    public void fetchCreditCard() {
-        HashMap<String, String> params = new HashMap<>();
-        String userObjectId = ParseUser.getCurrentUser().getObjectId();
-        params.put("userId", userObjectId);
-        ParseCloud.callFunctionInBackground("fetchCardForStripeCustomer", params, new FunctionCallback<HashMap<String, String>>() {
-            @Override
-            public void done(HashMap<String, String> object, ParseException e) {
-                if (e == null) {
-                    Log.d(TAG, object.get("brand"));
-                    cardObject = object;
-                    PaymentManager.getSingleton().setPaymentMethod(object);
-                    parseUtility.setHasCreditcard(true);
-                } else {
-                    e.printStackTrace();
-                    parseUtility.setHasCreditcard(false);
-                }
-            }
-        });
-    }
-
-
 }

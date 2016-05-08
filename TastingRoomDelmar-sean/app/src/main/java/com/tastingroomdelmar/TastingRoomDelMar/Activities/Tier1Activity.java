@@ -18,13 +18,17 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.parse.FindCallback;
+import com.parse.FunctionCallback;
+import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseInstallation;
 import com.parse.ParseObject;
+import com.parse.ParsePush;
 import com.parse.ParseQuery;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 import com.parse.ParseUser;
@@ -32,10 +36,12 @@ import com.parse.SaveCallback;
 import com.tastingroomdelmar.TastingRoomDelMar.R;
 import com.tastingroomdelmar.TastingRoomDelMar.ListViewAdapters.Tier1ListViewAdapter;
 import com.tastingroomdelmar.TastingRoomDelMar.parseUtils.ListObject;
+import com.tastingroomdelmar.TastingRoomDelMar.parseUtils.ParseUtility;
 import com.tastingroomdelmar.TastingRoomDelMar.utils.CategoryManager;
 import com.tastingroomdelmar.TastingRoomDelMar.utils.FontManager;
 import com.tastingroomdelmar.TastingRoomDelMar.utils.OIDManager;
 import com.tastingroomdelmar.TastingRoomDelMar.utils.OrderManager;
+import com.tastingroomdelmar.TastingRoomDelMar.utils.PaymentManager;
 
 public class Tier1Activity extends AppCompatActivity {
     private static final String TAG = Tier1Activity.class.getSimpleName();
@@ -49,6 +55,8 @@ public class Tier1Activity extends AppCompatActivity {
     ProgressBar mProgressBar;
 
     TextView mBadge;
+
+    HashMap<String, String> cardObject;
 
     @Override
     protected void onResume() {
@@ -76,17 +84,21 @@ public class Tier1Activity extends AppCompatActivity {
             actionBar.setDisplayShowTitleEnabled(false);
 
         if (ParseUser.getCurrentUser() != null) {
+            fetchCreditCard();
+
             ParseInstallation installation = ParseInstallation.getCurrentInstallation();
             installation.put("user", ParseUser.getCurrentUser());
             installation.saveInBackground(new SaveCallback() {
                 @Override
                 public void done(ParseException e) {
                     if (e!= null) {
-                        Log.d(TAG, "ERRORROROROROROROROROROR");
+                        Log.d(TAG, "ERRORROROROROROROROROROR\n"+e.getLocalizedMessage());
                         e.printStackTrace();
                     }
                 }
             });
+
+            ParsePush.subscribeInBackground("customer");
         }
 
         final ImageView mIVUp = (ImageView) findViewById(R.id.up_button);
@@ -283,6 +295,26 @@ public class Tier1Activity extends AppCompatActivity {
                 } else {
                     Log.d(TAG, "ERRORROROROROROROROROROR");
                     e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    public void fetchCreditCard() {
+        HashMap<String, String> params = new HashMap<>();
+        String userObjectId = ParseUser.getCurrentUser().getObjectId();
+        params.put("userId", userObjectId);
+        ParseCloud.callFunctionInBackground("fetchCardForStripeCustomer", params, new FunctionCallback<HashMap<String, String>>() {
+            @Override
+            public void done(HashMap<String, String> object, ParseException e) {
+                if (e == null) {
+                    Log.d(TAG, object.get("brand"));
+                    cardObject = object;
+                    PaymentManager.getSingleton().setPaymentMethod(object);
+                    ParseUtility.getSingleton().setHasCreditcard(true);
+                } else {
+                    e.printStackTrace();
+                    ParseUtility.getSingleton().setHasCreditcard(false);
                 }
             }
         });
