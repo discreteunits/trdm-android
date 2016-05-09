@@ -204,15 +204,15 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             bindPreferenceSummaryToValue(pushPref);
             bindPreferenceSummaryToValue(newsletterPref);
 
-            findPreference("privacypolicy").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                @Override
-                public boolean onPreferenceClick(Preference preference) {
-                    Intent i = new Intent(getActivity(), WebViewActivity.class);
-                    i.putExtra("TARGET","Privacy Policy");
-                    startActivity(i);
-                    return true;
-                }
-            });
+//            findPreference("privacypolicy").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+//                @Override
+//                public boolean onPreferenceClick(Preference preference) {
+//                    Intent i = new Intent(getActivity(), WebViewActivity.class);
+//                    i.putExtra("TARGET","Privacy Policy");
+//                    startActivity(i);
+//                    return true;
+//                }
+//            });
 
             findPreference("termsofuse").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override

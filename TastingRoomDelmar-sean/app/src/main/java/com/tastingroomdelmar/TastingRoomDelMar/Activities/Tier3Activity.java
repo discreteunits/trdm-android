@@ -270,6 +270,8 @@ public class Tier3Activity extends AppCompatActivity {
                     for(final ParseObject objects : objectList) {
                         final ParseObject categoryObject = objects.getParseObject("category");
 
+                        if (categoryObject == null) continue;
+
                         categoryObject.fetchIfNeededInBackground(new GetCallback<ParseObject>() {
                             @Override
                             public void done(ParseObject object, ParseException e) {

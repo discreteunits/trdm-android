@@ -14,7 +14,8 @@
         style="@style/TwoWayView"
         android:layout_width="match_parent"
         android:layout_height="70dp"
-        android:drawSelectorOnTop="false" />
+        android:drawSelectorOnTop="false"
+        android:background="@drawable/bottom_line_layout"/>
 
     <ProgressBar
         android:id="@+id/pb_tier4"

@@ -55,9 +55,6 @@
 
     <PreferenceCategory android:title="MORE INFORMATION">
         <Preference
-            android:title="PRIVACY POLICY"
-            android:key="privacypolicy" />
-        <Preference
             android:title="TERMS OF USE"
             android:key="termsofuse" />
         <Preference

@@ -11,4 +11,7 @@
     <color name="light_grey">#dedede</color>
     <color name="light_dark_grey">#b0b0b0</color>
     <color name="danger_red">#F44336</color>
+    <color name="danger_dark_red">#D32F2F</color>
+    <color name="fb_blue">#3B5998</color>
+    <color name="fb_blue_dark">#334d84</color>
 </resources>

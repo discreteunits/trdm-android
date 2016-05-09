@@ -37,6 +37,8 @@ public class ItemListObject implements Comparable<ItemListObject> {
     private JSONArray additionsArray;
     private JSONArray servingsArray;
 
+    private Number sortOrder;
+
     private String[] priceArray = new String[2];
     private String deliveryPriceWOVAT;
     private String takeawayPriceWOVAT;
@@ -53,6 +55,7 @@ public class ItemListObject implements Comparable<ItemListObject> {
         name = obj.getString("name");
         altName = obj.getString("info");
         prices = obj.getString("prices");
+        sortOrder = obj.getNumber("sortOrder");
 
         productType = obj.getString("productType");
 
@@ -94,6 +97,8 @@ public class ItemListObject implements Comparable<ItemListObject> {
     }
 
     public String getPrices() { return prices; }
+
+    public Number getSortOrder() { return sortOrder; }
 
     public JSONArray getCategoryArray() { return categoryArray; }
 
@@ -171,7 +176,7 @@ public class ItemListObject implements Comparable<ItemListObject> {
                             !additionDetailPriceWithoutVat[0].equals("") ?
                                     new double[]{Double.parseDouble(additionDetailPriceWithoutVat[0]),Double.parseDouble(additionDetailPriceWithoutVat[0])} :
                                     new double[]{0,0},
-                            this.taxRate));
+                            this.taxRate, this.sortOrder));
 
                     Log.d(TAG, "addition detail name: " + additionDetailName);
                     Collections.sort(additionList, new MyComparator());
@@ -216,6 +221,11 @@ public class ItemListObject implements Comparable<ItemListObject> {
 
     @Override
     public int compareTo(ItemListObject another) {
+
+        if (getSortOrder() != null && another.getSortOrder() != null) {
+            return getSortOrder().intValue() - another.getSortOrder().intValue();
+        }
+
         return name.compareTo(another.getName());
     }
 

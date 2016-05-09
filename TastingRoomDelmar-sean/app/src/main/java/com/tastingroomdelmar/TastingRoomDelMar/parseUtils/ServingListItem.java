@@ -22,7 +22,8 @@ public class ServingListItem extends OptionListItem {
                 null,
                 obj.getNumber("price").doubleValue(),
                 new double[]{obj.getNumber("deliveryPriceWithoutVat").doubleValue(),obj.getNumber("takeawayPriceWithoutVat").doubleValue()},
-                new double[]{Double.parseDouble(obj.getString("deliveryTaxClass").split("-")[1]),Double.parseDouble(obj.getString("takeawayTaxClass").split("-")[1])}
+                new double[]{Double.parseDouble(obj.getString("deliveryTaxClass").split("-")[1]),Double.parseDouble(obj.getString("takeawayTaxClass").split("-")[1])},
+                obj.getNumber("sortOrder")
               );
 
 

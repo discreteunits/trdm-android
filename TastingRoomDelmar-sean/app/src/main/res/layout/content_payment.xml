@@ -10,6 +10,14 @@
     tools:context=".Activities.PaymentActivity"
     tools:showIn="@layout/activity_payment">
 
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/btn_save_payment_method">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
     <Button
         android:id="@+id/btn_payment_method"
         android:layout_width="match_parent"
@@ -33,19 +41,13 @@
         android:textColor="@color/colorPrimary"
         android:textSize="15sp"/>
 
-    <RelativeLayout
-        android:id="@+id/rl_payment_edit"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/tv_payment"
-        android:orientation="horizontal">
-
         <TextView
             android:id="@+id/tv_card_num"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_alignParentLeft="true"
+            android:layout_below="@+id/tv_payment"
             android:paddingTop="10dp"
             android:paddingBottom="10dp"
             android:paddingLeft="10dp"
@@ -64,6 +66,7 @@
             android:layout_marginLeft="10dp"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
+            android:layout_below="@+id/tv_payment"
             android:paddingTop="10dp"
             android:paddingBottom="10dp"
             android:paddingRight="15dp"
@@ -169,7 +172,7 @@
         <Button
             android:id="@+id/btn_use_camera"
             android:layout_width="match_parent"
-            android:layout_height="80dp"
+            android:layout_height="60dp"
             android:layout_below="@+id/et_card_cvc"
             android:text="use camera instead"
             android:textColor="@color/colorPrimary"
@@ -179,12 +182,14 @@
             android:drawableLeft="@drawable/ic_photo_camera_black_48dp"
             android:drawableTint="@color/light_dark_grey"
             android:drawablePadding="10dp"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/light_gray_soft_corner_button"
             android:gravity="start|center_vertical"/>
 
         <Button
             android:id="@+id/btn_remove_card"
             android:layout_width="match_parent"
-            android:layout_height="60dp"
+            android:layout_height="wrap_content"
             android:layout_below="@+id/btn_use_camera"
             android:text="REMOVE CARD"
             android:textColor="@color/colorPrimary"
@@ -192,10 +197,11 @@
             android:paddingRight="20dp"
             android:paddingLeft="20dp"
             android:drawablePadding="10dp"
-            android:backgroundTint="@color/danger_red"
+            android:background="@drawable/red_soft_corner_button"
             android:gravity="center"/>
 
-    </RelativeLayout>
+        </RelativeLayout>
+    </ScrollView>
 
     <Button
         android:id="@+id/btn_save_payment_method"
@@ -206,4 +212,5 @@
         android:textAllCaps="false"
         android:background="@drawable/green_soft_corner_button"
         android:textSize="25sp"/>
+
 </RelativeLayout>

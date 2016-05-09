@@ -32,6 +32,15 @@
             android:paddingLeft="5dp"
             android:textSize="17sp" />
 
+        <ImageView
+            android:id="@+id/primary_logo"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:padding="13dp"
+            android:src="@drawable/primary_logotype"
+            android:layout_centerInParent="true"
+            android:visibility="gone" />
+
         <TextView
             android:id="@+id/tv_curr_activity"
             android:layout_width="wrap_content"

@@ -63,7 +63,6 @@ public class PaymentActivity extends AppCompatActivity {
 
     TextView mTVCurrentActivityName;
 
-    private RelativeLayout mEditLayout;
     private TextView mTVCardNumberLabel;
     private EditText mETCardNumber;
     private TextView mTVEXPLabel;
@@ -71,6 +70,9 @@ public class PaymentActivity extends AppCompatActivity {
     private EditText mETEXPYYYY;
     private TextView mTVCVCLabel;
     private EditText mETCVC;
+    private Button mCameraButton;
+    private Button mRemoveCard;
+
     private String mCardBrand;
 
     private Button mButtonSave;
@@ -132,8 +134,6 @@ public class PaymentActivity extends AppCompatActivity {
         mButtonSave = (Button) findViewById(R.id.btn_save_payment_method);
         mButtonSave.setTypeface(FontManager.nexa);
 
-        mEditLayout = (RelativeLayout) findViewById(R.id.rl_payment_edit);
-
         mTVCardNumberLabel = (TextView) findViewById(R.id.tv_card_num);
         mETCardNumber = (EditText) findViewById(R.id.et_card_num);
         mTVEXPLabel = (TextView) findViewById(R.id.tv_card_exp);
@@ -153,8 +153,8 @@ public class PaymentActivity extends AppCompatActivity {
         mButtonPaymentMethod = (Button) findViewById(R.id.btn_payment_method);
         mTVmessage = (TextView) findViewById(R.id.tv_payment);
 
-        final Button mCameraButton = (Button) findViewById(R.id.btn_use_camera);
-        final Button mRemoveCard = (Button) findViewById(R.id.btn_remove_card);
+        mCameraButton = (Button) findViewById(R.id.btn_use_camera);
+        mRemoveCard = (Button) findViewById(R.id.btn_remove_card);
 
         mCameraButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -284,7 +284,18 @@ public class PaymentActivity extends AppCompatActivity {
 
     private void modifyPaymentMethodMode(boolean isEditMode) {
         if (isEditMode) {
-            mEditLayout.setVisibility(View.VISIBLE);
+            mTVCardNumberLabel.setVisibility(View.VISIBLE);
+            mETCardNumber.setVisibility(View.VISIBLE);
+            mTVEXPLabel.setVisibility(View.VISIBLE);
+            mETEXPMM.setVisibility(View.VISIBLE);
+            mETEXPYYYY.setVisibility(View.VISIBLE);
+            mTVCVCLabel.setVisibility(View.VISIBLE);
+            mETCVC.setVisibility(View.VISIBLE);
+            mCameraButton.setVisibility(View.VISIBLE);
+            mRemoveCard.setVisibility(View.VISIBLE);
+
+
+
             mTVCurrentActivityName.setText(ADD_PAYMENT);
             mButtonSave.setText("Save");
             mButtonSave.setBackground(ContextCompat.getDrawable(mContext, R.drawable.green_soft_corner_button));
@@ -300,7 +311,18 @@ public class PaymentActivity extends AppCompatActivity {
                 }
             });
         } else {
-            mEditLayout.setVisibility(View.GONE);
+            mTVCardNumberLabel.setVisibility(View.GONE);
+            mETCardNumber.setVisibility(View.GONE);
+            mTVEXPLabel.setVisibility(View.GONE);
+            mETEXPMM.setVisibility(View.GONE);
+            mETEXPYYYY.setVisibility(View.GONE);
+            mTVCVCLabel.setVisibility(View.GONE);
+            mETCVC.setVisibility(View.GONE);
+            mCameraButton.setVisibility(View.GONE);
+            mRemoveCard.setVisibility(View.GONE);
+
+
+
             mTVCurrentActivityName.setText(PAYMENT);
             mButtonSave.setText("Back");
             mButtonSave.setBackground(ContextCompat.getDrawable(mContext, R.drawable.gray_soft_corner_button));

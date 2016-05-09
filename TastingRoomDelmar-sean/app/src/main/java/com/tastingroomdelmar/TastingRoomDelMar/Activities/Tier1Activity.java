@@ -106,6 +106,10 @@ public class Tier1Activity extends AppCompatActivity {
 
         final TextView mTVPreviousActivityName = (TextView) findViewById(R.id.tv_prev_activity);
         final TextView mTVCurrentActivityName = (TextView) findViewById(R.id.tv_curr_activity);
+        final ImageView mIVLogo = (ImageView) findViewById(R.id.primary_logo);
+        mIVLogo.setVisibility(View.VISIBLE);
+        mTVCurrentActivityName.setVisibility(View.GONE);
+
         mBadge = (TextView) findViewById(R.id.tab_badge);
 
         OrderManager.getSingleton().setOrderCountListener(new OrderManager.OrderCountListener() {
@@ -124,9 +128,6 @@ public class Tier1Activity extends AppCompatActivity {
 
         mTVPreviousActivityName.setText("Del Mar");
         mTVPreviousActivityName.setTypeface(FontManager.nexa);
-
-        mTVCurrentActivityName.setText("TASTING ROOM");
-        mTVCurrentActivityName.setTypeface(FontManager.bebasReg);
 
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
 

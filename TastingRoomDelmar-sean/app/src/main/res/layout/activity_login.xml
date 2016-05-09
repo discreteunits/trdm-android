@@ -23,7 +23,7 @@
     <ImageView
         android:layout_width="fill_parent"
         android:layout_height="0dp"
-        android:padding="20dp"
+        android:padding="30dp"
         android:id="@+id/image_view_logo"
         android:layout_weight="1"
         android:src="@drawable/primary_logo"
@@ -38,20 +38,22 @@
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:paddingLeft="50dp"
+            android:paddingRight="50dp"
             android:layout_gravity="center_horizontal"
-            android:gravity="center_horizontal"
-            android:paddingTop="20dp" >
+            android:gravity="center_horizontal">
 
             <Button
                 android:id="@+id/button_signup"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:minHeight="40dp"
                 android:text="Sign Up"
                 android:textColor="@color/white"
-                android:textSize="17sp"
+                android:textSize="20sp"
                 android:layout_marginRight="10dp"
+                android:layout_weight="1"
                 android:layout_marginEnd="10dp"
-
                 android:background="@drawable/gray_soft_corner_button"
                 android:textAllCaps="false"
                 android:gravity="center" />
@@ -60,26 +62,32 @@
                 android:id="@+id/button_login"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:minHeight="40dp"
                 android:text="Log In"
                 android:textColor="@color/white"
-                android:textSize="17sp"
+                android:textSize="20sp"
+                android:layout_weight="1"
                 android:background="@drawable/gray_soft_corner_button"
                 android:textAllCaps="false"
                 android:gravity="center" />
 
         </LinearLayout>
 
-        <ImageButton
+        <Button
             android:id="@+id/fb_login_button"
-            android:layout_width="200dp"
-            android:layout_height="40dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="40dp"
             android:layout_gravity="center"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="30dp"
-            android:layout_weight="0"
-            android:src="@drawable/login_with_fb"
-            android:scaleType="fitCenter"
-            android:background="@android:color/transparent"/>
+            android:layout_marginLeft="50dp"
+            android:layout_marginRight="50dp"
+            android:layout_weight="1"
+            android:textAllCaps="false"
+            android:textSize="20sp"
+            android:text="Login with Facebook"
+            android:background="@drawable/fb_blue_soft_corner_button"/>
 
     </LinearLayout>
 

@@ -47,13 +47,20 @@ public class LoginActivity extends AppCompatActivity {
 
     AppCompatActivity appCompatActivity;
 
-    ImageButton mFBLoginButton;
+    Button mBtnSignup;
+    Button mBtnLogin;
+    Button mFBLoginButton;
 
     String origin;
 
     Context mContext;
 
     Dialog loadingDialog;
+
+    Dialog alertDialog;
+    TextView alertTitle;
+    TextView alertMsg;
+    Button alertBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,7 +95,9 @@ public class LoginActivity extends AppCompatActivity {
             edit.apply();
 
             if (userEmail == null || userEmail.isEmpty()) {
-                Toast.makeText(getApplicationContext(), "We could not locate your email address. Please enter one.", Toast.LENGTH_LONG).show();
+                alertMsg.setText("Please enter an email.");
+                alertDialog.show();
+
                 Intent intent = new Intent(LoginActivity.this, SignUpLoginActivity.class);
                 intent.putExtra("LOGIN_OR_SIGNUP", Constants.SIGNUP_FLAG);
                 intent.putExtra("ORIGIN", "email");
@@ -104,13 +113,26 @@ public class LoginActivity extends AppCompatActivity {
 
         new FontManager(getApplicationContext());
 
-        final Button mBtnSignup = (Button) findViewById(R.id.button_signup);
+        alertDialog = new Dialog(this);
+        alertDialog.setContentView(R.layout.layout_general_alert);
+        alertTitle = (TextView) alertDialog.findViewById(R.id.tv_general_title);
+        alertMsg = (TextView) alertDialog.findViewById(R.id.tv_general_msg);
+        alertBtn = (Button) alertDialog.findViewById(R.id.btn_general_ok);
+        alertBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                alertDialog.dismiss();
+            }
+        });
+
+        mBtnSignup = (Button) findViewById(R.id.button_signup);
         mBtnSignup.setTypeface(FontManager.nexa);
-        final Button mBtnLogin = (Button) findViewById(R.id.button_login);
+        mBtnLogin = (Button) findViewById(R.id.button_login);
         mBtnLogin.setTypeface(FontManager.nexa);
         final Button mBtnGuest = (Button) findViewById(R.id.button_guest_continue);
         mBtnGuest.setTypeface(FontManager.nexa);
-        mFBLoginButton = (ImageButton) findViewById(R.id.fb_login_button);
+        mFBLoginButton = (Button) findViewById(R.id.fb_login_button);
+        mFBLoginButton.setTypeface(FontManager.nexa);
 
         loadingDialog = new Dialog(mContext);
         loadingDialog.setContentView(R.layout.layout_loading_dialog);
@@ -198,7 +220,10 @@ public class LoginActivity extends AppCompatActivity {
                                 PreferenceManager.getDefaultSharedPreferences(mContext).edit().clear().apply();
 
                                 Toast.makeText(LoginActivity.this, "Logged out successfully", Toast.LENGTH_SHORT).show();
-                                mFBLoginButton.setImageDrawable(ContextCompat.getDrawable(appCompatActivity, R.drawable.login_with_fb));
+                                mBtnLogin.setVisibility(View.VISIBLE);
+                                mBtnSignup.setVisibility(View.VISIBLE);
+                                mFBLoginButton.setText("Login with Facebook");
+                                mFBLoginButton.setBackground(ContextCompat.getDrawable(mContext, R.drawable.fb_blue_soft_corner_button));
                             }
 
                             loadingDialog.dismiss();
@@ -346,7 +371,20 @@ public class LoginActivity extends AppCompatActivity {
         super.onResume();
 
         if (ParseUser.getCurrentUser() != null) {
-            mFBLoginButton.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.logout_with_fb));
+            mBtnLogin.setVisibility(View.INVISIBLE);
+            mBtnSignup.setVisibility(View.INVISIBLE);
+            mFBLoginButton.setText("Logout");
+
+            if (!ParseFacebookUtils.isLinked(ParseUser.getCurrentUser()))
+                mFBLoginButton.setBackground(ContextCompat.getDrawable(this, R.drawable.gray_soft_corner_button));
+            else
+                mFBLoginButton.setBackground(ContextCompat.getDrawable(this, R.drawable.fb_blue_soft_corner_button));
+
+        } else {
+            mBtnLogin.setVisibility(View.VISIBLE);
+            mBtnSignup.setVisibility(View.VISIBLE);
+            mFBLoginButton.setText("Login with Facebook");
+            mFBLoginButton.setBackground(ContextCompat.getDrawable(this, R.drawable.fb_blue_soft_corner_button));
         }
     }
 }

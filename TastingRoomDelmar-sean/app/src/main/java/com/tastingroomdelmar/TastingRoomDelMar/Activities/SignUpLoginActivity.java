@@ -1,8 +1,10 @@
 package com.tastingroomdelmar.TastingRoomDelMar.Activities;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Typeface;
 import android.preference.PreferenceManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
@@ -49,6 +51,11 @@ public class SignUpLoginActivity extends AppCompatActivity {
     String origin;
 
     Context mContext;
+
+    Dialog alertDialog;
+    TextView alertTitle;
+    TextView alertMsg;
+    Button alertBtn;
 
     @Override
     protected void onResume() {
@@ -132,6 +139,19 @@ public class SignUpLoginActivity extends AppCompatActivity {
 
         final View thirdDivider = (View) findViewById(R.id.third_divider);
 
+        alertDialog = new Dialog(this);
+        alertDialog.setContentView(R.layout.layout_general_alert);
+        alertTitle = (TextView) alertDialog.findViewById(R.id.tv_general_title);
+        alertMsg = (TextView) alertDialog.findViewById(R.id.tv_general_msg);
+        alertBtn = (Button) alertDialog.findViewById(R.id.btn_general_ok);
+        alertBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                alertDialog.dismiss();
+            }
+        });
+
+
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             origin = extras.getString("ORIGIN");
@@ -207,56 +227,70 @@ public class SignUpLoginActivity extends AppCompatActivity {
 
         if (origin == null) {
             if (email.isEmpty() || password.isEmpty()) {
-                Toast.makeText(this, "Email or Password cannot be empty!", Toast.LENGTH_SHORT).show();
+                alertMsg.setText("Please enter an email and password.");
+                alertDialog.show();
+
                 return;
             }
         } else {
             if (email.isEmpty()) {
-                Toast.makeText(this, "Email cannot be empty!", Toast.LENGTH_SHORT).show();
+                alertMsg.setText("Please enter an email.");
+                alertDialog.show();
+
                 return;
             }
         }
 
         ParseUser user = ParseUser.getCurrentUser();
-        user.setEmail(email);
-        user.setUsername(email);
-        user.saveInBackground(new SaveCallback() {
-            @Override
-            public void done(ParseException e) {
-                if (e == null) {
-                    SharedPreferences prefs = PreferenceManager
-                            .getDefaultSharedPreferences(mContext);
-                    SharedPreferences.Editor edit = prefs.edit();
-                    edit.putString("email", email);
-                    edit.apply();
+        if (user != null) {
+            user.setEmail(email);
+            user.setUsername(email);
+            user.saveInBackground(new SaveCallback() {
+                @Override
+                public void done(ParseException e) {
+                    if (e == null) {
+                        SharedPreferences prefs = PreferenceManager
+                                .getDefaultSharedPreferences(mContext);
+                        SharedPreferences.Editor edit = prefs.edit();
+                        edit.putString("email", email);
+                        edit.apply();
 
-                    if (origin != null) {
-                        if (origin.equals("MyTabActivity+email")) {
-                            Toast.makeText(mContext, "Thanks! Signing in now", Toast.LENGTH_SHORT).show();
-                            startActivity(new Intent(SignUpLoginActivity.this, MyTabActivity.class));
-                        } else if (origin.equals("email")) {
-                            Toast.makeText(mContext, "Thanks! Signing in now", Toast.LENGTH_SHORT).show();
-                            startActivity(new Intent(SignUpLoginActivity.this, Tier1Activity.class));
+                        if (origin != null) {
+                            if (origin.equals("MyTabActivity+email")) {
+                                Toast.makeText(mContext, "Thanks! Signing in now", Toast.LENGTH_SHORT).show();
+                                startActivity(new Intent(SignUpLoginActivity.this, MyTabActivity.class));
+                            } else if (origin.equals("email")) {
+                                Toast.makeText(mContext, "Thanks! Signing in now", Toast.LENGTH_SHORT).show();
+                                startActivity(new Intent(SignUpLoginActivity.this, Tier1Activity.class));
+                            }
                         }
                     } else {
-                        Intent intent = new Intent(SignUpLoginActivity.this, SignUpSecondActivity.class);
-                        intent.putExtra("email", email);
-                        intent.putExtra("password", password);
-                        intent.putExtra("ORIGIN", origin);
-                        startActivity(intent);
+                        if (e.getCode() == ParseException.USERNAME_TAKEN)
+                            alertMsg.setText("This account already exists, try logging in.");
+                        else
+                            alertMsg.setText("There was an error. Error Code["+ e.getCode() +"]");
+
+                        alertDialog.show();
+
+                        e.printStackTrace();
                     }
-                } else {
-                    e.printStackTrace();
-                    Toast.makeText(mContext, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
                 }
-            }
-        });
+            });
+        } else {
+            Intent intent = new Intent(SignUpLoginActivity.this, SignUpSecondActivity.class);
+            intent.putExtra("email", email);
+            intent.putExtra("password", password);
+            intent.putExtra("ORIGIN", origin);
+            startActivity(intent);
+        }
     }
 
     private void loginUser() {
         final String email = mEditTextEmail.getText().toString();
 
         final String password = mEditTextPassword.getText().toString();
+
+        //TODO empty check.
 
         ParseUser.logInInBackground(email, password, new LogInCallback() {
             public void done(ParseUser user, ParseException e) {
@@ -287,7 +321,13 @@ public class SignUpLoginActivity extends AppCompatActivity {
                         startActivity(new Intent(SignUpLoginActivity.this, MyTabActivity.class));
                     }
                 } else {
-                    Toast.makeText(getApplicationContext(), "Username or password is wrong", Toast.LENGTH_SHORT).show();
+                    if (e.getCode() == ParseException.OBJECT_NOT_FOUND) {
+                        alertMsg.setText("Email and/or password is incorrect.");
+                    } else {
+                        alertMsg.setText("There was an error. Error Code["+ e.getCode() +"]");
+                    }
+
+                    alertDialog.show();
                 }
 
                 if (e != null) {

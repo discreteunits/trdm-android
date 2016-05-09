@@ -1,8 +1,10 @@
 package com.tastingroomdelmar.TastingRoomDelMar.Activities;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.content.ContextCompat;
@@ -32,6 +34,11 @@ import com.tastingroomdelmar.TastingRoomDelMar.utils.FontManager;
  */
 public class SignUpSecondActivity extends AppCompatActivity {
     Context mContext;
+
+    Dialog alertDialog;
+    TextView alertTitle;
+    TextView alertMsg;
+    Button alertBtn;
 
     @Override
     protected void onResume() {
@@ -127,7 +134,17 @@ public class SignUpSecondActivity extends AppCompatActivity {
         final String password = i.getStringExtra("password");
         final String origin = i.getStringExtra("ORIGIN");
 
-
+        alertDialog = new Dialog(this);
+        alertDialog.setContentView(R.layout.layout_general_alert);
+        alertTitle = (TextView) alertDialog.findViewById(R.id.tv_general_title);
+        alertMsg = (TextView) alertDialog.findViewById(R.id.tv_general_msg);
+        alertBtn = (Button) alertDialog.findViewById(R.id.btn_general_ok);
+        alertBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                alertDialog.dismiss();
+            }
+        });
 
         if (signupButton != null && firstname != null && lastname != null && mobile != null && newsletter != null) {
             signupButton.setOnClickListener(new View.OnClickListener() {
@@ -183,8 +200,13 @@ public class SignUpSecondActivity extends AppCompatActivity {
                                     startActivity(new Intent(SignUpSecondActivity.this, MyTabActivity.class));
                                 }
                             } else {
+                                if (e.getCode() == ParseException.USERNAME_TAKEN)
+                                    alertMsg.setText("This account already exists, try logging in.");
+                                else
+                                    alertMsg.setText("There was an error. Error Code["+ e.getCode() +"]");
+
+                                alertDialog.show();
                                 e.printStackTrace();
-                                Toast.makeText(getApplicationContext(), e.getMessage().replace("java.lang.IllegalArgumentException: ", ""), Toast.LENGTH_SHORT).show();
                             }
                         }
                     });

@@ -21,6 +21,8 @@ public class ModalListItem {
 
     private String productType;
 
+    private Number sortOrder;
+
     public ModalListItem(String baseObjectId, String baseItemName, String[] baseItemPrice, double[] baseTaxRate, Constants.Type type, String pType, String title, ArrayList<OptionListItem> optionList) {
         this.baseObjectId = baseObjectId;
         this.title = title;
@@ -41,10 +43,11 @@ public class ModalListItem {
         this.productType = pType;
         this.baseObjectId = objectId;
 
+
         quantityList = new ArrayList<>();
 
         for (int i = 1; i < 11; i++) {
-            quantityList.add(new OptionListItem((i+""), objectId, new double[]{0,0}));
+            quantityList.add(new OptionListItem((i+""), objectId, new double[]{0,0}, null));
         }
 
         quantityList.get(0).setSelected(true);

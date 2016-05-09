@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="300dp"
+    android:layout_height="wrap_content"
+    android:minHeight="150dp"
+    android:padding="10dp"
+    android:background="@drawable/modal">
+
+    <TextView
+        android:id="@+id/tv_general_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="Whoops!"
+        android:textColor="@color/colorPrimary"
+        android:textSize="30sp"
+        android:layout_gravity="center"/>
+
+    <TextView
+        android:id="@+id/tv_general_msg"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="Please Wait..."
+        android:textColor="@color/colorPrimary"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="30dp"
+        android:textSize="17sp"
+        android:gravity="center"/>
+
+    <Button
+        android:id="@+id/btn_general_ok"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:background="@drawable/light_gray_soft_corner_button"
+        android:textColor="@color/colorPrimary"
+        android:textAllCaps="false"
+        android:textSize="20sp"
+        android:text="Sounds Good"/>
+
+</LinearLayout>
