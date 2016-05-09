@@ -290,7 +290,11 @@ public class SignUpLoginActivity extends AppCompatActivity {
 
         final String password = mEditTextPassword.getText().toString();
 
-        //TODO empty check.
+        if (email.isEmpty() || password.isEmpty()) {
+            alertMsg.setText("Please enter an email and password.");
+            alertDialog.show();
+            return;
+        }
 
         ParseUser.logInInBackground(email, password, new LogInCallback() {
             public void done(ParseUser user, ParseException e) {

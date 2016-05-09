@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -147,48 +148,98 @@ public class Tier2Activity extends AppCompatActivity {
             }
         });
 
-        drawerListView = (ListView) findViewById(R.id.right_drawer);
-        drawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                switch (i) {
-                    case 0: Intent dineinIntent = new Intent(Tier2Activity.this, Tier2Activity.class);
-                        CategoryManager.setDinein(true);
-                        OIDManager.popFromList();
-                        CategoryManager.popFromList();
-                        dineinIntent.putExtra("TIER2_DEST", "Dine In");
-                        startActivity(dineinIntent);
-                        finish();
-                        break; // Dinein
-                    case 1: Intent takeawayintent = new Intent(Tier2Activity.this, Tier2Activity.class);
-                        CategoryManager.setDinein(false);
-                        OIDManager.popFromList();
-                        CategoryManager.popFromList();
-                        takeawayintent.putExtra("TIER2_DEST", "Take Away");
-                        startActivity(takeawayintent);
-                        finish();
-                        break; // Takeaway
-                    case 2: Intent eventIntent = new Intent(Tier2Activity.this, Tier4Activity.class);
-                        CategoryManager.setDinein(false);
-                        OIDManager.popFromList();
-                        CategoryManager.popFromList();
-                        eventIntent.putExtra("TIER4_DEST", "Events");
-                        eventIntent.putExtra("TIER4_ORIG", currentActivity);
-                        startActivity(eventIntent);
-                        finish();
-                        break; // Events
-                    case 3: Intent tabIntent = new Intent(Tier2Activity.this, MyTabActivity.class);
-                        startActivity(tabIntent);
-                        break;
-                    case 4: Intent paymentIntent = new Intent(Tier2Activity.this, PaymentActivity.class);
-                        startActivity(paymentIntent);
-                        break; // Payment
-                    case 5: Intent settingsIntent = new Intent(Tier2Activity.this, SettingsActivity.class);
-                        startActivity(settingsIntent);
-                        break; // Settings
+        final LinearLayout drawerLayout = (LinearLayout) findViewById(R.id.drawer_view);
+
+        for (int i = 0; i < drawerLayout.getChildCount()-1; i++) {
+            final int index = i;
+            final TextView tvItem = (TextView) drawerLayout.getChildAt(i);
+
+            tvItem.setTypeface(FontManager.nexa);
+
+            tvItem.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    switch (index) {
+                        case 0: Intent dineinIntent = new Intent(Tier2Activity.this, Tier2Activity.class);
+                            CategoryManager.setDinein(true);
+                            OIDManager.popFromList();
+                            CategoryManager.popFromList();
+                            dineinIntent.putExtra("TIER2_DEST", "Dine In");
+                            startActivity(dineinIntent);
+                            finish();
+                            break; // Dinein
+                        case 1: Intent takeawayintent = new Intent(Tier2Activity.this, Tier2Activity.class);
+                            CategoryManager.setDinein(false);
+                            OIDManager.popFromList();
+                            CategoryManager.popFromList();
+                            takeawayintent.putExtra("TIER2_DEST", "Take Away");
+                            startActivity(takeawayintent);
+                            finish();
+                            break; // Takeaway
+                        case 2: Intent eventIntent = new Intent(Tier2Activity.this, Tier4Activity.class);
+                            CategoryManager.setDinein(false);
+                            OIDManager.popFromList();
+                            CategoryManager.popFromList();
+                            eventIntent.putExtra("TIER4_DEST", "Events");
+                            eventIntent.putExtra("TIER4_ORIG", currentActivity);
+                            startActivity(eventIntent);
+                            finish();
+                            break; // Events
+                        case 3: Intent tabIntent = new Intent(Tier2Activity.this, MyTabActivity.class);
+                            startActivity(tabIntent);
+                            break;
+                        case 4: Intent paymentIntent = new Intent(Tier2Activity.this, PaymentActivity.class);
+                            startActivity(paymentIntent);
+                            break; // Payment
+                        case 5: Intent settingsIntent = new Intent(Tier2Activity.this, SettingsActivity.class);
+                            startActivity(settingsIntent);
+                            break; // Settings
+                    }
                 }
-            }
-        });
+            });
+        }
+//        drawerListView = (ListView) findViewById(R.id.right_drawer);
+//        drawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+//                switch (i) {
+//                    case 0: Intent dineinIntent = new Intent(Tier2Activity.this, Tier2Activity.class);
+//                        CategoryManager.setDinein(true);
+//                        OIDManager.popFromList();
+//                        CategoryManager.popFromList();
+//                        dineinIntent.putExtra("TIER2_DEST", "Dine In");
+//                        startActivity(dineinIntent);
+//                        finish();
+//                        break; // Dinein
+//                    case 1: Intent takeawayintent = new Intent(Tier2Activity.this, Tier2Activity.class);
+//                        CategoryManager.setDinein(false);
+//                        OIDManager.popFromList();
+//                        CategoryManager.popFromList();
+//                        takeawayintent.putExtra("TIER2_DEST", "Take Away");
+//                        startActivity(takeawayintent);
+//                        finish();
+//                        break; // Takeaway
+//                    case 2: Intent eventIntent = new Intent(Tier2Activity.this, Tier4Activity.class);
+//                        CategoryManager.setDinein(false);
+//                        OIDManager.popFromList();
+//                        CategoryManager.popFromList();
+//                        eventIntent.putExtra("TIER4_DEST", "Events");
+//                        eventIntent.putExtra("TIER4_ORIG", currentActivity);
+//                        startActivity(eventIntent);
+//                        finish();
+//                        break; // Events
+//                    case 3: Intent tabIntent = new Intent(Tier2Activity.this, MyTabActivity.class);
+//                        startActivity(tabIntent);
+//                        break;
+//                    case 4: Intent paymentIntent = new Intent(Tier2Activity.this, PaymentActivity.class);
+//                        startActivity(paymentIntent);
+//                        break; // Payment
+//                    case 5: Intent settingsIntent = new Intent(Tier2Activity.this, SettingsActivity.class);
+//                        startActivity(settingsIntent);
+//                        break; // Settings
+//                }
+//            }
+//        });
 
         mProgressBar = (ProgressBar) findViewById(R.id.pb_tier2);
         mProgressBar.setVisibility(View.VISIBLE);

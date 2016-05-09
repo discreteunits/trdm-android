@@ -151,8 +151,11 @@ public class SignUpSecondActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     if (firstname.getText() == null || lastname.getText() == null || mobile.getText() == null ||
-                        firstname.getText().length() == 0 || lastname.getText().length() == 0) {
-                        Toast.makeText(mContext, "All fields are required!", Toast.LENGTH_SHORT).show();
+                        firstname.getText().length() == 0 || lastname.getText().length() == 0 ||
+                        mobile.getText().length() == 0) {
+
+                        alertMsg.setText("All fields are required!");
+                        alertDialog.show();
                         return;
                     }
 
@@ -202,6 +205,8 @@ public class SignUpSecondActivity extends AppCompatActivity {
                             } else {
                                 if (e.getCode() == ParseException.USERNAME_TAKEN)
                                     alertMsg.setText("This account already exists, try logging in.");
+                                else if (e.getCode() == ParseException.INVALID_EMAIL_ADDRESS)
+                                    alertMsg.setText("Invalid email address. Please enter it again.");
                                 else
                                     alertMsg.setText("There was an error. Error Code["+ e.getCode() +"]");
 

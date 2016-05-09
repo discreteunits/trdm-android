@@ -83,17 +83,25 @@ public class Tier4ListViewAdapter extends ArrayAdapter<ItemListObject> implement
         if (item != null) {
             viewHolder.tvName.setText(item.getName());
             viewHolder.tvInfo.setText(item.getAltName());
-            if (CategoryManager.isDinein())
-                viewHolder.tvOption.setText(item.getPriceArray()[0]);
-            else
-                viewHolder.tvOption.setText(item.getPriceArray()[1]);
+            if (CategoryManager.isDinein()) {
+                if (item.getProductType().equals("CHOICE"))
+                    viewHolder.tvOption.setText(item.getPrices());
+                else
+                    viewHolder.tvOption.setText(item.getPriceArray()[0]);
+            } else {
+                if (item.getProductType().equals("CHOICE"))
+                    viewHolder.tvOption.setText(item.getPrices());
+                else
+                    viewHolder.tvOption.setText(item.getPriceArray()[1]);
+            }
+
             viewHolder.tvVerietal.setText(item.getVerietal());
 
             viewHolder.btnAddToTab.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     ModalDialog modalDialog = new ModalDialog(mContext, item, isEvent);
-                    modalDialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
+                    //modalDialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
                     modalDialog.show();
                 }
             });

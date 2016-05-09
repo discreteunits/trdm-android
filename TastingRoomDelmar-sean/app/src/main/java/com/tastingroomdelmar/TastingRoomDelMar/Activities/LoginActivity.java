@@ -2,6 +2,7 @@ package com.tastingroomdelmar.TastingRoomDelMar.Activities;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
@@ -95,13 +96,19 @@ public class LoginActivity extends AppCompatActivity {
             edit.apply();
 
             if (userEmail == null || userEmail.isEmpty()) {
-                alertMsg.setText("Please enter an email.");
+                alertTitle.setText("Whoops!");
+                alertMsg.setText("We could not locate your email. Please enter an email.");
                 alertDialog.show();
 
-                Intent intent = new Intent(LoginActivity.this, SignUpLoginActivity.class);
-                intent.putExtra("LOGIN_OR_SIGNUP", Constants.SIGNUP_FLAG);
-                intent.putExtra("ORIGIN", "email");
-                startActivity(intent);
+                alertDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogInterface dialog) {
+                        Intent intent = new Intent(LoginActivity.this, SignUpLoginActivity.class);
+                        intent.putExtra("LOGIN_OR_SIGNUP", Constants.SIGNUP_FLAG);
+                        intent.putExtra("ORIGIN", "email");
+                        startActivity(intent);
+                    }
+                });
             } else {
                 Toast.makeText(getApplicationContext(), "Thanks! Signing in now", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(LoginActivity.this, Tier1Activity.class);
@@ -151,8 +158,12 @@ public class LoginActivity extends AppCompatActivity {
                         @Override
                         public void done(ParseUser user, ParseException err) {
                             if (err != null) {
-                                Crashlytics.log("LoginActivity.ParseFacebookUtils.logInWithReadPermissionsInBackground:" + err.getLocalizedMessage());
-                                Toast.makeText(getApplicationContext(), err.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                                alertTitle.setText("Error");
+                                alertMsg.setText("There was an error. Error Code["+err.getCode()+"]");
+                                alertDialog.show();
+                                alertDialog.setOnDismissListener(null);
+
+                                Crashlytics.log("LoginActivity.ParseFacebookUtils.logInWithReadPermissionsInBackground:" + err.getLocalizedMessage() + "["+err.getCode()+"]");
                                 loadingDialog.dismiss();
                                 return;
                             }
@@ -351,7 +362,13 @@ public class LoginActivity extends AppCompatActivity {
 
                                     } else {
                                         loadingDialog.dismiss();
-                                        Crashlytics.log("LoginActivity.getAndSaveUserDetailsFromFB().user.saveInBackground:" + e.getLocalizedMessage());
+                                        Crashlytics.log("LoginActivity.getAndSaveUserDetailsFromFB().user.saveInBackground:" + e.getLocalizedMessage() + "["+e.getCode()+"]");
+
+                                        alertTitle.setText("Error");
+                                        alertMsg.setText("There was an error. Error Code["+e.getCode()+"]");
+                                        alertDialog.show();
+                                        alertDialog.setOnDismissListener(null);
+
                                         e.printStackTrace();
                                         Toast.makeText(getApplicationContext(), e.getMessage().replace("java.lang.IllegalArgumentException: ", ""), Toast.LENGTH_SHORT).show();
                                     }

@@ -2,6 +2,7 @@ package com.tastingroomdelmar.TastingRoomDelMar.Activities;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.graphics.Color;
@@ -78,6 +79,11 @@ public class MyTabActivity extends AppCompatActivity {
     double tipAmount;
     double grandtotal;
 
+    Dialog alertDialog;
+    TextView alertTitle;
+    TextView alertMsg;
+    Button alertBtn;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -126,6 +132,18 @@ public class MyTabActivity extends AppCompatActivity {
         mImageButtonDrawer.setVisibility(View.GONE);
         mImageButtonTab.setVisibility(View.GONE);
 
+        alertDialog = new Dialog(this);
+        alertDialog.setContentView(R.layout.layout_general_alert);
+        alertTitle = (TextView) alertDialog.findViewById(R.id.tv_general_title);
+        alertMsg = (TextView) alertDialog.findViewById(R.id.tv_general_msg);
+        alertBtn = (Button) alertDialog.findViewById(R.id.btn_general_ok);
+        alertBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                alertDialog.dismiss();
+            }
+        });
+
         /* fixed text views */
         final TextView qtyLabel = (TextView) findViewById(R.id.tv_qty_label);
         final TextView itemLabel = (TextView) findViewById(R.id.tv_item_label);
@@ -156,7 +174,11 @@ public class MyTabActivity extends AppCompatActivity {
         final OrderManager orderManager = OrderManager.getSingleton();
 
         if (orderManager == null || orderManager.getOrderCount() == 0) {
-            Toast.makeText(this, "Looks like you don't have any items on your tab", Toast.LENGTH_SHORT).show();
+            alertTitle.setText("Whoops!");
+            alertMsg.setText("Looks like you don't have any items on your tab");
+            alertDialog.show();
+            alertDialog.setOnDismissListener(null);
+
             orderButton.setText("Back to menu");
             orderButton.setBackground(ContextCompat.getDrawable(mContext, R.drawable.gray_soft_corner_button));
             orderButton.setOnClickListener(new View.OnClickListener() {
@@ -372,7 +394,11 @@ public class MyTabActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (etTableNumber.getText().toString().isEmpty()) {
-                    Toast.makeText(MyTabActivity.this, "Please enter table number!", Toast.LENGTH_SHORT).show();
+                    alertTitle.setText("Whoops!");
+                    alertMsg.setText("Please enter table number.");
+                    alertDialog.show();
+                    alertDialog.setOnDismissListener(null);
+
                     return;
                 }
 
@@ -463,7 +489,10 @@ public class MyTabActivity extends AppCompatActivity {
         placeOrderTip.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(mContext, "To place order, tab the button and HOLD it!", Toast.LENGTH_SHORT).show();
+                alertTitle.setText("Whoops!");
+                alertMsg.setText("To place order, tab the button and HOLD it.");
+                alertDialog.show();
+                alertDialog.setOnDismissListener(null);
             }
         });
 
@@ -482,10 +511,17 @@ public class MyTabActivity extends AppCompatActivity {
 
                     if (checkoutType == Constants.CheckoutType.STRIPE) {
                         if (PaymentManager.getSingleton().getPaymentMethod() == null) {
-                            Toast.makeText(mContext, "No payment method found", Toast.LENGTH_SHORT).show();
+                            alertTitle.setText("Whoops!");
+                            alertMsg.setText("Looks like you don’t have a credit card on file. Please add a card or checkout with your servers.");
+                            alertDialog.show();
 
-                            Intent i = new Intent(MyTabActivity.this, PaymentActivity.class);
-                            startActivity(i);
+                            alertDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                                @Override
+                                public void onDismiss(DialogInterface dialog) {
+                                    Intent i = new Intent(MyTabActivity.this, PaymentActivity.class);
+                                    startActivity(i);
+                                }
+                            });
                         } else {
                             placeOrder();
                         }
@@ -517,8 +553,8 @@ public class MyTabActivity extends AppCompatActivity {
             @Override
             public void done(String object, ParseException e) {
                 if (e == null) {
-                    Toast.makeText(mContext, "Order Placed Successfully!", Toast.LENGTH_SHORT).show();
-                    Log.d(CURRENT_ACTIVITY, object);
+                    loadingDialog.dismiss();
+
                     OrderManager.clearOrders();
                     orderListItems.clear();
 
@@ -528,16 +564,29 @@ public class MyTabActivity extends AppCompatActivity {
                     CategoryManager.popAll();
                     OIDManager.popAll();
 
+                    Log.d(CURRENT_ACTIVITY, object);
+
+                    alertTitle.setText("Great Success!");
+                    alertMsg.setText("Your order has been received. We’ll notify you once it’s been confirmed.");
+                    alertDialog.show();
+                    alertDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                        @Override
+                        public void onDismiss(DialogInterface dialog) {
+                            Intent intent = new Intent(MyTabActivity.this, Tier1Activity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            startActivity(intent);
+                        }
+                    });
+                } else {
                     loadingDialog.dismiss();
 
-                    Intent intent = new Intent(MyTabActivity.this, Tier1Activity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    startActivity(intent);
-                } else {
+                    alertTitle.setText("Whoops!");
+                    alertMsg.setText("Unable to place this order at this time. Please try again later.");
+                    alertDialog.show();
+                    alertDialog.setOnDismissListener(null);
+
                     Crashlytics.log("MyTabActivity.placeOrder():" + e.getLocalizedMessage());
                     e.printStackTrace();
-                    loadingDialog.dismiss();
-                    Toast.makeText(mContext, "There was an error while placing order :( Please try again.", Toast.LENGTH_SHORT).show();
                 }
             }
         });

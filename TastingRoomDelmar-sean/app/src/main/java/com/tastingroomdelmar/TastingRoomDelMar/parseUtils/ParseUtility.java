@@ -1,6 +1,7 @@
 package com.tastingroomdelmar.TastingRoomDelMar.parseUtils;
 
 import android.content.Context;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -18,6 +19,10 @@ import com.parse.PushService;
 import com.parse.SaveCallback;
 import com.stripe.Stripe;
 import com.tastingroomdelmar.TastingRoomDelMar.R;
+import com.tastingroomdelmar.TastingRoomDelMar.utils.CategoryManager;
+import com.tastingroomdelmar.TastingRoomDelMar.utils.OIDManager;
+import com.tastingroomdelmar.TastingRoomDelMar.utils.OrderManager;
+import com.tastingroomdelmar.TastingRoomDelMar.utils.PaymentManager;
 
 import java.io.File;
 import java.lang.reflect.Method;
@@ -62,10 +67,16 @@ public class ParseUtility {
                 installation.save();
                 ParsePush.subscribeInBackground("customer");
             } catch (ParseException e) {
-                    Toast.makeText(mContext, "There was an error logging in. Please login again", Toast.LENGTH_SHORT).show();
-                    ParseUser.logOut();
-                    Log.d("ParseUtility", "ERRORROROROROROROROROROR\n" + e.getLocalizedMessage());
-                    e.printStackTrace();
+                Toast.makeText(mContext, "There was an error logging in. Please login again", Toast.LENGTH_SHORT).show();
+                ParseUser.logOut();
+                OrderManager.clearOrders();
+                OIDManager.popAll();
+                CategoryManager.popAll();
+                PaymentManager.getSingleton().clearPaymentMethod();
+                PreferenceManager.getDefaultSharedPreferences(mContext).edit().clear().apply();
+
+                Log.d("ParseUtility", "ERRORROROROROROROROROROR\n" + e.getLocalizedMessage());
+                e.printStackTrace();
             }
         }
     }

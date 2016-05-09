@@ -1,6 +1,7 @@
 package com.tastingroomdelmar.TastingRoomDelMar.Dialogs;
 
 import android.app.Dialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -18,6 +19,7 @@ import org.json.JSONObject;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
+import com.tastingroomdelmar.TastingRoomDelMar.Activities.MyTabActivity;
 import com.tastingroomdelmar.TastingRoomDelMar.ListViewAdapters.ModalListViewAdapter;
 import com.tastingroomdelmar.TastingRoomDelMar.R;
 import com.tastingroomdelmar.TastingRoomDelMar.parseUtils.ItemListObject;
@@ -45,6 +47,10 @@ public class ModalDialog extends Dialog implements android.view.View.OnClickList
     private ModalListViewAdapter adapter;
     private ListView modalListView;
 
+    Dialog alertDialog;
+    Button alertBtnBackToMenu;
+    Button alertBtnGoToTab;
+
     public ModalDialog(AppCompatActivity context, ItemListObject item, boolean isEvent) {
         super(context);
         mContext = context;
@@ -63,6 +69,25 @@ public class ModalDialog extends Dialog implements android.view.View.OnClickList
         setContentView(R.layout.layout_modal);
 
         if (FontManager.getSingleton() == null) new FontManager(mContext.getApplicationContext());
+
+        alertDialog = new Dialog(mContext);
+        alertDialog.setContentView(R.layout.layout_added_to_tab);
+        alertBtnBackToMenu = (Button) alertDialog.findViewById(R.id.btn_added_tab_back_to_menu);
+        alertBtnGoToTab = (Button) alertDialog.findViewById(R.id.btn_added_tab_go_to_tab);
+        alertBtnBackToMenu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                alertDialog.dismiss();
+            }
+        });
+        alertBtnGoToTab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(mContext, MyTabActivity.class);
+                mContext.startActivity(intent);
+                alertDialog.dismiss();
+            }
+        });
 
         final TextView name = (TextView) findViewById(R.id.modal_tv_name);
         final TextView info = (TextView) findViewById(R.id.modal_tv_info);
@@ -224,6 +249,7 @@ public class ModalDialog extends Dialog implements android.view.View.OnClickList
 
                     orderManager.printOrder();
 
+                    alertDialog.show();
                     Toast.makeText(mContext, "Order Added", Toast.LENGTH_SHORT).show();
                 } catch (JSONException e) {
                     e.printStackTrace();

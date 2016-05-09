@@ -28,6 +28,7 @@ import com.stripe.android.Stripe;
 import com.stripe.android.TokenCallback;
 import com.stripe.android.model.Card;
 import com.stripe.android.model.Token;
+import com.stripe.exception.StripeException;
 import com.tastingroomdelmar.TastingRoomDelMar.BuildConfig;
 import com.tastingroomdelmar.TastingRoomDelMar.R;
 import com.tastingroomdelmar.TastingRoomDelMar.utils.Constants;
@@ -77,6 +78,11 @@ public class PaymentActivity extends AppCompatActivity {
 
     private Button mButtonSave;
 
+    Dialog alertDialog;
+    TextView alertTitle;
+    TextView alertMsg;
+    Button alertBtn;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -98,6 +104,18 @@ public class PaymentActivity extends AppCompatActivity {
         loadingDialog.setContentView(R.layout.layout_loading_dialog);
         loadingDialog.setCancelable(false);
         loadingDialog.setCanceledOnTouchOutside(false);
+
+        alertDialog = new Dialog(this);
+        alertDialog.setContentView(R.layout.layout_general_alert);
+        alertTitle = (TextView) alertDialog.findViewById(R.id.tv_general_title);
+        alertMsg = (TextView) alertDialog.findViewById(R.id.tv_general_msg);
+        alertBtn = (Button) alertDialog.findViewById(R.id.btn_general_ok);
+        alertBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                alertDialog.dismiss();
+            }
+        });
 
         final TextView tvPleaseWait = (TextView) loadingDialog.findViewById(R.id.tv_please_wait);
         tvPleaseWait.setTypeface(FontManager.nexa);
@@ -181,14 +199,20 @@ public class PaymentActivity extends AppCompatActivity {
                     @Override
                     public void done(String object, ParseException e) {
                         if (e == null) {
-                            Toast.makeText(mContext, "Card successfully removed", Toast.LENGTH_SHORT).show();
+                            alertTitle.setText("Great Success!");
+                            alertMsg.setText("Card successfully removed.");
+                            alertDialog.show();
+
                             modifyPaymentMethodMode(false);
                             mButtonPaymentMethod.setText("+Add Payment Method");
                             mButtonPaymentMethod.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_card_default, 0, 0, 0);
                             PaymentManager.getSingleton().clearPaymentMethod();
                         } else {
+                            alertTitle.setText("Whoops!");
+                            alertMsg.setText("There was an error. Error Code["+e.getCode()+"]");
+                            alertDialog.show();
+
                             e.printStackTrace();
-                            Toast.makeText(mContext, "There was an error!", Toast.LENGTH_SHORT).show();
                         }
 
                         loadingDialog.dismiss();
@@ -218,7 +242,10 @@ public class PaymentActivity extends AppCompatActivity {
         });
 
         if (ParseUser.getCurrentUser() == null) {
-            Toast.makeText(mContext, "You must be logged in to add payment", Toast.LENGTH_SHORT).show();
+            alertTitle.setText("Whoops!");
+            alertMsg.setText("You must be logged in to add payment");
+            alertDialog.show();
+
             mButtonPaymentMethod.setEnabled(false);
             mButtonSave.setText("Back");
             mButtonSave.setBackground(ContextCompat.getDrawable(mContext, R.drawable.gray_soft_corner_button));
@@ -294,8 +321,6 @@ public class PaymentActivity extends AppCompatActivity {
             mCameraButton.setVisibility(View.VISIBLE);
             mRemoveCard.setVisibility(View.VISIBLE);
 
-
-
             mTVCurrentActivityName.setText(ADD_PAYMENT);
             mButtonSave.setText("Save");
             mButtonSave.setBackground(ContextCompat.getDrawable(mContext, R.drawable.green_soft_corner_button));
@@ -305,8 +330,11 @@ public class PaymentActivity extends AppCompatActivity {
                     if (!mETCardNumber.getText().toString().isEmpty() && !mETEXPMM.getText().toString().isEmpty() &&
                             !mETEXPYYYY.getText().toString().isEmpty() && !mETCVC.getText().toString().isEmpty())
                         submitCard();
-                    else
-                        Toast.makeText(mContext, "All fields are required!", Toast.LENGTH_SHORT).show();
+                    else {
+                        alertTitle.setText("Required");
+                        alertMsg.setText("All fields are required");
+                        alertDialog.show();
+                    }
 
                 }
             });
@@ -358,7 +386,15 @@ public class PaymentActivity extends AppCompatActivity {
             }
 
             public void onError(Exception error) {
-                Toast.makeText(mContext, error.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                alertTitle.setText("Whoops!");
+                if (error instanceof StripeException)
+                    alertMsg.setText(error.getLocalizedMessage() + " Please try again later.");
+                else
+                    alertMsg.setText("Please try again later.");
+
+                alertDialog.show();
+
+                error.printStackTrace();
                 Log.d("Stripe", error.getLocalizedMessage());
                 loadingDialog.dismiss();
             }
@@ -374,16 +410,22 @@ public class PaymentActivity extends AppCompatActivity {
             @Override
             public void done(String object, ParseException e) {
                 if (e == null) {
+                    alertTitle.setText("Great Success!");
+                    alertMsg.setText("Your card has been updated to your account.");
+                    alertDialog.show();
+
                     Log.d(TAG, object);
                     modifyPaymentMethodMode(false);
-                    Toast.makeText(mContext, "Card information was successfully updated", Toast.LENGTH_SHORT).show();
 
                     cardObject = PaymentManager.getSingleton().getPaymentMethod();
                     updateCardButton();
                     loadingDialog.dismiss();
                 } else {
+                    alertTitle.setText("Whoops!");
+                    alertMsg.setText("There was an error. Error Code["+e.getCode()+"]");
+                    alertDialog.show();
+
                     e.printStackTrace();
-                    Toast.makeText(mContext, "There was an error: " + e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
                     loadingDialog.dismiss();
                 }
             }

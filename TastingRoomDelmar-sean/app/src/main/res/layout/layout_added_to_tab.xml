@@ -7,52 +7,45 @@
     android:background="@drawable/modal">
 
     <TextView
-        android:id="@+id/tv_checkout_user_title"
+        android:id="@+id/tv_added_tab_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Whoops"
+        android:text="Added Successfully!"
         android:layout_gravity="center"
         android:layout_marginTop="10dp"
-        android:textSize="30sp"
+        android:textSize="27sp"
         android:textColor="@color/colorPrimary"/>
 
     <TextView
-        android:id="@+id/tv_checkout_user_msg"
+        android:id="@+id/tv_added_tab_msg"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Looks like you're not logged in or don't have an account. Login or create an account to place an order."
+        android:text="Item has been added to your order!"
         android:layout_gravity="center"
         android:gravity="center"
         android:layout_marginTop="5dp"
-        android:layout_marginBottom="10dp"
+        android:layout_marginBottom="15dp"
         android:textSize="15sp"
         android:textColor="@color/colorPrimary"/>
 
     <Button
-        android:id="@+id/btn_closeout_user_login"
+        android:id="@+id/btn_added_tab_go_to_tab"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:minHeight="30dp"
-        android:text="Login"
+        android:text="Go to Tab"
         android:layout_marginBottom="5dp"
+        android:textAllCaps="false"
         android:textColor="@color/confirmDarkGreen"/>
 
     <Button
-        android:id="@+id/btn_closeout_user_create_user"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:minHeight="30dp"
-        android:layout_marginBottom="5dp"
-        android:text="create an account"
-        android:textColor="@color/confirmDarkGreen"/>
-
-    <Button
-        android:id="@+id/btn_closeout_user_cancel"
+        android:id="@+id/btn_added_tab_back_to_menu"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:minHeight="30dp"
         android:layout_marginBottom="10dp"
-        android:text="Cancel"
+        android:text="Back to Menu"
+        android:textAllCaps="false"
         android:textColor="@color/confirmDarkGreen" />
 
 </LinearLayout>

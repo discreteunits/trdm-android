@@ -1,5 +1,6 @@
 package com.tastingroomdelmar.TastingRoomDelMar.Activities;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -11,11 +12,14 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.parse.FindCallback;
 import com.parse.FunctionCallback;
@@ -57,6 +61,11 @@ public class Tier1Activity extends AppCompatActivity {
     TextView mBadge;
 
     HashMap<String, String> cardObject;
+
+    Dialog alertDialog;
+    TextView alertTitle;
+    TextView alertMsg;
+    Button alertBtn;
 
     @Override
     protected void onResume() {
@@ -129,6 +138,18 @@ public class Tier1Activity extends AppCompatActivity {
         mTVPreviousActivityName.setText("Del Mar");
         mTVPreviousActivityName.setTypeface(FontManager.nexa);
 
+        alertDialog = new Dialog(this);
+        alertDialog.setContentView(R.layout.layout_general_alert);
+        alertTitle = (TextView) alertDialog.findViewById(R.id.tv_general_title);
+        alertMsg = (TextView) alertDialog.findViewById(R.id.tv_general_msg);
+        alertBtn = (Button) alertDialog.findViewById(R.id.btn_general_ok);
+        alertBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                alertDialog.dismiss();
+            }
+        });
+
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
 
         final ImageButton mImageButtonDrawer = (ImageButton) findViewById(R.id.nav_button);
@@ -154,46 +175,104 @@ public class Tier1Activity extends AppCompatActivity {
             }
         });
 
-        drawerListView = (ListView) findViewById(R.id.right_drawer);
+        final LinearLayout drawerLayout = (LinearLayout) findViewById(R.id.drawer_view);
 
-        drawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                switch (i) {
-                    case 0: Intent dineinIntent = new Intent(Tier1Activity.this, Tier2Activity.class);
-                        CategoryManager.setDinein(true);
-                        OIDManager.addToList(listItem.get(0).getId());
-                        CategoryManager.addToList(listItem.get(0).getCategoryId());
-                        dineinIntent.putExtra("TIER2_DEST", "Dine In");
-                        startActivity(dineinIntent);
-                        break; // Dinein
-                    case 1: Intent takeawayintent = new Intent(Tier1Activity.this, Tier2Activity.class);
-                        CategoryManager.setDinein(false);
-                        OIDManager.addToList(listItem.get(1).getId());
-                        CategoryManager.addToList(listItem.get(1).getCategoryId());
-                        takeawayintent.putExtra("TIER2_DEST", "Take Away");
-                        startActivity(takeawayintent);
-                        break; // Takeaway
-                    case 2: Intent eventIntent = new Intent(Tier1Activity.this, Tier4Activity.class);
-                        CategoryManager.setDinein(false);
-                        OIDManager.addToList(listItem.get(2).getId());
-                        CategoryManager.addToList(listItem.get(2).getCategoryId());
-                        eventIntent.putExtra("TIER4_DEST", "Events");
-                        eventIntent.putExtra("TIER4_ORIG", "Del Mar");
-                        startActivity(eventIntent);
-                        break; // Events
-                    case 3: Intent tabIntent = new Intent(Tier1Activity.this, MyTabActivity.class);
-                        startActivity(tabIntent);
-                        break;
-                    case 4: Intent paymentIntent = new Intent(Tier1Activity.this, PaymentActivity.class);
-                        startActivity(paymentIntent);
-                        break; // Payment
-                    case 5: Intent settingsIntent = new Intent(Tier1Activity.this, SettingsActivity.class);
-                        startActivity(settingsIntent);
-                        break; // Settings
+        for (int i = 0; i < drawerLayout.getChildCount()-1; i++) {
+            final int index = i;
+            final TextView tvItem = (TextView) drawerLayout.getChildAt(i);
+
+            tvItem.setTypeface(FontManager.nexa);
+
+            tvItem.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    try {
+                        switch (index) {
+                            case 0:
+                                Intent dineinIntent = new Intent(Tier1Activity.this, Tier2Activity.class);
+                                CategoryManager.setDinein(true);
+                                OIDManager.addToList(listItem.get(index).getId());
+                                CategoryManager.addToList(listItem.get(index).getCategoryId());
+                                dineinIntent.putExtra("TIER2_DEST", "Dine In");
+                                startActivity(dineinIntent);
+                                break; // Dinein
+                            case 1:
+                                Intent takeawayintent = new Intent(Tier1Activity.this, Tier2Activity.class);
+                                CategoryManager.setDinein(false);
+                                OIDManager.addToList(listItem.get(index).getId());
+                                CategoryManager.addToList(listItem.get(index).getCategoryId());
+                                takeawayintent.putExtra("TIER2_DEST", "Take Away");
+                                startActivity(takeawayintent);
+                                break; // Takeaway
+                            case 2:
+                                Intent eventIntent = new Intent(Tier1Activity.this, Tier4Activity.class);
+                                CategoryManager.setDinein(false);
+                                OIDManager.addToList(listItem.get(index).getId());
+                                CategoryManager.addToList(listItem.get(index).getCategoryId());
+                                eventIntent.putExtra("TIER4_DEST", "Events");
+                                eventIntent.putExtra("TIER4_ORIG", "Del Mar");
+                                startActivity(eventIntent);
+                                break; // Events
+                            case 3:
+                                Intent tabIntent = new Intent(Tier1Activity.this, MyTabActivity.class);
+                                startActivity(tabIntent);
+                                break;
+                            case 4:
+                                Intent paymentIntent = new Intent(Tier1Activity.this, PaymentActivity.class);
+                                startActivity(paymentIntent);
+                                break; // Payment
+                            case 5:
+                                Intent settingsIntent = new Intent(Tier1Activity.this, SettingsActivity.class);
+                                startActivity(settingsIntent);
+                                break; // Settings
+                        }
+                    } catch (IndexOutOfBoundsException e) {
+                        e.printStackTrace();
+                        alertMsg.setText("Please wait until loading is done.");
+                        alertDialog.show();
+                    }
                 }
-            }
-        });
+            });
+        }
+
+//        drawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+//                switch (i) {
+//                    case 0: Intent dineinIntent = new Intent(Tier1Activity.this, Tier2Activity.class);
+//                        CategoryManager.setDinein(true);
+//                        OIDManager.addToList(listItem.get(0).getId());
+//                        CategoryManager.addToList(listItem.get(0).getCategoryId());
+//                        dineinIntent.putExtra("TIER2_DEST", "Dine In");
+//                        startActivity(dineinIntent);
+//                        break; // Dinein
+//                    case 1: Intent takeawayintent = new Intent(Tier1Activity.this, Tier2Activity.class);
+//                        CategoryManager.setDinein(false);
+//                        OIDManager.addToList(listItem.get(1).getId());
+//                        CategoryManager.addToList(listItem.get(1).getCategoryId());
+//                        takeawayintent.putExtra("TIER2_DEST", "Take Away");
+//                        startActivity(takeawayintent);
+//                        break; // Takeaway
+//                    case 2: Intent eventIntent = new Intent(Tier1Activity.this, Tier4Activity.class);
+//                        CategoryManager.setDinein(false);
+//                        OIDManager.addToList(listItem.get(2).getId());
+//                        CategoryManager.addToList(listItem.get(2).getCategoryId());
+//                        eventIntent.putExtra("TIER4_DEST", "Events");
+//                        eventIntent.putExtra("TIER4_ORIG", "Del Mar");
+//                        startActivity(eventIntent);
+//                        break; // Events
+//                    case 3: Intent tabIntent = new Intent(Tier1Activity.this, MyTabActivity.class);
+//                        startActivity(tabIntent);
+//                        break;
+//                    case 4: Intent paymentIntent = new Intent(Tier1Activity.this, PaymentActivity.class);
+//                        startActivity(paymentIntent);
+//                        break; // Payment
+//                    case 5: Intent settingsIntent = new Intent(Tier1Activity.this, SettingsActivity.class);
+//                        startActivity(settingsIntent);
+//                        break; // Settings
+//                }
+//            }
+//        });
 
         mProgressBar = (ProgressBar) findViewById(R.id.pb_tier1);
         mProgressBar.setVisibility(View.VISIBLE);
