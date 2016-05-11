@@ -4,7 +4,7 @@
     android:orientation="vertical"
     android:layout_width="300dp"
     android:layout_height="wrap_content"
-    android:padding="5dp"
+    android:padding="20dp"
     android:background="@drawable/modal">
 
     <TextView
@@ -14,7 +14,7 @@
         android:text="ADD GRATUITY"
         android:layout_gravity="center"
         android:layout_marginTop="10dp"
-        android:textSize="30sp"
+        android:textSize="25sp"
         android:textColor="@color/colorPrimary"/>
 
     <TextView
@@ -57,6 +57,7 @@
                 android:layout_alignParentRight="true"
                 android:layout_alignParentEnd="true"
                 android:text="10.00"
+                android:paddingRight="5dp"
                 android:textSize="20sp"
                 android:textColor="@color/colorPrimary"/>
 
@@ -82,6 +83,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:layout_alignParentEnd="true"
+                android:paddingRight="5dp"
                 android:text="0.80"
                 android:textSize="20sp"
                 android:textColor="@color/colorPrimary"/>
@@ -109,6 +111,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:layout_alignParentEnd="true"
+                android:paddingRight="5dp"
                 android:text="0.00"
                 android:textSize="20sp"
                 android:textColor="@color/colorPrimary"/>
@@ -135,6 +138,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:layout_alignParentEnd="true"
+                android:paddingRight="5dp"
                 android:text="12.80"
                 android:textSize="20sp"
                 android:textColor="@color/colorPrimary"/>
@@ -147,7 +151,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:text="Gratuity (Adjust below. Default 18%)"
-            android:textSize="18sp"
+            android:textSize="16sp"
             android:textColor="@color/colorPrimary"/>
 
         <org.adw.library.widgets.discreteseekbar.DiscreteSeekBar

@@ -68,6 +68,9 @@ public class WebViewActivity extends AppCompatActivity {
 
         WebView myWebView = (WebView) findViewById(R.id.webview);
 
-        myWebView.loadUrl("http://www.tastingroomdelmar.com/terms/");
+        if (target.startsWith("Terms"))
+            myWebView.loadUrl("http://www.tastingroomdelmar.com/terms/");
+        else
+            myWebView.loadUrl("http://www.tastingroomdelmar.com/privacy/");
     }
 }

@@ -17,6 +17,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -67,6 +68,8 @@ public class MyTabActivity extends AppCompatActivity {
     TextView mTVSubtotal;
     TextView mTVTax;
     TextView mTVTotal;
+
+    ImageView mBGLogo;
 
     Dialog loadingDialog;
 
@@ -133,7 +136,9 @@ public class MyTabActivity extends AppCompatActivity {
         mImageButtonTab.setVisibility(View.GONE);
 
         alertDialog = new Dialog(this);
+        alertDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         alertDialog.setContentView(R.layout.layout_general_alert);
+        alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         alertTitle = (TextView) alertDialog.findViewById(R.id.tv_general_title);
         alertMsg = (TextView) alertDialog.findViewById(R.id.tv_general_msg);
         alertBtn = (Button) alertDialog.findViewById(R.id.btn_general_ok);
@@ -171,8 +176,19 @@ public class MyTabActivity extends AppCompatActivity {
         mTVTotal.setTypeface(FontManager.nexa);
         mTVTotal.setTypeface(mTVTotal.getTypeface(), Typeface.BOLD);
 
+        mBGLogo = (ImageView) findViewById(R.id.iv_logo_bg);
+
         final OrderManager orderManager = OrderManager.getSingleton();
 
+        orderManager.setOrderCountListener(new OrderManager.OrderCountListener() {
+            @Override
+            public void onOrderCountChanged(int count) {
+                if (count == 0)
+                    mBGLogo.setVisibility(View.VISIBLE);
+                else
+                    mBGLogo.setVisibility(View.INVISIBLE);
+            }
+        });
         if (orderManager == null || orderManager.getOrderCount() == 0) {
             alertTitle.setText("Whoops!");
             alertMsg.setText("Looks like you don't have any items on your tab");
@@ -188,6 +204,8 @@ public class MyTabActivity extends AppCompatActivity {
                 }
             });
             return;
+        } else {
+            mBGLogo.setVisibility(View.INVISIBLE);
         }
 
         SwipeMenuCreator swipeMenuCreator = new SwipeMenuCreator() {
@@ -262,7 +280,9 @@ public class MyTabActivity extends AppCompatActivity {
         mTVTotal.setText(formattedGrandtotal);
 
         final Dialog checkoutOptionDialog = new Dialog(mContext);
+        checkoutOptionDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         checkoutOptionDialog.setContentView(R.layout.layout_checkout_options);
+        checkoutOptionDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
         final TextView tvCloseoutTitle = (TextView) checkoutOptionDialog.findViewById(R.id.tv_closeout_title);
         final TextView tvCloseoutMsg = (TextView) checkoutOptionDialog.findViewById(R.id.tv_closeout_msg);
@@ -276,15 +296,21 @@ public class MyTabActivity extends AppCompatActivity {
         cancelCheckout.setTypeface(FontManager.openSansBold);
 
         final Dialog tableDialog = new Dialog(mContext);
+        tableDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         tableDialog.setContentView(R.layout.layout_checkout_table);
+        tableDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
         final Dialog tipDialog = new Dialog(mContext);
+        tipDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         tipDialog.setContentView(R.layout.layout_checkout_tip);
+        tipDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
         loadingDialog = new Dialog(mContext);
+        loadingDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         loadingDialog.setContentView(R.layout.layout_checkout_loading);
         loadingDialog.setCancelable(false);
         loadingDialog.setCanceledOnTouchOutside(false);
+        loadingDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
         final TextView tvPlacingOrder = (TextView) loadingDialog.findViewById(R.id.tv_placing_order);
         tvPlacingOrder.setTypeface(FontManager.nexa);
@@ -383,6 +409,8 @@ public class MyTabActivity extends AppCompatActivity {
         tvTableTitle.setTypeface(FontManager.bebasBold);
         tvTableMsg.setTypeface(FontManager.openSansLight);
 
+        etTableNumber.setHintTextColor(ContextCompat.getColor(this, R.color.light_grey));
+
         cancelTable.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -422,7 +450,9 @@ public class MyTabActivity extends AppCompatActivity {
         tvTotal.setText(formattedGrandtotal);
 
         final Dialog userDialog = new Dialog(mContext);
+        userDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         userDialog.setContentView(R.layout.layout_checkout_no_user);
+        userDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
         TextView tvUserTitle = (TextView) userDialog.findViewById(R.id.tv_checkout_user_title);
         TextView tvUserMsg = (TextView) userDialog.findViewById(R.id.tv_checkout_user_msg);
@@ -490,7 +520,7 @@ public class MyTabActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 alertTitle.setText("Whoops!");
-                alertMsg.setText("To place order, tab the button and HOLD it.");
+                alertMsg.setText("To place order, press and hold the Place Order button.");
                 alertDialog.show();
                 alertDialog.setOnDismissListener(null);
             }

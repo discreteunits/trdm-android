@@ -401,10 +401,10 @@ public class Tier4Activity extends AppCompatActivity {
                         });
                     }
 
-                    TopListObject fullList = new TopListObject("Full List");
-                    fullList.setSelected(true); // default selected
+                    TopListObject showAll = new TopListObject("Show All");
+                    showAll.setSelected(true); // default selected
 
-                    topListItem.add(0, fullList);
+                    topListItem.add(0, showAll);
 
                     topAdapter.notifyDataSetChanged();
                 } else {

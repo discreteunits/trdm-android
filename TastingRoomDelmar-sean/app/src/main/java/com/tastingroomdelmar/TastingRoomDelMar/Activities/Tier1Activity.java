@@ -2,6 +2,8 @@ package com.tastingroomdelmar.TastingRoomDelMar.Activities;
 
 import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -11,6 +13,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -139,7 +142,9 @@ public class Tier1Activity extends AppCompatActivity {
         mTVPreviousActivityName.setTypeface(FontManager.nexa);
 
         alertDialog = new Dialog(this);
+        alertDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         alertDialog.setContentView(R.layout.layout_general_alert);
+        alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         alertTitle = (TextView) alertDialog.findViewById(R.id.tv_general_title);
         alertMsg = (TextView) alertDialog.findViewById(R.id.tv_general_msg);
         alertBtn = (Button) alertDialog.findViewById(R.id.btn_general_ok);

@@ -4,7 +4,9 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.content.ContextCompat;
@@ -13,6 +15,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatCheckBox;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -135,7 +138,9 @@ public class SignUpSecondActivity extends AppCompatActivity {
         final String origin = i.getStringExtra("ORIGIN");
 
         alertDialog = new Dialog(this);
+        alertDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         alertDialog.setContentView(R.layout.layout_general_alert);
+        alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         alertTitle = (TextView) alertDialog.findViewById(R.id.tv_general_title);
         alertMsg = (TextView) alertDialog.findViewById(R.id.tv_general_msg);
         alertBtn = (Button) alertDialog.findViewById(R.id.btn_general_ok);

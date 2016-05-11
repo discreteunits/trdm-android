@@ -5,14 +5,16 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.preference.PreferenceManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -76,9 +78,26 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         mContext = this;
+        appCompatActivity = this;
 
         final Intent currentIntent = getIntent();
         origin = currentIntent.getStringExtra("ORIGIN");
+
+        new FontManager(getApplicationContext());
+
+        alertDialog = new Dialog(this);
+        alertDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        alertDialog.setContentView(R.layout.layout_general_alert);
+        alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        alertTitle = (TextView) alertDialog.findViewById(R.id.tv_general_title);
+        alertMsg = (TextView) alertDialog.findViewById(R.id.tv_general_msg);
+        alertBtn = (Button) alertDialog.findViewById(R.id.btn_general_ok);
+        alertBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                alertDialog.dismiss();
+            }
+        });
 
         ParseUser user = ParseUser.getCurrentUser();
         if (user != null) {
@@ -116,22 +135,6 @@ public class LoginActivity extends AppCompatActivity {
             }
         }
 
-        appCompatActivity = this;
-
-        new FontManager(getApplicationContext());
-
-        alertDialog = new Dialog(this);
-        alertDialog.setContentView(R.layout.layout_general_alert);
-        alertTitle = (TextView) alertDialog.findViewById(R.id.tv_general_title);
-        alertMsg = (TextView) alertDialog.findViewById(R.id.tv_general_msg);
-        alertBtn = (Button) alertDialog.findViewById(R.id.btn_general_ok);
-        alertBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                alertDialog.dismiss();
-            }
-        });
-
         mBtnSignup = (Button) findViewById(R.id.button_signup);
         mBtnSignup.setTypeface(FontManager.nexa);
         mBtnLogin = (Button) findViewById(R.id.button_login);
@@ -142,7 +145,9 @@ public class LoginActivity extends AppCompatActivity {
         mFBLoginButton.setTypeface(FontManager.nexa);
 
         loadingDialog = new Dialog(mContext);
+        loadingDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         loadingDialog.setContentView(R.layout.layout_loading_dialog);
+        loadingDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         loadingDialog.setCancelable(false);
         loadingDialog.setCanceledOnTouchOutside(false);
 

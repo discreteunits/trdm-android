@@ -1,10 +1,13 @@
 package com.tastingroomdelmar.TastingRoomDelMar.Activities;
 
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.EditTextPreference;
@@ -16,7 +19,12 @@ import android.preference.PreferenceManager;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.Window;
+import android.widget.Button;
+import android.widget.TextView;
 
+import com.parse.ParseException;
 import com.parse.ParseUser;
 import com.tastingroomdelmar.TastingRoomDelMar.BuildConfig;
 import com.tastingroomdelmar.TastingRoomDelMar.R;
@@ -40,6 +48,13 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
     static Context mContext;
 
+    static Dialog loadingDialog;
+
+    static Dialog alertDialog;
+    static TextView alertTitle;
+    static TextView alertMsg;
+    static Button alertBtn;
+
     /**
      * A preference value change listener that updates the preference's summary
      * to reflect its new value.
@@ -50,6 +65,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             ParseUser user = ParseUser.getCurrentUser();
 
             if(user == null) return false;
+
+            final String savedEmail = user.getEmail();
 
             if (preference instanceof CheckBoxPreference) {
                 String key = preference.getKey();
@@ -85,8 +102,35 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                         user.saveInBackground();
                         break;
                     case "email":
+                        if (stringValue.isEmpty() || stringValue.length() == 0) {
+                            user.setEmail(savedEmail);
+                            preference.setSummary(savedEmail);
+
+                            alertMsg.setText("You must specify an email.");
+                            alertDialog.show();
+                            break;
+                        }
+
                         user.put("email",stringValue);
-                        user.saveInBackground();
+                        loadingDialog.show();
+                        try {
+                            user.save();
+                        } catch (ParseException e) {
+                            user.setEmail(savedEmail);
+                            preference.setSummary(savedEmail);
+
+                            if (e.getCode() == ParseException.EMAIL_MISSING) {
+                                alertMsg.setText("You must specify an email.");
+                            } else if (e.getCode() == ParseException.EMAIL_TAKEN) {
+                                alertMsg.setText("Email address is already taken.");
+                            } else if (e.getCode() == ParseException.INVALID_EMAIL_ADDRESS) {
+                                alertMsg.setText("Email address is invalid. Please try again.");
+                            } else {
+                                alertMsg.setText("There was an error. Please try again. Error["+e.getCode()+"]");
+                            }
+                            alertDialog.show();
+                        }
+                        loadingDialog.dismiss();
                         break;
                     case "password":
                         user.put("password",stringValue);
@@ -169,6 +213,27 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             Log.d("PREFERENCE", "onCreate called");
             setHasOptionsMenu(false);
 
+            loadingDialog = new Dialog(mContext);
+            loadingDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            loadingDialog.setContentView(R.layout.layout_loading_dialog);
+            loadingDialog.setCancelable(false);
+            loadingDialog.setCanceledOnTouchOutside(false);
+            loadingDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+            alertDialog = new Dialog(mContext);
+            alertDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            alertDialog.setContentView(R.layout.layout_general_alert);
+            alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            alertTitle = (TextView) alertDialog.findViewById(R.id.tv_general_title);
+            alertMsg = (TextView) alertDialog.findViewById(R.id.tv_general_msg);
+            alertBtn = (Button) alertDialog.findViewById(R.id.btn_general_ok);
+            alertBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    alertDialog.dismiss();
+                }
+            });
+
             EditTextPreference firstnamePref = (EditTextPreference) findPreference("firstname");
             EditTextPreference lastnamePref = (EditTextPreference) findPreference("lastname");
             EditTextPreference mobilePref = (EditTextPreference) findPreference("mobile");
@@ -204,15 +269,15 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             bindPreferenceSummaryToValue(pushPref);
             bindPreferenceSummaryToValue(newsletterPref);
 
-//            findPreference("privacypolicy").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-//                @Override
-//                public boolean onPreferenceClick(Preference preference) {
-//                    Intent i = new Intent(getActivity(), WebViewActivity.class);
-//                    i.putExtra("TARGET","Privacy Policy");
-//                    startActivity(i);
-//                    return true;
-//                }
-//            });
+            findPreference("privacypolicy").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    Intent i = new Intent(getActivity(), WebViewActivity.class);
+                    i.putExtra("TARGET","Privacy Policy");
+                    startActivity(i);
+                    return true;
+                }
+            });
 
             findPreference("termsofuse").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override

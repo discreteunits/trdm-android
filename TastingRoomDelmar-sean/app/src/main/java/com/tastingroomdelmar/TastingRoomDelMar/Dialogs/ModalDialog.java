@@ -2,6 +2,8 @@ package com.tastingroomdelmar.TastingRoomDelMar.Dialogs;
 
 import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -68,9 +70,12 @@ public class ModalDialog extends Dialog implements android.view.View.OnClickList
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.layout_modal);
 
+        getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
         if (FontManager.getSingleton() == null) new FontManager(mContext.getApplicationContext());
 
         alertDialog = new Dialog(mContext);
+        alertDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         alertDialog.setContentView(R.layout.layout_added_to_tab);
         alertBtnBackToMenu = (Button) alertDialog.findViewById(R.id.btn_added_tab_back_to_menu);
         alertBtnGoToTab = (Button) alertDialog.findViewById(R.id.btn_added_tab_go_to_tab);

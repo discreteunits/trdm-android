@@ -3,6 +3,8 @@ package com.tastingroomdelmar.TastingRoomDelMar.Activities;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
@@ -12,6 +14,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -101,12 +104,16 @@ public class PaymentActivity extends AppCompatActivity {
             actionBar.setDisplayShowTitleEnabled(false);
 
         loadingDialog = new Dialog(mContext);
+        loadingDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         loadingDialog.setContentView(R.layout.layout_loading_dialog);
         loadingDialog.setCancelable(false);
         loadingDialog.setCanceledOnTouchOutside(false);
+        loadingDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
         alertDialog = new Dialog(this);
+        alertDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         alertDialog.setContentView(R.layout.layout_general_alert);
+        alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         alertTitle = (TextView) alertDialog.findViewById(R.id.tv_general_title);
         alertMsg = (TextView) alertDialog.findViewById(R.id.tv_general_msg);
         alertBtn = (Button) alertDialog.findViewById(R.id.btn_general_ok);

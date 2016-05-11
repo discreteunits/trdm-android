@@ -10,9 +10,12 @@
     tools:showIn="@layout/activity_my_tab">
 
     <ImageView
+        android:id="@+id/iv_logo_bg"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:src="@drawable/secondary_logo_drawable"
+        android:paddingBottom="95dp"
+        android:src="@drawable/secondary_logo"
+        android:alpha="0.1"
         android:scaleType="fitCenter"
         android:layout_centerInParent="true" />
 
@@ -22,8 +25,10 @@
         android:layout_height="wrap_content"
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
-        android:paddingTop="16dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
         android:orientation="horizontal"
+        android:background="@drawable/bottom_line_layout"
         >
 
         <TextView
@@ -72,7 +77,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="5dp"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
         android:orientation="vertical"
+        android:background="@drawable/top_bottom_line_layout"
         >
 
         <RelativeLayout
