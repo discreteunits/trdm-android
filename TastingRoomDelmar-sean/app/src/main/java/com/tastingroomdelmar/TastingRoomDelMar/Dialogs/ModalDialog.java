@@ -18,6 +18,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
@@ -53,6 +54,8 @@ public class ModalDialog extends Dialog implements android.view.View.OnClickList
     Button alertBtnBackToMenu;
     Button alertBtnGoToTab;
 
+    DecimalFormat df = new DecimalFormat("0.00");
+
     public ModalDialog(AppCompatActivity context, ItemListObject item, boolean isEvent) {
         super(context);
         mContext = context;
@@ -71,6 +74,8 @@ public class ModalDialog extends Dialog implements android.view.View.OnClickList
         setContentView(R.layout.layout_modal);
 
         getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+        df.setRoundingMode(RoundingMode.HALF_UP);
 
         if (FontManager.getSingleton() == null) new FontManager(mContext.getApplicationContext());
 
@@ -180,13 +185,48 @@ public class ModalDialog extends Dialog implements android.view.View.OnClickList
                             }
 
                             if (modalItem.getType() == Constants.Type.QUANTITY) {
-                                orderItem.put("amount", Integer.parseInt(modalItem.getSelectedOptionItem().getOptionName()));
+                                int amount = Integer.parseInt(modalItem.getSelectedOptionItem().getOptionName());
+                                orderItem.put("amount", amount);
                                 orderListItem.setQty(modalItem.getSelectedOptionItem().getOptionName());
+
+                                if (!CategoryManager.isDinein()) {
+                                    if (CategoryManager.isWine()) {
+                                        OrderManager.addTakeawayWineBottleCount(amount);
+                                        orderListItem.setNeedDiscount(true);
+                                        orderListItem.setVineOrHop("Vine");
+                                    }
+                                    else if (CategoryManager.isBeer()) {
+                                        OrderManager.addTakeawayBeerBottleCount(amount);
+                                        orderListItem.setNeedDiscount(true);
+                                        orderListItem.setVineOrHop("Hop");
+                                    }
+                                }
                             }
 
                             else if (modalItem.getType() == Constants.Type.SERVING) {
                                 if (modalItem.getSelectedOptionItem() instanceof ServingListItem) {
                                     orderItem.put("objectId", ((ServingListItem) modalItem.getSelectedOptionItem()).getObjectId());
+
+                                    final String info = modalItem.getSelectedOptionItem().getInfo();
+                                    final String firstSegment = info.split(" ")[0];
+
+                                    if (!CategoryManager.isDinein() && CategoryManager.isBeer()) {
+                                        if (firstSegment.endsWith("ml")) {
+                                            if (Double.parseDouble(firstSegment.replace("ml", "")) < 709.765) {
+                                                orderListItem.setCRV(0.05);
+                                            } else {
+                                                orderListItem.setCRV(0.10);
+                                            }
+
+                                        } else if (firstSegment.endsWith("oz")) {
+                                            if (Double.parseDouble(firstSegment.replace("oz", "")) < 24) {
+                                                orderListItem.setCRV(0.05);
+                                            } else {
+                                                orderListItem.setCRV(0.10);
+                                            }
+                                        }
+                                    }
+
                                     if (!parentOrderIdAdded)
                                         orderListItem.setObjectId(((ServingListItem) modalItem.getSelectedOptionItem()).getObjectId());
                                 }
@@ -197,7 +237,16 @@ public class ModalDialog extends Dialog implements android.view.View.OnClickList
                                 }
 
                                 orderListItem.setOptions(modalItem.getSelectedOptionItem().getOptionName());
-                                orderListItem.setModPrices(new DecimalFormat("0.00").format(modalItem.getSelectedOptionItem().getPrice()));
+                                orderListItem.setModPrices(df.format(modalItem.getSelectedOptionItem().getPrice()));
+
+                                if (!CategoryManager.isDinein()) {
+                                    if (CategoryManager.isWine()) {
+                                        OrderManager.addTakeawayWinePrice(modalItem.getSelectedOptionItem().getPrice());
+                                    }
+                                    else if (CategoryManager.isBeer()) {
+                                        OrderManager.addTakeawayBeerPrice(modalItem.getSelectedOptionItem().getPrice());
+                                    }
+                                }
                                 servingExists = true;
                             }
 
@@ -210,7 +259,7 @@ public class ModalDialog extends Dialog implements android.view.View.OnClickList
 
                                 orderListItem.setOptions(modalItem.getTitle() + " (" + modalItem.getSelectedOptionItem().getOptionName() + ")" + "\n");
                                 orderListItem.setModPrices(modalItem.getSelectedOptionItem().getPrice() == 0 ?
-                                        "\n" : new DecimalFormat("0.00").format(modalItem.getSelectedOptionItem().getPrice()) + "\n");
+                                        "\n" : df.format(modalItem.getSelectedOptionItem().getPrice()) + "\n");
 
                                 modifiers.put(modifierObject);
                             }

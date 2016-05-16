@@ -109,12 +109,41 @@
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
         android:paddingTop="30dp"
+        android:paddingBottom="30dp"
         android:textSize="15sp"
         android:textColor="@color/grayText"
         android:text="Already have an account? Login"
         android:layout_below="@+id/third_divider"
         android:layout_alignParentLeft="false"
         android:layout_alignParentStart="false" />
+
+    <View
+        android:id="@+id/fourth_divider"
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:layout_below="@+id/tv_signup_login_question"
+        android:background="@android:color/darker_gray"/>
+
+    <TextView
+        android:id="@+id/tv_signup_login_lost_pw_question"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:paddingTop="30dp"
+        android:paddingBottom="30dp"
+        android:textSize="15sp"
+        android:textColor="@color/grayText"
+        android:text="Forgot something? Reset Your Password"
+        android:layout_below="@+id/fourth_divider"
+        android:layout_alignParentLeft="false"
+        android:layout_alignParentStart="false" />
+
+    <View
+        android:id="@+id/fifth_divider"
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:layout_below="@+id/tv_signup_login_lost_pw_question"
+        android:background="@android:color/darker_gray"/>
 
     <Button
         android:id="@+id/button_signup_login"

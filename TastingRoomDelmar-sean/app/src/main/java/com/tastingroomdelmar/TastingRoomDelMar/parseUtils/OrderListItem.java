@@ -3,6 +3,7 @@ package com.tastingroomdelmar.TastingRoomDelMar.parseUtils;
 import com.tastingroomdelmar.TastingRoomDelMar.utils.Constants;
 import com.tastingroomdelmar.TastingRoomDelMar.utils.OrderManager;
 
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 
 /**
@@ -29,7 +30,18 @@ public class OrderListItem {
     private double itemPriceSum = 0;
     private double itemTaxPrice = 0;
 
+    private boolean isDiscount = false;
+    private String discountType;
+
+    private double crv = 0;
+
+    private double taxAccumulator = 0;
+
+    private boolean needDiscount = false;
+
     OrderManager mOrderManager = OrderManager.getSingleton();
+
+    DecimalFormat df = new DecimalFormat("0.00");
 
     public void setObjectId(String objectId) { this.objectId = objectId; }
     public String getObjectId() { return objectId; }
@@ -70,7 +82,6 @@ public class OrderListItem {
         try {
             if (this.modPrices != null) {
                 if (modPrices != null && !modPrices.equals("\n")) {
-
                     this.modPrices += modPrices;
                 }
             } else {
@@ -81,7 +92,14 @@ public class OrderListItem {
             e.printStackTrace();
         }
     }
-    public String getModPrices() { return modPrices; }
+    public String getModPrices() {
+        df.setRoundingMode(RoundingMode.HALF_UP);
+
+        if (getCRV() != 0)
+            return modPrices + df.format(getWeightedCRV());
+        else
+            return modPrices;
+    }
 
     public void setBaseTaxRate(double taxRate) { this.taxRate = taxRate; }
 
@@ -91,17 +109,22 @@ public class OrderListItem {
         double basePrice = 0;
         if (this.basePrice != null && !isBPcalced) {
             try {
+                df.setRoundingMode(RoundingMode.HALF_UP);
+
                 //Log.d("OrderListItem", this.basePrice);
                 basePrice = Double.parseDouble(this.basePrice);
                 int qty = Integer.parseInt(this.qty);
+                double weightedCRV = crv * qty;
+
+                //setCRV(weightedCRV);
 
                 basePrice = basePrice * qty;
-                itemPriceSum += basePrice;
-                itemTaxPrice += basePrice * (getBaseTaxRate() / 100);
+                itemPriceSum += basePrice + weightedCRV;
+                itemTaxPrice += (basePrice + weightedCRV) * (getBaseTaxRate() / 100);
+                mOrderManager.addToSubTotal(basePrice + weightedCRV);
+                mOrderManager.addToTax((basePrice + weightedCRV) * (getBaseTaxRate() / 100));
 
-                mOrderManager.addToSubTotal(basePrice);
-                mOrderManager.addToTax(basePrice * (getBaseTaxRate() / 100));
-                this.basePrice = new DecimalFormat("0.00").format((basePrice));
+                this.basePrice = df.format((basePrice + weightedCRV));
                 isBPcalced = true;
             } catch (NumberFormatException | NullPointerException e) {
                 e.printStackTrace();
@@ -109,6 +132,7 @@ public class OrderListItem {
         }
 
         if (this.modPrices != null && !isMPcalced) {
+            df.setRoundingMode(RoundingMode.HALF_UP);
             String[] modPrices = this.modPrices.split("\\n");
             String calculatedModPrices = "";
             for (int i = 0; i < modPrices.length; i++) {
@@ -121,11 +145,11 @@ public class OrderListItem {
 
                     if (getProductType() != null && getProductType().equals(Constants.CHOICE)) {
                         calculatedModPrice = (modPrice * qty) - basePrice;
-                        calculatedModPrices += new DecimalFormat("0.00").format(calculatedModPrice) + "\n";
+                        calculatedModPrices += df.format(calculatedModPrice) + "\n";
                     }
                     else {
                         calculatedModPrice = (modPrice * qty);
-                        calculatedModPrices += new DecimalFormat("0.00").format(calculatedModPrice) + "\n";
+                        calculatedModPrices += df.format(calculatedModPrice) + "\n";
                     }
 
                     itemPriceSum += calculatedModPrice;
@@ -158,4 +182,27 @@ public class OrderListItem {
     public double getItemTaxPrice() {
         return itemTaxPrice;
     }
+
+    public void setCRV(double c) { crv = c; }
+    public double getCRV() { return crv; }
+
+    public double getWeightedCRV() { return crv * Integer.parseInt(qty); }
+
+    public void setIsDiscount(boolean discount, String type) {
+        isDiscount = discount;
+        discountType = type;
+    }
+    public boolean isDiscount() { return isDiscount; }
+    public String getDiscountType() { return discountType; }
+
+    public void setNeedDiscount(boolean needDiscount) { this.needDiscount = needDiscount; }
+    public boolean getNeedDiscount() { return needDiscount; }
+
+    boolean discountApplied = false;
+    public void setDiscountApplied(boolean d) { discountApplied = d; }
+    public boolean getDiscountApplied() { return discountApplied; }
+
+    String vineOrHop;
+    public void setVineOrHop(String type) { vineOrHop = type; }
+    public String getVineOrHop() { return vineOrHop; }
 }

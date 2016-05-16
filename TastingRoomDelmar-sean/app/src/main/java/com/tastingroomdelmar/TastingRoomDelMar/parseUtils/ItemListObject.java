@@ -2,6 +2,7 @@ package com.tastingroomdelmar.TastingRoomDelMar.parseUtils;
 
 import android.util.Log;
 
+import com.parse.FindCallback;
 import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
@@ -10,10 +11,12 @@ import com.parse.ParseQuery;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 
 import com.tastingroomdelmar.TastingRoomDelMar.utils.CategoryManager;
 import com.tastingroomdelmar.TastingRoomDelMar.utils.Constants;
@@ -50,23 +53,28 @@ public class ItemListObject implements Comparable<ItemListObject> {
 
     private ArrayList<ModalListItem> additionOptions;
 
+    private String info;
+
+    private DecimalFormat df = new DecimalFormat("0.00");
+
     public ItemListObject(ParseObject obj) {
+        df.setRoundingMode(RoundingMode.HALF_UP);
         objectId = obj.getObjectId();
         name = obj.getString("name");
         altName = obj.getString("info");
         prices = obj.getString("prices");
         sortOrder = obj.getNumber("sortOrder");
-
+        info = obj.getString("info");
         productType = obj.getString("productType");
 
         if(productType.equals("CHOICE")) {
-            deliveryPriceWOVAT = new DecimalFormat("0.00").format(obj.getNumber("deliveryPriceWithoutVat").doubleValue());
-            takeawayPriceWOVAT = new DecimalFormat("0.00").format(obj.getNumber("takeawayPriceWithoutVat").doubleValue());
+            deliveryPriceWOVAT = df.format(obj.getNumber("deliveryPriceWithoutVat").doubleValue());
+            takeawayPriceWOVAT = df.format(obj.getNumber("takeawayPriceWithoutVat").doubleValue());
             deliveryTaxRate = Double.parseDouble(obj.getString("taxClass").split("-")[1]);
             takeawayTaxRate = Double.parseDouble(obj.getString("taxClass").split("-")[1]);
         } else {
-            deliveryPriceWOVAT = new DecimalFormat("0.00").format(obj.getNumber("deliveryPriceWithoutVat").doubleValue());
-            takeawayPriceWOVAT = new DecimalFormat("0.00").format(obj.getNumber("takeawayPriceWithoutVat").doubleValue());
+            deliveryPriceWOVAT = df.format(obj.getNumber("deliveryPriceWithoutVat").doubleValue());
+            takeawayPriceWOVAT = df.format(obj.getNumber("takeawayPriceWithoutVat").doubleValue());
             deliveryTaxRate = Double.parseDouble(obj.getString("deliveryTaxClass").split("-")[1]);
             takeawayTaxRate = Double.parseDouble(obj.getString("takeawayTaxClass").split("-")[1]);
         }
@@ -119,16 +127,22 @@ public class ItemListObject implements Comparable<ItemListObject> {
 
         for (int i = 0; i < servingsArray.length(); i++) {
             ParseQuery<ParseObject> query = ParseQuery.getQuery("Product");
+            query.include("categories");
+            query.whereContainsAll("categories", CategoryManager.getObjectList());
+            query.setLimit(1000);
             try {
-                query.getInBackground(servingsArray.getString(i), new GetCallback<ParseObject>() {
+                query.whereStartsWith("objectId", servingsArray.getString(i));
+                query.findInBackground(new FindCallback<ParseObject>() {
                     @Override
-                    public void done(ParseObject object, ParseException e) {
+                    public void done(List<ParseObject> objects, ParseException e) {
                         if (e == null) {
-                            servingList.add(new ServingListItem(object));
-                            Log.d(TAG, "Serving ObjectId: " + object.getObjectId());
-                            Log.d(TAG, "Serving: " + object.getString("info"));
+                            for (ParseObject object : objects) {
+                                servingList.add(new ServingListItem(object));
+                                Log.d(TAG, "Serving ObjectId: " + object.getObjectId());
+                                Log.d(TAG, "Serving: " + object.getString("info"));
 
-                            Collections.sort(servingList, new MyComparator());
+                                Collections.sort(servingList, new MyComparator());
+                            }
                         } else {
                             e.printStackTrace();
                         }
@@ -165,8 +179,8 @@ public class ItemListObject implements Comparable<ItemListObject> {
                 for (int j = 0; j < valueObject.length(); j++) {
                     String additionId = valueObject.getJSONObject(j).getString("id");
                     String additionDetailName = valueObject.getJSONObject(j).getString("name");
-                    String additionDetailPrice = new DecimalFormat("0.00").format(valueObject.getJSONObject(j).getDouble("price"));
-                    String[] additionDetailPriceWithoutVat = {new DecimalFormat("0.00").format(valueObject.getJSONObject(j).getDouble("priceWithoutVAT"))};
+                    String additionDetailPrice = df.format(valueObject.getJSONObject(j).getDouble("price"));
+                    String[] additionDetailPriceWithoutVat = {df.format(valueObject.getJSONObject(j).getDouble("priceWithoutVAT"))};
 
                     if (additionDetailPrice.equals("0.00")) additionDetailPrice = "";
                     else additionDetailPrice = "  +" + additionDetailPrice;
@@ -176,7 +190,7 @@ public class ItemListObject implements Comparable<ItemListObject> {
                             !additionDetailPriceWithoutVat[0].equals("") ?
                                     new double[]{Double.parseDouble(additionDetailPriceWithoutVat[0]),Double.parseDouble(additionDetailPriceWithoutVat[0])} :
                                     new double[]{0,0},
-                            this.taxRate, this.sortOrder));
+                            this.taxRate, this.sortOrder, this.info));
 
                     Log.d(TAG, "addition detail name: " + additionDetailName);
                     Collections.sort(additionList, new MyComparator());
@@ -189,7 +203,7 @@ public class ItemListObject implements Comparable<ItemListObject> {
                 String basePrice =  getPrices().split(",")[0];
                 if (basePrice == null) basePrice = getPrices();
 
-                basePrice = new DecimalFormat("0.00").format(Double.parseDouble(basePrice));
+                basePrice = df.format(Double.parseDouble(basePrice));
 
                 if (CategoryManager.isDinein())
                     additionOptions.add(new ModalListItem(getObjectId(), getName(), priceArray, getTaxRate(), Constants.Type.ADDITION, Constants.OTHER, getAdditionTitle(), additionList));
@@ -208,7 +222,7 @@ public class ItemListObject implements Comparable<ItemListObject> {
     }
 
     public ArrayList<OptionListItem> getServings() {
-        if (servingList != null) {
+        if (servingList != null && !servingList.isEmpty()) {
             for (OptionListItem item: servingList) { item.setSelected(false); }
             servingList.get(0).setSelected(true);
         }

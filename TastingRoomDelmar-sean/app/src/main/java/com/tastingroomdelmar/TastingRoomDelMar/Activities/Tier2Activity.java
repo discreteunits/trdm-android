@@ -218,7 +218,8 @@ public class Tier2Activity extends AppCompatActivity {
                 OIDManager.addToList(listItem.get(position).getId());
                 //OIDManager.printObjectId();
 
-                CategoryManager.addToList(listItem.get(position).getCategoryId());
+                CategoryManager.addToList(listItem.get(position).getCategoryId(), listItem.get(position).getName());
+                CategoryManager.addToObjectList(listItem.get(position).getObject());
                 //CategoryManager.printCategory();
 
                 Intent intent;
@@ -287,7 +288,7 @@ public class Tier2Activity extends AppCompatActivity {
 
                             for (int i = 0; i < arr.length(); i++) {
                                 if (OIDManager.isInList(arr.getJSONObject(i).getString("objectId"))) {
-                                    listItem.add(new ListObject(objects.getInt("sortOrder"),
+                                    listItem.add(new ListObject(objects.getParseObject("category"), objects.getInt("sortOrder"),
                                             objects.getObjectId(),
                                             categoryObject == null ?
                                                     "" : categoryObject.getObjectId(),

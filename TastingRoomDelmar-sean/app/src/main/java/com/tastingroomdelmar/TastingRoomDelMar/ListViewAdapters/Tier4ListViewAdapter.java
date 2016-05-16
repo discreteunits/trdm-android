@@ -141,7 +141,7 @@ public class Tier4ListViewAdapter extends ArrayAdapter<ItemListObject> implement
             ArrayList<ItemListObject> tmpList = new ArrayList<>(original);
             FilterResults result = new FilterResults();
 
-            if(constraint == null || constraint.length() == 0 || constraint == ("Full List")) {
+            if(constraint == null || constraint.length() == 0 || constraint == ("Show All")) {
                 result.values = original;
                 result.count = original.size();
             } else {

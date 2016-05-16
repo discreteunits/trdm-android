@@ -43,6 +43,11 @@ public class OrderManager {
     static int numDinein = 0;
     static int numTakeaway = 0;
 
+    static int takeawayWineBottleCount;
+    static int takeawayBeerBottleCount;
+
+    static double takeawayWinePriceAccumulator;
+    static double takeawayBeerPriceAccumulator;
 
     private static ArrayList<OrderListItem> orderListItems;
 
@@ -293,8 +298,6 @@ public class OrderManager {
         singleton = new OrderManager();
     }
 
-
-
     public static Map<String, Object> jsonToMap(JSONObject json) throws JSONException {
         Map<String, Object> retMap = new HashMap<String, Object>();
 
@@ -338,5 +341,26 @@ public class OrderManager {
             list.add(value);
         }
         return list;
+    }
+
+    public static void addTakeawayWineBottleCount(int c) { takeawayWineBottleCount += c; }
+    public static void addTakeawayBeerBottleCount(int c) { takeawayBeerBottleCount += c; }
+    public static int getTakeawayWineBottleCount() { return takeawayWineBottleCount; }
+    public static int getTakeawayBeerBottleCount() { return takeawayBeerBottleCount; }
+
+
+    public static void addTakeawayWinePrice(double p) { takeawayWinePriceAccumulator += p; }
+    public static void addTakeawayBeerPrice(double p) { takeawayBeerPriceAccumulator += p; }
+
+    public static double getWineDiscount() {
+        if (takeawayWineBottleCount == 0) return 0;
+        if (takeawayWineBottleCount > 0 && takeawayWineBottleCount < 3) return takeawayWinePriceAccumulator * 0.15;
+        if (takeawayWineBottleCount >= 3 && takeawayWineBottleCount < 12) return takeawayWinePriceAccumulator * 0.20;
+        else return takeawayWinePriceAccumulator * 0.25;
+    }
+
+    public static double getBeerDiscount() {
+        if (takeawayBeerBottleCount == 0) return 0;
+        else return takeawayBeerPriceAccumulator * 0.15;
     }
 }

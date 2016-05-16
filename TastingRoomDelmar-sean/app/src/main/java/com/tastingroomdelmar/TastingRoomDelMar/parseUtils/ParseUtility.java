@@ -51,7 +51,16 @@ public class ParseUtility {
     public void init() {
         Parse.enableLocalDatastore(mContext); /* Parse method enableLocalDatastore() must be called before initialize() */
         Parse.initialize(mContext, mContext.getString(R.string.parse_app_id), mContext.getString(R.string.parse_client_key));
-        ParseFacebookUtils.initialize(mContext);
+//        Parse.initialize(
+//                new Parse.Configuration.Builder(mContext)
+//                        .applicationId(mContext.getString(R.string.parse_app_id))
+//                        .clientKey(null)
+//                        .server(mContext.getString(R.string.parse_server))
+//                        .build()
+//        );
+
+
+                ParseFacebookUtils.initialize(mContext);
 
         FacebookSdk.sdkInitialize(mContext);
 

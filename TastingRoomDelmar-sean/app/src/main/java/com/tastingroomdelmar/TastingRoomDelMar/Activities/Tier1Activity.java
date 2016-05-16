@@ -197,7 +197,8 @@ public class Tier1Activity extends AppCompatActivity {
                                 Intent dineinIntent = new Intent(Tier1Activity.this, Tier2Activity.class);
                                 CategoryManager.setDinein(true);
                                 OIDManager.addToList(listItem.get(index).getId());
-                                CategoryManager.addToList(listItem.get(index).getCategoryId());
+                                CategoryManager.addToList(listItem.get(index).getCategoryId(), listItem.get(index).getName());
+                                CategoryManager.addToObjectList(listItem.get(index).getObject());
                                 dineinIntent.putExtra("TIER2_DEST", "Dine In");
                                 startActivity(dineinIntent);
                                 break; // Dinein
@@ -205,7 +206,8 @@ public class Tier1Activity extends AppCompatActivity {
                                 Intent takeawayintent = new Intent(Tier1Activity.this, Tier2Activity.class);
                                 CategoryManager.setDinein(false);
                                 OIDManager.addToList(listItem.get(index).getId());
-                                CategoryManager.addToList(listItem.get(index).getCategoryId());
+                                CategoryManager.addToList(listItem.get(index).getCategoryId(), listItem.get(index).getName());
+                                CategoryManager.addToObjectList(listItem.get(index).getObject());
                                 takeawayintent.putExtra("TIER2_DEST", "Take Away");
                                 startActivity(takeawayintent);
                                 break; // Takeaway
@@ -213,7 +215,8 @@ public class Tier1Activity extends AppCompatActivity {
                                 Intent eventIntent = new Intent(Tier1Activity.this, Tier4Activity.class);
                                 CategoryManager.setDinein(false);
                                 OIDManager.addToList(listItem.get(index).getId());
-                                CategoryManager.addToList(listItem.get(index).getCategoryId());
+                                CategoryManager.addToList(listItem.get(index).getCategoryId(), listItem.get(index).getName());
+                                CategoryManager.addToObjectList(listItem.get(index).getObject());
                                 eventIntent.putExtra("TIER4_DEST", "Events");
                                 eventIntent.putExtra("TIER4_ORIG", "Del Mar");
                                 startActivity(eventIntent);
@@ -240,45 +243,6 @@ public class Tier1Activity extends AppCompatActivity {
             });
         }
 
-//        drawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-//                switch (i) {
-//                    case 0: Intent dineinIntent = new Intent(Tier1Activity.this, Tier2Activity.class);
-//                        CategoryManager.setDinein(true);
-//                        OIDManager.addToList(listItem.get(0).getId());
-//                        CategoryManager.addToList(listItem.get(0).getCategoryId());
-//                        dineinIntent.putExtra("TIER2_DEST", "Dine In");
-//                        startActivity(dineinIntent);
-//                        break; // Dinein
-//                    case 1: Intent takeawayintent = new Intent(Tier1Activity.this, Tier2Activity.class);
-//                        CategoryManager.setDinein(false);
-//                        OIDManager.addToList(listItem.get(1).getId());
-//                        CategoryManager.addToList(listItem.get(1).getCategoryId());
-//                        takeawayintent.putExtra("TIER2_DEST", "Take Away");
-//                        startActivity(takeawayintent);
-//                        break; // Takeaway
-//                    case 2: Intent eventIntent = new Intent(Tier1Activity.this, Tier4Activity.class);
-//                        CategoryManager.setDinein(false);
-//                        OIDManager.addToList(listItem.get(2).getId());
-//                        CategoryManager.addToList(listItem.get(2).getCategoryId());
-//                        eventIntent.putExtra("TIER4_DEST", "Events");
-//                        eventIntent.putExtra("TIER4_ORIG", "Del Mar");
-//                        startActivity(eventIntent);
-//                        break; // Events
-//                    case 3: Intent tabIntent = new Intent(Tier1Activity.this, MyTabActivity.class);
-//                        startActivity(tabIntent);
-//                        break;
-//                    case 4: Intent paymentIntent = new Intent(Tier1Activity.this, PaymentActivity.class);
-//                        startActivity(paymentIntent);
-//                        break; // Payment
-//                    case 5: Intent settingsIntent = new Intent(Tier1Activity.this, SettingsActivity.class);
-//                        startActivity(settingsIntent);
-//                        break; // Settings
-//                }
-//            }
-//        });
-
         mProgressBar = (ProgressBar) findViewById(R.id.pb_tier1);
         mProgressBar.setVisibility(View.VISIBLE);
 
@@ -298,7 +262,8 @@ public class Tier1Activity extends AppCompatActivity {
                 OIDManager.addToList(listItem.get(position).getId());
                 //OIDManager.printObjectId();
 
-                CategoryManager.addToList(listItem.get(position).getCategoryId());
+                CategoryManager.addToList(listItem.get(position).getCategoryId(), listItem.get(position).getName());
+                CategoryManager.addToObjectList(listItem.get(position).getObject());
                 //CategoryManager.printCategory();
 
                 if (listItem.get(position).getName().equals("Dine In")) {
@@ -363,6 +328,7 @@ public class Tier1Activity extends AppCompatActivity {
                         if (state.equals("idle")) continue;
 
                         listItem.add(new ListObject(
+                                objects.getParseObject("category"),
                                 objects.getInt("sortOrder"),
                                 objects.getObjectId(),
                                 categoryObject == null ? "" : categoryObject.getObjectId(),
@@ -374,7 +340,11 @@ public class Tier1Activity extends AppCompatActivity {
 
                     Collections.sort(listItem);
                     OIDManager.setOIDs(listItem.get(0).getId(),listItem.get(1).getId(),listItem.get(2).getId());
-                    CategoryManager.setCategories(listItem.get(0).getCategoryId(),listItem.get(1).getCategoryId(),listItem.get(2).getCategoryId());
+                    CategoryManager.setCategories(
+                            listItem.get(0).getObject(), listItem.get(0).getCategoryId(),
+                            listItem.get(1).getObject(), listItem.get(1).getCategoryId(),
+                            listItem.get(2).getObject(), listItem.get(2).getCategoryId()
+                    );
                     adapter.notifyDataSetChanged();
                     mProgressBar.setVisibility(View.GONE);
                 } else {

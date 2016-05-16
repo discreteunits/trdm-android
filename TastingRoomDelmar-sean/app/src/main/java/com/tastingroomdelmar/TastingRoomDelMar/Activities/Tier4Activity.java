@@ -142,6 +142,11 @@ public class Tier4Activity extends AppCompatActivity {
                     onBackPressed();
                 }
             });
+
+            if (currentActivity.equals("Events") || currentActivity.equals("Merch") || currentActivity.equals("Harvest")) {
+                CategoryManager.setIsWine(false);
+                CategoryManager.setIsBeer(false);
+            }
         }
 
         nothing = (TextView) findViewById(R.id.nothing_to_display);
@@ -208,7 +213,8 @@ public class Tier4Activity extends AppCompatActivity {
                         case 0: Intent dineinIntent = new Intent(Tier4Activity.this, Tier2Activity.class);
                             CategoryManager.setDinein(true);
                             CategoryManager.popAll();
-                            CategoryManager.addToList(CategoryManager.getDineinCategoryId());
+                            CategoryManager.addToList(CategoryManager.getDineinCategoryId(), "Dine In");
+                            CategoryManager.addToObjectList(CategoryManager.getDineineObject());
                             OIDManager.popAll();
                             OIDManager.addToList(OIDManager.getDineinOID());
                             dineinIntent.putExtra("TIER2_DEST", "Dine In");
@@ -218,7 +224,8 @@ public class Tier4Activity extends AppCompatActivity {
                         case 1: Intent takeawayintent = new Intent(Tier4Activity.this, Tier2Activity.class);
                             CategoryManager.setDinein(false);
                             CategoryManager.popAll();
-                            CategoryManager.addToList(CategoryManager.getTakeawayCategoryId());
+                            CategoryManager.addToList(CategoryManager.getTakeawayCategoryId(), "Take Away");
+                            CategoryManager.addToObjectList(CategoryManager.getTakeawayObject());
                             OIDManager.popAll();
                             OIDManager.addToList(OIDManager.getTakeawayOID());
                             takeawayintent.putExtra("TIER2_DEST", "Take Away");
@@ -228,7 +235,8 @@ public class Tier4Activity extends AppCompatActivity {
                         case 2: Intent eventIntent = new Intent(Tier4Activity.this, Tier4Activity.class);
                             CategoryManager.setDinein(false);
                             CategoryManager.popAll();
-                            CategoryManager.addToList(CategoryManager.getEventsCategoryId());
+                            CategoryManager.addToList(CategoryManager.getEventsCategoryId(), "Events");
+                            CategoryManager.addToObjectList(CategoryManager.getEventsObject());
                             OIDManager.popAll();
                             OIDManager.addToList(OIDManager.getEventsOID());
                             eventIntent.putExtra("TIER4_DEST", "Events");
@@ -249,55 +257,6 @@ public class Tier4Activity extends AppCompatActivity {
                 }
             });
         }
-
-//        drawerListView = (ListView) findViewById(R.id.right_drawer);
-//        drawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-//                switch (i) {
-//                    case 0: Intent dineinIntent = new Intent(Tier4Activity.this, Tier2Activity.class);
-//                        CategoryManager.setDinein(true);
-//                        CategoryManager.popAll();
-//                        CategoryManager.addToList(CategoryManager.getDineinCategoryId());
-//                        OIDManager.popAll();
-//                        OIDManager.addToList(OIDManager.getDineinOID());
-//                        dineinIntent.putExtra("TIER2_DEST", "Dine In");
-//                        startActivity(dineinIntent);
-//                        finish();
-//                        break; // Dinein
-//                    case 1: Intent takeawayintent = new Intent(Tier4Activity.this, Tier2Activity.class);
-//                        CategoryManager.setDinein(false);
-//                        CategoryManager.popAll();
-//                        CategoryManager.addToList(CategoryManager.getTakeawayCategoryId());
-//                        OIDManager.popAll();
-//                        OIDManager.addToList(OIDManager.getTakeawayOID());
-//                        takeawayintent.putExtra("TIER2_DEST", "Take Away");
-//                        startActivity(takeawayintent);
-//                        finish();
-//                        break; // Takeaway
-//                    case 2: Intent eventIntent = new Intent(Tier4Activity.this, Tier4Activity.class);
-//                        CategoryManager.setDinein(false);
-//                        CategoryManager.popAll();
-//                        CategoryManager.addToList(CategoryManager.getEventsCategoryId());
-//                        OIDManager.popAll();
-//                        OIDManager.addToList(OIDManager.getEventsOID());
-//                        eventIntent.putExtra("TIER4_DEST", "Events");
-//                        eventIntent.putExtra("TIER4_ORIG", currentActivity);
-//                        startActivity(eventIntent);
-//                        finish();
-//                        break; // Events
-//                    case 3: Intent tabIntent = new Intent(Tier4Activity.this, MyTabActivity.class);
-//                        startActivity(tabIntent);
-//                        break;
-//                    case 4: Intent paymentIntent = new Intent(Tier4Activity.this, PaymentActivity.class);
-//                        startActivity(paymentIntent);
-//                        break; // Payment
-//                    case 5: Intent settingsIntent = new Intent(Tier4Activity.this, SettingsActivity.class);
-//                        startActivity(settingsIntent);
-//                        break; // Settings
-//                }
-//            }
-//        });
 
         final TwoWayView topListView = (TwoWayView) findViewById(R.id.lv_top_tier4);
         topAdapter = new Tier4TopListViewAdapter(this, topListItem);
@@ -417,6 +376,7 @@ public class Tier4Activity extends AppCompatActivity {
     private void getListFromParse() {
         ParseQuery<ParseObject> query = new ParseQuery<>("Product");
         query.include("categories");
+        query.whereContainsAll("categories", CategoryManager.getObjectList());
         query.setLimit(1000);
         query.findInBackground(new FindCallback<ParseObject>() {
             public void done(final List<ParseObject> objectList, ParseException e) {

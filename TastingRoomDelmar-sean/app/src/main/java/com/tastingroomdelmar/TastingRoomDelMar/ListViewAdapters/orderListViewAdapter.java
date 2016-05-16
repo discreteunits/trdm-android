@@ -12,6 +12,8 @@ import com.tastingroomdelmar.TastingRoomDelMar.R;
 import com.tastingroomdelmar.TastingRoomDelMar.parseUtils.OrderListItem;
 import com.tastingroomdelmar.TastingRoomDelMar.utils.FontManager;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 /**
@@ -21,11 +23,15 @@ public class OrderListViewAdapter extends ArrayAdapter<OrderListItem> {
     AppCompatActivity mContext;
     ArrayList<OrderListItem> item;
 
+    DecimalFormat df = new DecimalFormat("0.00");
+
     public OrderListViewAdapter(AppCompatActivity context, ArrayList<OrderListItem> item) {
         super(context, R.layout.list_item_mytab, item);
 
         mContext = context;
         this.item = item;
+
+        df.setRoundingMode(RoundingMode.HALF_UP);
     }
 
     @Override
@@ -66,21 +72,43 @@ public class OrderListViewAdapter extends ArrayAdapter<OrderListItem> {
 
         String options = orderListItem.getOptions();
 
+        if (orderListItem.isDiscount()) {
+
+        }
+
         if (orderListItem.getIsDineIn()) {
-            if (options != null)
-                viewHolder.tvOption.setText(options);
-            else
-                viewHolder.tvOption.setVisibility(View.GONE);
+            if (options != null) {
+                if (orderListItem.getCRV() != 0)
+                    viewHolder.tvOption.setText(options + "\nCRV "+orderListItem.getCRV());
+                else
+                    viewHolder.tvOption.setText(options);
+            }
+            else {
+                if (orderListItem.getCRV() != 0)
+                    viewHolder.tvOption.setText("CRV "+orderListItem.getCRV());
+                else
+                    viewHolder.tvOption.setVisibility(View.GONE);
+
+            }
         }
         else {
             if (options != null)
-                viewHolder.tvOption.setText(options + "\nTakeaway");
+                if (orderListItem.getCRV() != 0)
+                    viewHolder.tvOption.setText(options + "\nCRV "+ df.format(orderListItem.getCRV()) + "\nTakeaway");
+                else
+                    viewHolder.tvOption.setText(options + "\nTakeaway");
             else
-                viewHolder.tvOption.setText("Takeaway");
+                if (orderListItem.getCRV() != 0)
+                    viewHolder.tvOption.setText("CRV "+ df.format(orderListItem.getCRV()) + "\nTakeaway");
+                else
+                    viewHolder.tvOption.setText("Takeaway");
         }
 
         viewHolder.tvBasePrice.setText(orderListItem.getBasePrice());
         viewHolder.tvModPrice.setText(orderListItem.getModPrices());
+
+        if (orderListItem.getIsChoice()) viewHolder.tvBasePrice.setVisibility(View.INVISIBLE);
+        else viewHolder.tvBasePrice.setVisibility(View.VISIBLE);
 
         return rowView;
     }

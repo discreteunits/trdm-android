@@ -46,7 +46,7 @@ public class ModalListItem {
 
         quantityList = new ArrayList<>();
 
-        for (int i = 1; i < 11; i++) {
+        for (int i = 1; i < 13; i++) {
             quantityList.add(new OptionListItem((i+""), objectId, new double[]{0,0}, null));
         }
 

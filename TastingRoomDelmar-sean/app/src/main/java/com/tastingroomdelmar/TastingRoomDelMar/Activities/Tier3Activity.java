@@ -92,7 +92,8 @@ public class Tier3Activity extends AppCompatActivity {
         final TextView mTVCurrentActivityName = (TextView) findViewById(R.id.tv_curr_activity);
         mBadge = (TextView) findViewById(R.id.tab_badge);
 
-        OrderManager.getSingleton().setOrderCountListener(new OrderManager.OrderCountListener() {
+        OrderManager orderManager = OrderManager.getSingleton();
+        orderManager.setOrderCountListener(new OrderManager.OrderCountListener() {
             @Override
             public void onOrderCountChanged(int count) {
                 if (count == 0)
@@ -123,6 +124,17 @@ public class Tier3Activity extends AppCompatActivity {
                     onBackPressed();
                 }
             });
+
+            if (currentActivity.equals("Vines")) {
+                CategoryManager.setIsWine(true);
+                CategoryManager.setIsBeer(false);
+            } else if (currentActivity.equals("Hops")){
+                CategoryManager.setIsWine(false);
+                CategoryManager.setIsBeer(true);
+            } else {
+                CategoryManager.setIsWine(false);
+                CategoryManager.setIsBeer(false);
+            }
         }
 
         mProgressBar = (ProgressBar) findViewById(R.id.pb_tier3);
@@ -168,7 +180,8 @@ public class Tier3Activity extends AppCompatActivity {
                         case 0: Intent dineinIntent = new Intent(Tier3Activity.this, Tier2Activity.class);
                             CategoryManager.setDinein(true);
                             CategoryManager.popAll();
-                            CategoryManager.addToList(CategoryManager.getDineinCategoryId());
+                            CategoryManager.addToList(CategoryManager.getDineinCategoryId(), listItem.get(index).getName());
+                            CategoryManager.addToObjectList(CategoryManager.getDineineObject());
                             OIDManager.popAll();
                             OIDManager.addToList(OIDManager.getDineinOID());
                             dineinIntent.putExtra("TIER2_DEST", "Dine In");
@@ -178,7 +191,8 @@ public class Tier3Activity extends AppCompatActivity {
                         case 1: Intent takeawayintent = new Intent(Tier3Activity.this, Tier2Activity.class);
                             CategoryManager.setDinein(false);
                             CategoryManager.popAll();
-                            CategoryManager.addToList(CategoryManager.getTakeawayCategoryId());
+                            CategoryManager.addToList(CategoryManager.getTakeawayCategoryId(), listItem.get(index).getName());
+                            CategoryManager.addToObjectList(CategoryManager.getTakeawayObject());
                             OIDManager.popAll();
                             OIDManager.addToList(OIDManager.getTakeawayOID());
                             takeawayintent.putExtra("TIER2_DEST", "Take Away");
@@ -188,7 +202,8 @@ public class Tier3Activity extends AppCompatActivity {
                         case 2: Intent eventIntent = new Intent(Tier3Activity.this, Tier4Activity.class);
                             CategoryManager.setDinein(false);
                             CategoryManager.popAll();
-                            CategoryManager.addToList(CategoryManager.getEventsCategoryId());
+                            CategoryManager.addToList(CategoryManager.getEventsCategoryId(), listItem.get(index).getName());
+                            CategoryManager.addToObjectList(CategoryManager.getEventsObject());
                             OIDManager.popAll();
                             OIDManager.addToList(OIDManager.getEventsOID());
                             eventIntent.putExtra("TIER4_DEST", "Events");
@@ -210,57 +225,7 @@ public class Tier3Activity extends AppCompatActivity {
             });
         }
 
-//        drawerListView = (ListView) findViewById(R.id.right_drawer);
-//        drawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-//                switch (i) {
-//                    case 0: Intent dineinIntent = new Intent(Tier3Activity.this, Tier2Activity.class);
-//                        CategoryManager.setDinein(true);
-//                        CategoryManager.popAll();
-//                        CategoryManager.addToList(CategoryManager.getDineinCategoryId());
-//                        OIDManager.popAll();
-//                        OIDManager.addToList(OIDManager.getDineinOID());
-//                        dineinIntent.putExtra("TIER2_DEST", "Dine In");
-//                        startActivity(dineinIntent);
-//                        finish();
-//                        break; // Dinein
-//                    case 1: Intent takeawayintent = new Intent(Tier3Activity.this, Tier2Activity.class);
-//                        CategoryManager.setDinein(false);
-//                        CategoryManager.popAll();
-//                        CategoryManager.addToList(CategoryManager.getTakeawayCategoryId());
-//                        OIDManager.popAll();
-//                        OIDManager.addToList(OIDManager.getTakeawayOID());
-//                        takeawayintent.putExtra("TIER2_DEST", "Take Away");
-//                        startActivity(takeawayintent);
-//                        finish();
-//                        break; // Takeaway
-//                    case 2: Intent eventIntent = new Intent(Tier3Activity.this, Tier4Activity.class);
-//                        CategoryManager.setDinein(false);
-//                        CategoryManager.popAll();
-//                        CategoryManager.addToList(CategoryManager.getEventsCategoryId());
-//                        OIDManager.popAll();
-//                        OIDManager.addToList(OIDManager.getEventsOID());
-//                        eventIntent.putExtra("TIER4_DEST", "Events");
-//                        eventIntent.putExtra("TIER4_ORIG", currentActivity);
-//                        startActivity(eventIntent);
-//                        finish();
-//                        break; // Events
-//                    case 3: Intent tabIntent = new Intent(Tier3Activity.this, MyTabActivity.class);
-//                        startActivity(tabIntent);
-//                        break;
-//                    case 4: Intent paymentIntent = new Intent(Tier3Activity.this, PaymentActivity.class);
-//                        startActivity(paymentIntent);
-//                        break; // Payment
-//                    case 5: Intent settingsIntent = new Intent(Tier3Activity.this, SettingsActivity.class);
-//                        startActivity(settingsIntent);
-//                        break; // Settings
-//                }
-//            }
-//        });
-
         final ListView listView = (ListView) findViewById(R.id.lv_tier3);
-
 
         adapter = new Tier3ListViewAdapter(this,listItem);
 
@@ -276,7 +241,8 @@ public class Tier3Activity extends AppCompatActivity {
                 OIDManager.addToList(listItem.get(position).getId());
                 //OIDManager.printObjectId();
 
-                CategoryManager.addToList(listItem.get(position).getCategoryId());
+                CategoryManager.addToList(listItem.get(position).getCategoryId(), listItem.get(position).getName());
+                CategoryManager.addToObjectList(listItem.get(position).getObject());
                 //CategoryManager.printCategory();
 
                 Intent intent = new Intent(Tier3Activity.this, Tier4Activity.class);
@@ -326,7 +292,19 @@ public class Tier3Activity extends AppCompatActivity {
         query.findInBackground(new FindCallback<ParseObject>() {
             public void done(List<ParseObject> objectList, ParseException e) {
                 if (e == null) {
+
                     for(final ParseObject objects : objectList) {
+                        final String name = objects.getString("name");
+
+                        if (!CategoryManager.isDinein()) {
+                            if (CategoryManager.isBeer()) {
+                                if (name.equals("Draft") || name.equals("Flights")) continue;
+                            } else if (CategoryManager.isWine()) {
+                                if (name.equals("Flights")) continue;
+                            } else {
+                                if (name.equals("Cider") || name.equals("Coffee") || name.equals("Kombucha") || name.equals("Mead")) continue;
+                            }
+                        }
                         final ParseObject categoryObject = objects.getParseObject("category");
 
                         if (categoryObject == null) continue;
@@ -339,9 +317,12 @@ public class Tier3Activity extends AppCompatActivity {
 
                                 if (state.equals("idle")) return;
 
-                                String name = objects.getString("name");
                                 String objectId = objects.getObjectId();
                                 int sortOrder = objects.getInt("sortOrder");
+
+
+
+
 
 
                                 //Log.d(TAG, "parse object name : " + name);
@@ -355,6 +336,7 @@ public class Tier3Activity extends AppCompatActivity {
                                     for (int i = 0; i < arr.length(); i++) {
                                         if (OIDManager.isInList(arr.getJSONObject(i).getString("objectId"))) {
                                             listItem.add(new ListObject(
+                                                    object,
                                                     sortOrder,
                                                     objectId,
                                                     categoryObject == null ?

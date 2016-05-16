@@ -13,6 +13,9 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
@@ -30,6 +33,7 @@ import com.parse.ParsePush;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
+import com.parse.RequestPasswordResetCallback;
 import com.parse.SaveCallback;
 import com.tastingroomdelmar.TastingRoomDelMar.R;
 import com.tastingroomdelmar.TastingRoomDelMar.utils.Constants;
@@ -45,6 +49,7 @@ public class SignUpLoginActivity extends AppCompatActivity {
     TextView mTVQuestion;
     TextView mTVEmail;
     TextView mTVPassword;
+    TextView mTVResetPassword;
 
     Button mButtonSignupLogin;
 
@@ -127,6 +132,9 @@ public class SignUpLoginActivity extends AppCompatActivity {
         mTVQuestion = (TextView) findViewById(R.id.tv_signup_login_question);
         mTVQuestion.setTypeface(FontManager.nexa);
 
+        mTVResetPassword = (TextView) findViewById(R.id.tv_signup_login_lost_pw_question);
+        mTVResetPassword.setTypeface(FontManager.nexa);
+
         mButtonSignupLogin = (Button) findViewById(R.id.button_signup_login);
         mButtonSignupLogin.setTypeface(FontManager.nexa);
 
@@ -140,7 +148,9 @@ public class SignUpLoginActivity extends AppCompatActivity {
 
         mEditTextPassword = (EditText) findViewById(R.id.et_password);
 
-        final View thirdDivider = (View) findViewById(R.id.third_divider);
+        final View thirdDivider = findViewById(R.id.third_divider);
+        final View fourthDivider = findViewById(R.id.fourth_divider);
+        final View fifthDivider = findViewById(R.id.fifth_divider);
 
         alertDialog = new Dialog(this);
         alertDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -164,6 +174,10 @@ public class SignUpLoginActivity extends AppCompatActivity {
 
             if (flagSignupOrLogin == Constants.SIGNUP_FLAG) {
                 mTVCurrentActivityName.setText(getResources().getString(R.string.signup));
+                fourthDivider.setVisibility(View.INVISIBLE);
+                fifthDivider.setVisibility(View.INVISIBLE);
+                mTVResetPassword.setVisibility(View.INVISIBLE);
+                mTVResetPassword.setOnClickListener(null);
                 mTVQuestion.setText(getResources().getString(R.string.question_signup));
                 mTVQuestion.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -200,6 +214,62 @@ public class SignUpLoginActivity extends AppCompatActivity {
             }
             else {
                 mTVCurrentActivityName.setText(getResources().getString(R.string.login));
+                fourthDivider.setVisibility(View.VISIBLE);
+                fifthDivider.setVisibility(View.VISIBLE);
+                mTVResetPassword.setVisibility(View.VISIBLE);
+                mTVResetPassword.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        final Dialog pwResetDialog = new Dialog(mContext);
+                        pwResetDialog.setContentView(R.layout.layout_reset_password);
+                        pwResetDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+                        final EditText etEmail = (EditText) pwResetDialog.findViewById(R.id.et_reset_email);
+                        final Button btnReset = (Button) pwResetDialog.findViewById(R.id.btn_reset_submit);
+                        final Button btnCancel = (Button) pwResetDialog.findViewById(R.id.btn_reset_cancel);
+
+                        pwResetDialog.show();
+
+                        etEmail.addTextChangedListener(new TextWatcher() {
+                            @Override
+                            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+
+                            @Override
+                            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                                if (etEmail.getText().toString().isEmpty()) etEmail.setEnabled(false);
+                                else etEmail.setEnabled(true);
+                            }
+
+                            @Override
+                            public void afterTextChanged(Editable s) {}
+                        });
+
+                        btnCancel.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                pwResetDialog.dismiss();
+                            }
+                        });
+
+                        btnReset.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                ParseUser.requestPasswordResetInBackground(etEmail.getText().toString(), new RequestPasswordResetCallback() {
+                                    @Override
+                                    public void done(ParseException e) {
+                                        Toast.makeText(mContext, "Password reset request sent!", Toast.LENGTH_SHORT).show();
+
+                                        if (e != null) {
+                                            e.printStackTrace();
+                                        }
+
+                                        pwResetDialog.dismiss();
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
                 mTVQuestion.setText(getResources().getString(R.string.question_login));
                 mTVQuestion.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -295,6 +365,7 @@ public class SignUpLoginActivity extends AppCompatActivity {
 
         final String password = mEditTextPassword.getText().toString();
 
+        Log.d(TAG, "pw entered: " + password);
         if (email.isEmpty() || password.isEmpty()) {
             alertMsg.setText("Please enter an email and password.");
             alertDialog.show();

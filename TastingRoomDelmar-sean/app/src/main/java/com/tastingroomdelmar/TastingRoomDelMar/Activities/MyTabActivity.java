@@ -4,7 +4,6 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.ApplicationInfo;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
@@ -23,16 +22,18 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.baoyz.swipemenulistview.SwipeMenu;
 import com.baoyz.swipemenulistview.SwipeMenuCreator;
 import com.baoyz.swipemenulistview.SwipeMenuItem;
 import com.baoyz.swipemenulistview.SwipeMenuListView;
 import com.crashlytics.android.Crashlytics;
+import com.parse.FindCallback;
 import com.parse.FunctionCallback;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.tastingroomdelmar.TastingRoomDelMar.ListViewAdapters.OrderListViewAdapter;
 import com.tastingroomdelmar.TastingRoomDelMar.R;
@@ -45,14 +46,12 @@ import com.tastingroomdelmar.TastingRoomDelMar.utils.OrderManager;
 import com.tastingroomdelmar.TastingRoomDelMar.utils.PaymentManager;
 
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
-import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -64,6 +63,8 @@ public class MyTabActivity extends AppCompatActivity {
     SwipeMenuListView orderListView;
     OrderListViewAdapter adapter;
     ArrayList<OrderListItem> orderListItems;
+
+    ArrayList<String> tableNames;
 
     TextView mTVSubtotal;
     TextView mTVTax;
@@ -87,12 +88,19 @@ public class MyTabActivity extends AppCompatActivity {
     TextView alertMsg;
     Button alertBtn;
 
+    OrderListItem wineDiscountItem;
+    OrderListItem beerDiscountItem;
+
+    DecimalFormat df = new DecimalFormat("0.00");
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_tab);
 
         mContext = this;
+
+        df.setRoundingMode(RoundingMode.HALF_UP);
 
         if (FontManager.getSingleton() == null) new FontManager(this);
 
@@ -239,13 +247,15 @@ public class MyTabActivity extends AppCompatActivity {
                 switch (index) {
                     case 0:
                         final OrderListItem item = orderListItems.get(position);
+                        if (item.isDiscount()) break;
+
                         subtotal = subtotal - item.getItemPriceSum();
                         tax = tax - item.getItemTaxPrice();
                         grandtotal = subtotal + tax;
 
-                        mTVSubtotal.setText(new DecimalFormat("0.00").format(subtotal));
-                        mTVTax.setText(new DecimalFormat("0.00").format(tax));
-                        mTVTotal.setText(new DecimalFormat("0.00").format(grandtotal));
+                        mTVSubtotal.setText(df.format(subtotal));
+                        mTVTax.setText(df.format(tax));
+                        mTVTotal.setText(df.format(grandtotal));
 
                         orderManager.addToSubTotal((-1) * item.getItemPriceSum());
                         orderManager.addToTax((-1) * item.getItemTaxPrice());
@@ -271,9 +281,9 @@ public class MyTabActivity extends AppCompatActivity {
         tax = orderManager.getTaxPrice();
         grandtotal = subtotal + tax;
 
-        final String formattedSubtotal = new DecimalFormat("0.00").format(subtotal);
-        final String formattedTax = new DecimalFormat("0.00").format(tax);
-        final String formattedGrandtotal = new DecimalFormat("0.00").format(grandtotal);
+        final String formattedSubtotal = df.format(subtotal);
+        final String formattedTax = df.format(tax);
+        final String formattedGrandtotal = df.format(grandtotal);
 
         mTVSubtotal.setText(formattedSubtotal);
         mTVTax.setText(formattedTax);
@@ -344,8 +354,8 @@ public class MyTabActivity extends AppCompatActivity {
                 tipAmount = value/100.0;
 
                 double totalAfterTip = grandtotal + afterTip;
-                final String gratuity = new DecimalFormat("0.00").format(afterTip);
-                final String grandTotal = new DecimalFormat("0.00").format(totalAfterTip);
+                final String gratuity = df.format(afterTip);
+                final String grandTotal = df.format(totalAfterTip);
                 tvGratuityLabel.setText("GRATUITY (" + value + "%)");
                 tvGratuity.setText(gratuity);
                 tvTotal.setText(grandTotal);
@@ -430,9 +440,56 @@ public class MyTabActivity extends AppCompatActivity {
                     return;
                 }
 
-                tableDialog.dismiss();
-                tableNumber = etTableNumber.getText().toString();
-                tipDialog.show();
+                tableNames = new ArrayList<>();
+                loadingDialog.show();
+                ParseQuery<ParseObject> query = new ParseQuery<>("Table");
+                query.findInBackground(new FindCallback<ParseObject>() {
+                    @Override
+                    public void done(List<ParseObject> objects, ParseException e) {
+                        if (e == null) {
+                            for (ParseObject obj : objects) {
+                                tableNames.add(obj.getString("name"));
+                            }
+                        } else {
+                            e.printStackTrace();
+                            alertTitle.setText("Whoops!");
+                            alertMsg.setText("There was an error verifying table number. Please try again.");
+                            alertDialog.show();
+                            alertDialog.setOnDismissListener(null);
+
+                            return;
+                        }
+
+                        loadingDialog.dismiss();
+
+                        final String table = etTableNumber.getText().toString();
+
+                        if ((tableNames != null && tableNames.size() != 0) || table.equals("99")) {
+                            if (tableNames.contains(table) || table.equals("99")){
+                                tableDialog.dismiss();
+                                tableNumber = table;
+                                tipDialog.show();
+                            } else {
+                                alertTitle.setText("Whoops!");
+                                alertMsg.setText("Looks like that table does not exist. Please recheck your table number and try again, or contact your server for further assistance.");
+                                tableDialog.dismiss();
+                                alertDialog.show();
+                                alertDialog.setOnDismissListener(null);
+
+                                return;
+                            }
+                        } else {
+                            alertTitle.setText("Whoops!");
+                            alertMsg.setText("There was an error verifying table number. Please try again.");
+                            alertDialog.show();
+                            alertDialog.setOnDismissListener(null);
+
+                            return;
+                        }
+                    }
+                });
+
+
             }
         });
 
@@ -448,6 +505,151 @@ public class MyTabActivity extends AppCompatActivity {
         tvSubTotal.setText(formattedSubtotal);
         tvTax.setText(formattedTax);
         tvTotal.setText(formattedGrandtotal);
+
+        if (OrderManager.getWineDiscount() != 0 || OrderManager.getBeerDiscount() != 0) {
+            ParseQuery<ParseObject> query = new ParseQuery<>("Product");
+            query.whereStartsWith("productType", "REDUCTIONONEPERCENTAGE");
+            query.setLimit(1000);
+            query.findInBackground(new FindCallback<ParseObject>() {
+                @Override
+                public void done(List<ParseObject> objects, ParseException e) {
+                    if (e == null) {
+                        double totalWineDiscount = 0;
+                        double totalBeerDiscount = 0;
+
+                        if (OrderManager.getWineDiscount() != 0) {
+                            final int count = OrderManager.getTakeawayWineBottleCount();
+                            double discountBracket;
+
+                            if (count == 0) discountBracket = 0;
+                            else if (count > 0 && count < 3) discountBracket = 15;
+                            else if (count >= 3 && count < 12) discountBracket = 20;
+                            else discountBracket = 25;
+
+                            for (ParseObject obj : objects) {
+                                if (obj.getNumber("priceWithoutVat").doubleValue() == discountBracket) {
+                                    if (wineDiscountItem == null)
+                                        wineDiscountItem = new OrderListItem();
+
+                                    boolean replaceFlag = false;
+                                    int replaceIndex = 0;
+                                    for (int i = 0; i < orderListItems.size(); i++) {
+                                        OrderListItem listItem = orderListItems.get(i);
+                                        if (listItem.isDiscount() && listItem.getDiscountType().equals("WINE")) {
+                                            replaceFlag = true;
+                                            replaceIndex = i;
+                                        }
+
+                                        if (!listItem.isDiscount() && listItem.getNeedDiscount() && listItem.getVineOrHop().equals("Vine")) {
+                                            double basePrice = Double.parseDouble(listItem.getModPrices().split("\\n")[0]);
+                                            double baseTaxRate = listItem.getBaseTaxRate()/100;
+
+                                            if (!listItem.getDiscountApplied()) {
+                                                orderManager.addToTax((-1) * ((basePrice + listItem.getWeightedCRV()) * baseTaxRate));
+                                                orderManager.addToTax(((basePrice - (basePrice * (discountBracket / 100))) + listItem.getWeightedCRV()) * baseTaxRate);
+                                                orderManager.addToSubTotal((-1) * (basePrice + listItem.getWeightedCRV()));
+                                                orderManager.addToSubTotal(basePrice - (basePrice * (discountBracket / 100)) + listItem.getWeightedCRV());
+                                            }
+                                            totalWineDiscount += basePrice * (discountBracket/100);
+                                            listItem.setDiscountApplied(true);
+                                            //orderManager.addToSubTotal((basePrice + listItem.getWeightedCRV()) - (OrderManager.getWineDiscount() * Integer.parseInt(listItem.getQty())));
+                                        }
+                                    }
+
+                                    wineDiscountItem.setName(obj.getString("name") + "(Vines)");
+                                    wineDiscountItem.setBasePrice("(" + df.format(totalWineDiscount) + ")");
+                                    wineDiscountItem.setQty(OrderManager.getTakeawayWineBottleCount() + "");
+                                    wineDiscountItem.setIsDiscount(true, "WINE");
+                                    wineDiscountItem.setIsDineIn(false);
+
+                                    if (replaceFlag)
+                                        orderListItems.set(replaceIndex, wineDiscountItem);
+                                    else
+                                        orderListItems.add(wineDiscountItem);
+
+                                    adapter.notifyDataSetChanged();
+                                }
+                            }
+                        }
+
+                        if (OrderManager.getBeerDiscount() != 0) {
+                            final int count = OrderManager.getTakeawayBeerBottleCount();
+                            double discountBracket;
+
+                            if (count == 0) discountBracket = 0;
+                            else discountBracket = 15;
+
+                            for (ParseObject obj : objects) {
+                                if (obj.getNumber("priceWithoutVat").doubleValue() == discountBracket) {
+                                    if (beerDiscountItem == null)
+                                        beerDiscountItem = new OrderListItem();
+
+                                    boolean replaceFlag = false;
+                                    int replaceIndex = 0;
+                                    for (int i = 0; i < orderListItems.size(); i++) {
+                                        OrderListItem listItem = orderListItems.get(i);
+                                        if (listItem.isDiscount() && listItem.getDiscountType().equals("BEER")) {
+                                            replaceFlag = true;
+                                            replaceIndex = i;
+                                        }
+
+                                        if (!listItem.isDiscount() && listItem.getNeedDiscount() && listItem.getVineOrHop().equals("Hop")) {
+                                            double basePrice = Double.parseDouble(listItem.getModPrices().split("\\n")[0]);
+                                            double baseTaxRate = listItem.getBaseTaxRate()/100;
+
+                                            if (!listItem.getDiscountApplied()) {
+                                                orderManager.addToTax((-1) * ((basePrice + listItem.getWeightedCRV()) * baseTaxRate));
+                                                orderManager.addToTax(((basePrice - (basePrice * (discountBracket / 100))) + listItem.getWeightedCRV()) * baseTaxRate);
+                                                orderManager.addToSubTotal((-1) * (basePrice + listItem.getWeightedCRV()));
+                                                orderManager.addToSubTotal(basePrice - (basePrice * (discountBracket / 100)) + listItem.getWeightedCRV());
+                                            }
+                                            totalBeerDiscount += basePrice * (discountBracket/100);
+                                            listItem.setDiscountApplied(true);
+                                        }
+
+                                    }
+
+                                    beerDiscountItem.setName(obj.getString("name") + "(Hops)");
+                                    beerDiscountItem.setBasePrice("(" + df.format(totalBeerDiscount) + ")");
+                                    beerDiscountItem.setQty(OrderManager.getTakeawayBeerBottleCount() + "");
+                                    beerDiscountItem.setIsDiscount(true, "BEER");
+                                    beerDiscountItem.setIsDineIn(false);
+
+                                    //orderManager.addToSubTotal((-1) * OrderManager.getBeerDiscount());
+
+
+                                    if (replaceFlag)
+                                        orderListItems.set(replaceIndex, beerDiscountItem);
+                                    else
+                                        orderListItems.add(beerDiscountItem);
+
+                                    adapter.notifyDataSetChanged();
+                                }
+                            }
+                        }
+
+                        subtotal = orderManager.getSubTotalPrice();
+                        tax = orderManager.getTaxPrice();
+                        grandtotal = subtotal + tax;
+
+                        final String formattedSubtotal = df.format(subtotal);
+                        final String formattedTax = df.format(tax);
+                        final String formattedGrandtotal = df.format(grandtotal);
+
+                        mTVSubtotal.setText(formattedSubtotal);
+                        mTVTax.setText(formattedTax);
+                        mTVTotal.setText(formattedGrandtotal);
+
+                        tvSubTotal.setText(formattedSubtotal);
+                        tvTax.setText(formattedTax);
+                        tvTotal.setText(formattedGrandtotal);
+
+                    } else {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
 
         final Dialog userDialog = new Dialog(mContext);
         userDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);

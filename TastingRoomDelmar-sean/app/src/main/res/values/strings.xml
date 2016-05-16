@@ -3,6 +3,8 @@
 
     <string name="facebook_app_id">1167616249933870</string>
     <string name="parse_app_id">kK30VZLdLwfWjOqOfzKbneFjniRGNKr3nOEb83kS</string>
+    <string name="parse_app_id_new">ec321db54f541c125465ddc586b54b08</string>
+    <string name="parse_server">https://trdm-production-717.nodechef.com/parse/</string>
     <string name="parse_client_key">BvU3xAcEB37sp3WXZUD9UhbpI4Set8CCUSbCa0OU</string>
 
     <string name="content_description_tab">My Tab</string>

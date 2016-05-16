@@ -2,6 +2,8 @@ package com.tastingroomdelmar.TastingRoomDelMar.utils;
 
 import android.util.Log;
 
+import com.parse.ParseObject;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 
@@ -19,29 +21,53 @@ public class CategoryManager {
     private static String takeaway;
     private static String events;
 
+    private static ParseObject dineinObject;
+    private static ParseObject takeawayObject;
+    private static ParseObject eventsObject;
+
     private static ArrayList<String> list = new ArrayList<>();
 
     private static ArrayList<String> allList = new ArrayList<>();
 
+    private static ArrayList<String> nameList = new ArrayList<>();
+
+    private static ArrayList<ParseObject> objectList = new ArrayList<>();
+
     private static boolean isDinein = false;
+    private static boolean isWine = false;
+    private static boolean isBeer = false;
 
     public static ArrayList getList() {
         return list;
     }
 
-    public static void addToList(String categoryId) {
+    public static void addToList(String categoryId, String name) {
         list.add(categoryId); printCategory();
+        nameList.add(name);
+    }
+
+    public static void addToObjectList(ParseObject obj) {
+        objectList.add(obj);
     }
 
     public static void popFromList() {
         if (list.size() > 0)
             list.remove(list.size()-1);
+
+        if (objectList.size() > 0)
+            objectList.remove(objectList.size()-1);
+
+        if (nameList.size() > 0)
+            nameList.remove(nameList.size()-1);
+
         printCategory();
     }
 
     public static void popAll() {
         list.clear();
         list = new ArrayList<>();
+        objectList.clear();
+        objectList = new ArrayList<>();
 
         printCategory();
     }
@@ -95,24 +121,39 @@ public class CategoryManager {
     public static void setDinein(boolean dinein) {
         isDinein = dinein;
     }
-
     public static boolean isDinein() { return isDinein; }
 
-    public static void setCategories(String d, String t, String e) {
+    public static void setIsWine(boolean wine) { isWine = wine; }
+    public static boolean isWine() { return isWine; }
+
+    public static void setIsBeer(boolean beer) { isBeer = beer; }
+    public static boolean isBeer() { return isBeer; }
+
+    public static void setCategories(ParseObject dineinObj, String d, ParseObject takeawayObj, String t, ParseObject eventsObj, String e) {
         dinein = d;
         takeaway = t;
         events = e;
+        dineinObject = dineinObj;
+        takeawayObject = takeawayObj;
+        eventsObject = eventsObj;
     }
 
-    public static String getDineinCategoryId() {
-        return dinein;
-    }
+    public static String getDineinCategoryId() { return dinein; }
+    public static ParseObject getDineineObject() { return dineinObject; }
 
     public static String getTakeawayCategoryId() {
         return takeaway;
     }
+    public static ParseObject getTakeawayObject() { return takeawayObject; }
 
     public static String getEventsCategoryId() {
         return events;
     }
+    public static ParseObject getEventsObject() { return eventsObject; }
+
+    public static ArrayList<ParseObject> getObjectList() {
+        return objectList;
+    }
+
+    public static ArrayList<String> getNameList() { return nameList; }
 }

@@ -14,6 +14,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatCheckBox;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
@@ -173,10 +174,12 @@ public class SignUpSecondActivity extends AppCompatActivity {
                     user.setUsername(email);
                     user.setEmail(email);
                     user.setPassword(password);
+                    Log.d("SignUpSecondActivity", "pw passed: " + password);
                     user.put("firstName", first);
                     user.put("lastName", last);
                     user.put("mobileNumber", mobilenum);
-                    user.put("pushAllowed", subscribe);
+                    user.put("pushAllowed", true);
+                    user.put("marketingAllowed", subscribe);
 
                     user.signUpInBackground(new SignUpCallback() {
                         @Override
@@ -198,6 +201,7 @@ public class SignUpSecondActivity extends AppCompatActivity {
                                 edit.putString("email", user.getEmail());
                                 edit.putBoolean("push", user.getBoolean("pushAllowed"));
                                 edit.putBoolean("newsletter", user.getBoolean("marketingAllowed"));
+                                edit.putString("password", password);
                                 edit.apply();
 
                                 Toast.makeText(getApplicationContext(), "Thanks! Signing in now", Toast.LENGTH_SHORT).show();

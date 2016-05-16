@@ -3,6 +3,7 @@ package com.tastingroomdelmar.TastingRoomDelMar.parseUtils;
 import com.parse.ParseObject;
 import com.tastingroomdelmar.TastingRoomDelMar.utils.CategoryManager;
 
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 
 /**
@@ -12,6 +13,7 @@ public class ServingListItem extends OptionListItem {
     private String name;
     private double price;
     private String objectId;
+    private DecimalFormat df = new DecimalFormat("0.00");
 
     public ServingListItem(ParseObject obj) {
         super(obj.getString("info") + " " +
@@ -23,7 +25,8 @@ public class ServingListItem extends OptionListItem {
                 obj.getNumber("price").doubleValue(),
                 new double[]{obj.getNumber("deliveryPriceWithoutVat").doubleValue(),obj.getNumber("takeawayPriceWithoutVat").doubleValue()},
                 new double[]{Double.parseDouble(obj.getString("deliveryTaxClass").split("-")[1]),Double.parseDouble(obj.getString("takeawayTaxClass").split("-")[1])},
-                obj.getNumber("sortOrder")
+                obj.getNumber("sortOrder"),
+                obj.getString("info")
               );
 
 
@@ -34,6 +37,8 @@ public class ServingListItem extends OptionListItem {
         else
             price = obj.getNumber("takeawayPriceWithoutVat").doubleValue();
         objectId = obj.getObjectId();
+
+        df.setRoundingMode(RoundingMode.HALF_UP);
     }
 
     public double getPrice() {
@@ -41,7 +46,7 @@ public class ServingListItem extends OptionListItem {
     }
 
     public String getDisplayName() {
-        return name + " " + new DecimalFormat("0.00").format(price);
+        return name + " " + df.format(price);
     }
 
     public String getObjectId() { return objectId; }
